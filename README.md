@@ -3,7 +3,7 @@ node-qemu-server
 
 setup and control qemu instances with Node.js
 
-more to in future
+more to come in the future
 
 vision:
 setup and control qemu instances via web gui, lean and simple
