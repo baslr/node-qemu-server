@@ -2,7 +2,6 @@ http       = require 'http'
 fs         = require 'fs'
 nodeStatic = require 'node-static'
 qemu       = require './lib/qemu'
-qemuImage  = require './lib/qemuImage'
 
 staticS    = new nodeStatic.Server "./public"
 webServer  = http.createServer()
@@ -30,10 +29,14 @@ ioServer.sockets.on 'connection', (sock) ->
     console.log "status #{vmName}"
     
   sock.on 'createImage', (img) ->
-    qemuImage.create img, (data) ->
-      if      data.status is 'success'
+    qemu.createImage img, (ret) ->
+      if      ret.status is 'success'
         sock.emit 'msg', {type:'success', msg:'image successfully created'}
-      else if data.status is 'error'
+
+        ret.image.info (ret) ->
+          console.dir ret
+        
+      else if ret.status is 'error'
         sock.emit 'msg', {type:'error',   msg:'image not created'}
 
 webServer.on 'error', (e) ->
