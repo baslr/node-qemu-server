@@ -1,5 +1,7 @@
 {
   "dependencies": {
-    "coffee-script": "~1.6.1"
+    "coffee-script": "~1.6.1",
+    "node-static": "~0.6.7",
+    "socket.io": "~0.9.13"
   }
 }

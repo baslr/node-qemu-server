@@ -4,13 +4,13 @@ proc = require 'child_process'
 
 class QemuVm
   constructor: (@name) ->
-    @qmpSocket = 0
-    @process   = 0
+    @qmpSocket    = 0
+    @process      = 0
+    @dataCallback = undefined
 
     # set from extern
     @qmpPort   = 0
     @startArgs = []
-    
     
   start: (callback) ->
     @startVm()
@@ -23,6 +23,9 @@ class QemuVm
     @process.on 'exit', (code, signal) ->
       console.log "qemuVM exit with code: #{code} and signal: #{signal}"
 
+  ###
+  #   qmq stuff
+  ###
   connectQmp: (callback) ->
     @qmpSocket = net.connect @qmpPort
     
@@ -32,14 +35,30 @@ class QemuVm
       
       callback()
       
-    @qmpSocket.on 'data', (data) ->
-      console.log "qmpData"
-      data = data.toString().split '\r\n'
-      console.dir data
-      
+    @qmpSocket.on 'data', (data) =>
+      data = data.toString().split '\r\n'      
+      data.pop()                                                                # remove last ''
+
       for json in data
         try
-          console.dir JSON.parse json.toString()
+          parsedData = JSON.parse json.toString()
+          if @dataCallback?
+            if parsedData.error?
+              @dataCallback 'error':parsedData.error
+            else if parsedData.timestamp?
+              continue
+            else if parsedData.return?
+              if 0 is Object.keys(parsedData.return).length
+                @dataCallback status:'ok'
+              else
+                @dataCallback 'data':parsedData.return
+            else
+              console.error "cant process Data"
+              console.error parsedData
+            @dataCallback = undefined
+          else
+            console.log "no callback defined:"
+            console.dir parsedData
         catch e
           console.error "cant parse returned json, Buffer is:"
           console.error json.toString()
@@ -48,17 +67,21 @@ class QemuVm
       console.error "qmpConnectError try reconnect"
       @connectQmp callback
       
-  pushCmd: (cmd, opts) ->
-    @startArgs.push cmd
-    @startArgs.push opts
-
+  qmpCommand: (cmd, callback) ->
+    @dataCallback = callback
+    @qmpSocket.write JSON.stringify execute:cmd
+      
   reconnectQmp: (qmpPort, callback) ->
     @qmpPort = qmpPort
-    @connectQmp callback
+    @connectQmp callback      
 
   ###
   #   QEMU START OPTIONS  
-  ###
+  ###      
+  pushCmd: (cmd, opts) ->
+    @startArgs.push cmd
+    @startArgs.push opts
+  
   hd: (img) ->
     @pushCmd '-drive', "file=#{img},media=disk"
     return this
@@ -130,26 +153,24 @@ class QemuVm
   ###
   #   QMP commands
   ###  
-  pause: ->
-    @qmpCommand 'stop'
+  pause: (callback) ->
+    @qmpCommand 'stop', callback
 
-  reset: ->
-    @qmpCommand 'system_reset'
+  reset: (callback) ->
+    @qmpCommand 'system_reset', callback
     
-  resume: ->
-    @qmpCommand 'cont'
+  resume: (callback) ->
+    @qmpCommand 'cont', callback
 
-  shutdown: ->
-    @qmpCommand 'system_powerdown'
+  shutdown: (callback) ->
+    @qmpCommand 'system_powerdown', callback
 
-  stop: ->
-    @qmpCommand 'quit'
-
-  qmpCommand: (cmd) ->
-    @qmpSocket.write JSON.stringify execute:cmd
+  stop: (callback) ->
+    @qmpCommand 'stopp', callback
+    
 
   
-qVM = new QemuVm 'mongo-one'
+# qVM = new QemuVm 'mongo-one'
 
 # qVM.gfx()
 #    .ram(1024)
@@ -163,17 +184,39 @@ qVM = new QemuVm 'mongo-one'
 #    .keyboard('de')
 
 
-console.dir qVM.startArgs
-
-# qVM.start ->
-#   console.log "qemu VM startet"
-
-qVM.reconnectQmp 4442, ->
-  console.log "reconnected to qmp"  
-
+# console.dir qVM.startArgs
+# 
+# # qVM.start ->
+# #   console.log "qemu VM startet"
+# 
+# qVM.reconnectQmp 4442, ->
+#   console.log "reconnected to qmp"  
+# 
 # setTimeout ->
-#   qVM.stop()
-# , 60000
+#   qVM.pause (data) ->
+#     if data.status is 'ok'
+#       console.log "pause vm ok"
+#     else
+#       console.dir data
+# , 10000
+# 
+# setTimeout ->
+#   qVM.resume (data) ->
+#     if data.status is 'ok'
+#       console.log "resume vm ok"
+#     else
+#       console.dir data
+# , 20000
+# 
+# 
+# setTimeout ->
+#   qVM.stop (data) ->
+#     if data.status is 'ok'
+#       console.log "stop vm ok"
+#     else
+#       console.dir data
+# , 30000
+# 
   
   # qemu  -cpu kvm64
   
@@ -181,105 +224,5 @@ qVM.reconnectQmp 4442, ->
 ###    
   
 #       @qmpSocket.write '{"execute":"query-commands"}'  
-  
-  
-inspired by 
-https://github.com/hoffoo/qemulib
 
-cmdlist = {
-    boot    : "-boot",
-    drive   : "-drive",
-    kernel  : "-kernel",
-    append  : "-append",
-    initrd  : "-initrd",
-    cdrom   : "-cdrom",
-    hda     : "-hda",
-    hdb     : "-hdb",
-    hdc     : "-hdc",
-    hdd     : "-hdd",
-    nic     : "-net nic,",
-    net     : "-net user,"
-}
-
-
-# main object managed here
-vm = (qemu) ->
-  qemu      : qemu
-  # qmp socket loc (tcp or fifo)
-  qmp       : null
-  appended  : ''
-
-  start   : (cb) ->
-    this.qemu.start(this, cb)
-
-  # internal stuff
-  cmds : []
-  cmdput : (cmd, arg) ->
-    @cmds.push cmd
-    @cmds.push arg
-
-  makeArgs : ->
-    res = @cmds
-
-    if (this.appended)
-      res.push this.appended
-    res
-  qAppend : (line) ->
-    this.appended += ' ' + line
-
-
-
-  # kernel related
-  kernel  : (file) ->
-    this.cmdput 'kernel', file
-    this
-  append  : (line) ->
-    this.cmdput 'append', line
-    this
-  initrd  : (file) ->
-    this.cmdput 'initrd', file
-    this
-
-  # drive related
-  hda : (file) ->
-    this.cmdput '-hda', file
-    this
-  hdb : (file) ->
-    this.cmdput 'hdb', file
-    this
-  hdc : (file) ->
-    this.cmdput 'hdc', file
-    this
-  hdd : (file) ->
-    this.cmdput 'hdd', file
-    this
-  cdrom : (file) ->
-    this.cmdput '-cdrom', file
-
-  # qmp commands
-  qmpSend : (data, callback) ->
-    socket = net.connect({port: this.qmp})
-    qemuOutput = null
-    socket.on 'connect', ->
-      socket.write('{"execute":"qmp_capabilities"}')
-      socket.write(data)
-
-    socket.on 'data', (resp) ->
-      socket.end()
-      qemuOutput = resp
-    socket.on 'end', ->
-      callback(qemuOutput)
-  quit : (callback) ->
-    this.qmpSend('{"execute":"quit"}', callback)
-
-  drives  : []
-  nics    : []
-
-
-firstVm = new vm {}
-
-firstVm.hda   'debianImg'
-firstVm.cdrom 'abc'
-
-# console.dir firstVm.makeArgs()
 ###
