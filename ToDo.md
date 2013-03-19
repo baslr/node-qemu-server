@@ -1,5 +1,4 @@
-
-#### different way to crate an image
+#### different ways to crate an image
     qemu = require './lib/qemu'
     conf = {name:'myImage',size:10}     # 10GiByte
 
