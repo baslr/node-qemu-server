@@ -1,0 +1,21 @@
+
+qemu
+  -> vm
+  -> image
+
+
+qemu = require 'qemu'
+
+
+qImage = new qemu.image 'name' # loads image 
+
+qImage = new qemu.image()            # empty image
+qImage = new qemu.image 'name'       # loads from file
+qImage = new qemu.image 'name', size # create new image
+
+qImage.create 'name', size
+
+qImage =     qemu.image.create 'name', size
+       = new qemu.image        'name', size
+
+qVm = q
