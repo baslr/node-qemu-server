@@ -18,18 +18,29 @@
     <div class="tabbable">
 
       <ul class="nav nav-tabs">
-        <li class="active"><a href="#vmsTab"    data-toggle="tab">vms</a></li>
-        <li>               <a href="#createTab" data-toggle="tab">create</a></li>
+        <li class="active"><a href="#listVmsTab"    data-toggle="tab">vms</a></li>
+        <li>               <a href="#listImagesTab" data-toggle="tab">images</a></li>
+        <li>               <a href="#createTab"     data-toggle="tab">create</a></li>
       </ul>
 
       <div class="tab-content">
 
-        <div class="tab-pane active" id="vmsTab">
+        <div class="tab-pane active" id="listVmsTab">
 
+        </div>
+        
+        <div class="tab-pane" id="listImagesTab">
 
-
-
-
+          <h3>list of images</h3>
+          
+          <div data-bind="foreach: images" id="imagesList">
+            <div class="well well-small">
+              <span data-bind="text: name"></span>
+              <div class="progress progress-info">              
+                <div class="bar" data-bind="style: { width: percentUsed }"></div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="tab-pane" id="createTab">
