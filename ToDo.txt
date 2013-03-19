@@ -1,4 +1,3 @@
-
 qemu
   -> vm
   -> image
@@ -6,11 +5,17 @@ qemu
 
 qemu = require 'qemu'
 
+qemu.createImage 'name', size, callback(status, image)
+qemu.loadImage 'name'
+
 
 qImage = new qemu.image 'name' # loads image 
 
 qImage = new qemu.image()            # empty image
+
 qImage = new qemu.image 'name'       # loads from file
+
+// callback problem
 qImage = new qemu.image 'name', size # create new image
 
 qImage.create 'name', size
