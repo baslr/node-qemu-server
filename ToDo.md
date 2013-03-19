@@ -1,6 +1,6 @@
 #### different ways to crate an image
     qemu = require './lib/qemu'
-    conf = {name:'myImage',size:10}     # 10GiByte
+    conf = {name:'myImage', size:10}    # 10GiByte
 
     qemu.createImage conf, (ret) ->
       ret.image                         # image object
