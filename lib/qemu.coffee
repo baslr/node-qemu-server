@@ -169,6 +169,7 @@ class QemuVm
     @qmpCommand 'stopp', callback
     
 
+exports.QemuVm = QemuVm
   
 # qVM = new QemuVm 'mongo-one'
 
