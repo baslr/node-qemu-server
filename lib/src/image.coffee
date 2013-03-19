@@ -1,4 +1,4 @@
-
+fs   = require 'fs'
 exec = require('child_process').exec
 
 class Image
@@ -21,12 +21,16 @@ class Image
 
     if typeof img is 'function'
       callback = img
-
-    exec "qemu-img create -f qcow2 images/#{@name}.img #{@size}G", (err, stdout, stderr) =>    
-      if err? or stderr isnt ''
-        callback {status:'error', data:[err,stderr]}
-      else
-        callback status:'success', image:this
+      
+      exec "cd images && ls #{@name}.img", (err, stdout, stderr) =>
+        if err? and stdout is ''
+          exec "qemu-img create -f qcow2 images/#{@name}.img #{@size}G", (err, stdout, stderr) =>    
+            if err? or stderr isnt ''
+              callback {status:'error', data:[err,stderr]}
+            else
+              callback status:'success', image:this
+        else
+          callback {status:'error', data:['image already existing']}
         
   info: (callback) ->
     exec "qemu-img info images/#{@name}.img", (err, stdout, stderr) =>
@@ -44,18 +48,18 @@ class Image
         
         size = b['disk_size'].split ''
         
-        console.log size
-        
         if size[size.length-1] is 'K'
           size.pop()
           size = size.join('') * 1000
-          
-        console.log size
-          
         b['disk_size'] = size
         
         callback status:'success', data:b
         
-        
+  delete: (callback) ->
+    fs.unlink "images/#{@name}.img", (err) ->
+      if err?
+        callback status:'error'
+      else
+        callback status:'success'
 
 exports.Image = Image

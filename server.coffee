@@ -1,4 +1,5 @@
 http       = require 'http'
+exec       = require('child_process').exec
 fs         = require 'fs'
 nodeStatic = require 'node-static'
 qemu       = require './lib/qemu'
@@ -14,7 +15,6 @@ webServer.on 'request', (req, res) ->
       staticS.serve req, res                                                    # we only serve files, all other stuff via websockets
   
 socks  = {}
-
 vms    = {}
 images = {}
 
@@ -37,10 +37,9 @@ ioServer.sockets.on 'connection', (sock) ->
       if      ret.status is 'success'
         sock.emit 'msg', {type:'success', msg:'image successfully created'}
         
-        emitToAll 'image', img.name
-
+        images[ret.image.name] = ret.image
         ret.image.info (ret) ->
-          console.dir ret
+          emitToAll 'image', ret.data
         
       else if ret.status is 'error'
         sock.emit 'msg', {type:'error',   msg:'image not created'}
@@ -49,7 +48,15 @@ ioServer.sockets.on 'connection', (sock) ->
     for i,img of images
       img.info (ret) ->
         sock.emit 'image', ret.data
-
+        
+  sock.on 'deleteImage', (image) ->
+    if images[image.name]?
+      images[image.name].delete (ret) ->
+        if ret.status is 'success'
+          sock.emit 'msg', {type:'success', msg:'image deleted'}
+          delete images[image.name]
+        else if ret.status is 'error'
+          sock.emit 'msg', {type:'error', msg:'cant delete image'}
 
 webServer.on 'error', (e) ->
   console.error "webServer error: #{e}"
@@ -61,8 +68,12 @@ emitToAll = (msg, data) ->
 ###
 #   read images
 ###
-for img in fs.readdirSync('images')
-  if -1 < img.search(/\.img$/)
+
+exec "cd images && ls -v *.img", (err, stdout, stderr) ->
+  imgs = stdout.split '\n'
+  imgs.pop()
+
+  for img in imgs
     img = img.split('.')[0]
     images[img] = new qemu.Image img
 
@@ -70,6 +81,7 @@ for img in fs.readdirSync('images')
 
 # load vm stats from database
 
+#-v     Natürliche Sortierung von (Versions)nummern im Text
 
 # mongoOne = new qemu.QemuVm 'mongo-one'
 # vms['mongo-one'] = mongoOne

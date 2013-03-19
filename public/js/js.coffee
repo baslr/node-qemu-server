@@ -1,4 +1,6 @@
 
+sock = undefined
+
 class ImageViewModel
   constructor: ->
     @images  = ko.observableArray()
@@ -11,7 +13,15 @@ class ImageViewModel
         @images.replace n, ncp
         
   add: (image) ->
+    for n,i in @images()
+      if n.name is image.name
+        return
     @images.push image
+    
+  remove: (image) =>
+    @images.remove image
+    sock.emit 'deleteImage', image
+    
 
 imagesVM = new ImageViewModel()
 
@@ -23,14 +33,7 @@ imagesVM = new ImageViewModel()
   sock.on 'connect', ->
     console.log 'SOCK -> connected'
     
-    sock.emit 'images'
-  
-    ($ 'FORM#createImageForm A#createImage').click ->
-      img = name:($ 'FORM#createImageForm INPUT#imageName').val()
-      img.size = ($ 'FORM#createImageForm INPUT#imageSize').val()
-      
-      sock.emit 'createImage', img
-      
+    sock.emit 'images'      
       
   sock.on 'msg', (msg) ->
     $.notification msg:msg.msg, type:msg.type, fixed:true
@@ -41,11 +44,10 @@ imagesVM = new ImageViewModel()
     image['percentUsed'] = "#{100/image['virtual_size'] * image['disk_size']}%"
     imagesVM.add image
     
-  ko.applyBindings imagesVM, ($ 'DIV#imagesList').get 0
+  ($ 'FORM#createImageForm A#createImage').click ->
+    img = name:($ 'FORM#createImageForm INPUT#imageName').val()
+    img.size = ($ 'FORM#createImageForm INPUT#imageSize').val()
+      
+    sock.emit 'createImage', img  
   
-
-#     ($ 'DIV#listImagesTab').append ($ '<div/>').addClass('well').text "#{image.name}, #{image.disk_size}, #{image.virtual_size}"
-#     
-#     <div class="progress progress-info">
-#       <div class="bar" style="width: 20%"></div>
-#     </div>
+  ko.applyBindings imagesVM, ($ 'DIV#imagesList').get 0
