@@ -1,6 +1,7 @@
 http       = require 'http'
 exec       = require('child_process').exec
 fs         = require 'fs'
+os         = require 'os'
 nodeStatic = require 'node-static'
 qemu       = require './lib/qemu'
 
@@ -17,6 +18,8 @@ webServer.on 'request', (req, res) ->
 socks  = {}
 vms    = {}
 images = {}
+
+qmpStartPort = 15001
 
 ioServer.sockets.on 'connection', (sock) ->
 
@@ -65,51 +68,54 @@ ioServer.sockets.on 'connection', (sock) ->
         sock.emit 'iso', iso.split('.')[0]
         
   sock.on 'createVm', (vm) ->
-    console.log vm
-    vms[vm.name] = qemu.createVm vm.name
-    vmObj = vms[vm.name]
-    
-    vmObj.cpus(vm.cpus)
-         .ram(vm.m)
-         .gfx()
-         .vnc(2)
-         .qmp(8088)
-         .keyboard('de')
-         .mac('52:54:00:12:34:52')
-         
-    if vm['bootOnce']?
-      vmObj.cd vm['bootOnce']
-      vmObj.boot 'cd'
-      
-    if vm['image']?
-      vmObj.hd vm['image']
-
-    if vm['newImageSize']?
-      qemu.createImage {name:vm.name, size:vm.newImageSize}, (ret) ->
-        if ret.status is 'success'
-          vmObj.hd vm.name
-          boot()
-    else
-      boot()
-      
     boot = ->
       if vm.boot?
         vmObj.start ->
           console.log "vm #{vm.name} started"
-          
-          
 
-#    .accel('kvm')
+    console.log vm
+    vms[vm.name] = qemu.createVm vm.name
+    vmObj = vms[vm.name]
+    args  = new qemu.Args()
+    vmObj.setArgs args
+    
+    args.cpus(vm.cpus)
+        .ram(vm.m)
+        .gfx()
+        .vnc(qmpStartPort-15000)
+        .qmp(qmpStartPort)
+        .keyboard('de')
+        .mac('52:54:00:12:34:52')
+        
+    if os.type().toLowerCase() is 'linux'
+      args.accel 'kvm'
+        
+    console.dir args
+         
+    if vm['bootOnce']?
+      args.cd vm['bootOnce']
+      args.boot 'cd'
+      
+    if vm['image']?
+      args.hd vm['image']
+
+    if vm['newImageSize']?
+      qemu.createImage {name:vm.name, size:vm.newImageSize}, (ret) ->
+        if ret.status is 'success'
+          args.hd vm.name
+          images[vm.name] = ret.image 
+          boot()
+    else
+      boot()
+    qmpStartPort++
+
 #    .net()
-#    .hd('ub1210.img')
-#    
-#     if @vmImageChecked()
-#       vm['newImageSize'] = @imageSize()
-#     else
-#       vm['image']    = @selectedImage()
-#       @images.remove @selectedImage()
-#     sock.emit 'createVm', vm
 
+setInterval ->
+  for i,img of images
+    img.info (ret) ->
+      ioServer.sockets.emit 'image', ret.data
+, 1000
 
 
 webServer.on 'error', (e) ->
