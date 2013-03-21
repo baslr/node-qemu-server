@@ -26,6 +26,10 @@
       <div class="tab-content">
 
         <div class="tab-pane active" id="listVmsTab">
+        
+        <div data-bind="foreach: vms" id="vmsList">
+<!--           <span data-bind="text: " -->
+        </div>
 
         </div>
         
@@ -45,35 +49,115 @@
         </div>
 
         <div class="tab-pane" id="createTab">
+          <div class="row-fluid">
+            <div class="span10" style="margin-left:20px;">
 
-          <h3>create image</h3>
-          
-          <form id="createImageForm">
-            <input  id="imageName"   type="text"   placeholder="image name" />
-            <input  id="imageSize"   type="number" placeholder="size in gb" />
-            <a      id="createImage" style="margin-bottom:10px;" class="btn btn-primary">create</a>
-          </form>
-          
-          <h3>create vm</h3>
+              <h3>create image</h3>
+              
+              <form id="createImageForm">
+                <input  id="imageName"   type="text"   placeholder="image name" />
+                <input  id="imageSize"   type="number" placeholder="size in gb" />
+                <a      id="createImage" style="margin-bottom:10px;" class="btn btn-primary">create</a>
+              </form>
 
-          <table>
-            <tr>
-              <td>vm name</td>
-              <td>ram in mib</td>
-              <td>cpu number</td>
-              <td>hd-image</td>
-              <td>cd-image</td>
-            </tr>
-            <tr>
-              <td> <input type="text" /></td>
-              <td> <input type="number" class="input-mini" /></td>
-              <td> <input type="number" class="input-mini" /></td>
-              <td> <select class="input-medium"></select></td>
-              <td> <select class="input-medium"></select></td>
-              <td> <button style="margin-bottom:10px;" class="btn btn-primary">create</button></td>
-            </tr>
-          </table>
+
+              <form id="createVmForm" class="form-horizontal">
+                <h3>create vm</h3>
+                <div class="control-group">
+                  <label class="control-label" for="vmName">vm name</label>
+                  <div class="controls">
+                    <input data-bind="value: vmName" type="text" id="vmName" />
+                  </div>
+                </div>
+                
+                <div class="control-group">
+                  <div class="controls">
+                    <label class="checkbox">
+                      <input type="checkbox" data-bind="checked: vmImageChecked">also create an hd-image
+                    </label>
+                  </div>
+                </div>
+                
+                <div class="control-group" data-bind="visible: vmImageChecked()">
+                  <label class="control-label" for="imageSize">hd image size in GiByte</label>
+                  <div class="controls">
+                    <input data-bind="value: imageSize" type="text" id="imageSize" />
+                  </div>
+                </div>
+
+                <div class="control-group">
+                  <label class="control-label" for="vmRam">specify vm ram</label>
+                  <div class="controls">
+                    <select data-bind="options: memory, optionsText:'mem', value: selectedMemory" class="input-medium" id="vmRam"></select>
+                  </div>
+                </div>
+              
+                <div class="control-group">
+                  <label class="control-label" for="vmCpus">specify number of cpus</label>
+                  <div class="controls">
+                    <select data-bind="options: cpus, optionsText:'cpu', value: selectedCpu" class="input-medium" id="vmCpus"></select> 
+                  </div>
+                </div>
+                
+                <div class="control-group" data-bind="visible: !vmImageChecked() && images().length > 0">
+                  <label class="control-label" for="vmImageName">select image name </label>
+                  <div class="controls">
+                    <select data-bind="options: images, value: selectedImage" class="input-medium" id="vmImageName"></select> 
+                  </div>
+                </div>
+                
+                <div class="control-group">
+                  <div class="controls">
+                    <label class="checkbox">
+                      <input type="checkbox" data-bind="checked: bootOnceIso">boot once from iso image
+                    </label>
+                  </div>
+                </div>
+                
+                <div class="control-group" data-bind="visible: bootOnceIso()">
+                  <label class="control-label" for="vmIso">select iso image</label>
+                  <div class="controls">
+                    <select data-bind="options: isos, value: selectedIso" class="input-large" id="vmIso"></select>
+                  </div>
+                </div>
+                
+                <div class="control-group">
+                  <div class="controls">
+                    <label class="checkbox">
+                      <input type="checkbox" data-bind="checked: startVm">boot after creation
+                    </label>
+                  </div>
+                </div>
+                
+                <div class="control-group">
+                  <div class="controls">
+                    <button data-bind="click: create, enable: checkCreate" class="btn btn-primary">create</button>
+                  </div>
+                </div>
+              </form>
+
+            </div>
+          </div>
         </div>
+            
+<!--
+  <div class="control-group">
+    <label class="control-label" for="inputPassword">Password</label>
+    <div class="controls">
+      <input type="password" id="inputPassword" placeholder="Password">
+    </div>
+  </div>
+  <div class="control-group">
+    <div class="controls">
+      <label class="checkbox">
+        <input type="checkbox"> Remember me
+      </label>
+      <button type="submit" class="btn">Sign in</button>
+    </div>
+  </div>
+</form>
+-->
+
 
       </div>
       

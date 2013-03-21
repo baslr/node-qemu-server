@@ -1,4 +1,4 @@
-
+os   = require 'os'
 net  = require 'net'
 proc = require 'child_process'
 
@@ -7,6 +7,7 @@ class Vm
     @qmpSocket    = 0
     @process      = 0
     @dataCallback = undefined
+    @bin          = if os.type().toLowerCase() is 'darwin' then 'qemu-system-x86_64' else if os.type().toLowerCase() is 'linux' then 'qemu'
 
     # set from extern
     @qmpPort   = 0
@@ -18,7 +19,7 @@ class Vm
       callback()
     
   startVm: ->
-    @process = proc.spawn 'qemu', @startArgs, stdio: 'inherit', detached: true
+    @process = proc.spawn @bin, @startArgs, stdio: 'inherit', detached: true
     
     @process.on 'exit', (code, signal) ->
       console.log "qemuVM exit with code: #{code} and signal: #{signal}"
@@ -83,10 +84,10 @@ class Vm
     @startArgs.push opts
   
   hd: (img) ->
-    @pushCmd '-drive', "file=#{img},media=disk"
+    @pushCmd '-drive', "file=images/#{img}.img,media=disk"
     return this
   cd: (img) ->
-    @pushCmd '-drive', "file=#{img},media=cdrom"
+    @pushCmd '-drive', "file=isos/#{img}.iso,media=cdrom"
     return this
 
   boot: (type, once = true) ->
@@ -94,7 +95,7 @@ class Vm
     if once is true
       args += 'once='
 
-    if type is 'hd'
+    if      type is 'hd'
       args = "#{args}c"
     else if type is 'cd'
       args = "#{args}d"
@@ -140,7 +141,7 @@ class Vm
       
   qmp: (qmpPort) ->
     @qmpPort = qmpPort
-    @pushCmd '-qmp', "tcp:localhost:#{qmpPort},server"
+    @pushCmd '-qmp', "tcp:127.0.0.1:#{qmpPort},server"
     return this
     
   keyboard: (keyboard) ->

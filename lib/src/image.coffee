@@ -1,5 +1,6 @@
-fs   = require 'fs'
-exec = require('child_process').exec
+fs        = require 'fs'
+exec      = require('child_process').exec
+imageInfo = require './imageInfo'
 
 class Image
   constructor: (img, size) ->
@@ -33,27 +34,7 @@ class Image
           callback {status:'error', data:['image already existing']}
         
   info: (callback) ->
-    exec "qemu-img info images/#{@name}.img", (err, stdout, stderr) =>
-      b = {}
-      for row in stdout.split('\n')
-        if row is ''
-          continue
-        b[row.split(':')[0].replace(' ', '_')] = row.split(':')[1].replace ' ', ''
-    
-      if err? or stderr isnt ''
-        callback {status:'error', data:[err,stderr]}
-      else
-        b['name']         = @name
-        b['virtual_size'] = b['virtual_size'].split('(')[1].split(' ')[0]
-        
-        size = b['disk_size'].split ''
-        
-        if size[size.length-1] is 'K'
-          size.pop()
-          size = size.join('') * 1000
-        b['disk_size'] = size
-        
-        callback status:'success', data:b
+    imageInfo.info @name, callback
         
   delete: (callback) ->
     fs.unlink "images/#{@name}.img", (err) ->

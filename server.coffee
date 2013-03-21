@@ -22,7 +22,6 @@ ioServer.sockets.on 'connection', (sock) ->
 
   socks[sock.id] = sock
   console.log "SOCK -> CON #{sock.handshake.address.address}"
-  
   console.log "SOCK -> count: #{Object.keys(socks).length}"
 
   sock.on 'disconnect', ->
@@ -39,8 +38,7 @@ ioServer.sockets.on 'connection', (sock) ->
         
         images[ret.image.name] = ret.image
         ret.image.info (ret) ->
-          emitToAll 'image', ret.data
-        
+          ioServer.emit 'image', ret.data        
       else if ret.status is 'error'
         sock.emit 'msg', {type:'error',   msg:'image not created'}
         
@@ -57,13 +55,65 @@ ioServer.sockets.on 'connection', (sock) ->
           delete images[image.name]
         else if ret.status is 'error'
           sock.emit 'msg', {type:'error', msg:'cant delete image'}
+          
+  sock.on 'isos', ->
+    exec "cd isos && ls -v *.iso", (err, stdout, stderr) ->
+      isos = stdout.split '\n'
+      isos.pop()
+    
+      for iso in isos
+        sock.emit 'iso', iso.split('.')[0]
+        
+  sock.on 'createVm', (vm) ->
+    console.log vm
+    vms[vm.name] = qemu.createVm vm.name
+    vmObj = vms[vm.name]
+    
+    vmObj.cpus(vm.cpus)
+         .ram(vm.m)
+         .gfx()
+         .vnc(2)
+         .qmp(8088)
+         .keyboard('de')
+         .mac('52:54:00:12:34:52')
+         
+    if vm['bootOnce']?
+      vmObj.cd vm['bootOnce']
+      vmObj.boot 'cd'
+      
+    if vm['image']?
+      vmObj.hd vm['image']
+
+    if vm['newImageSize']?
+      qemu.createImage {name:vm.name, size:vm.newImageSize}, (ret) ->
+        if ret.status is 'success'
+          vmObj.hd vm.name
+          boot()
+    else
+      boot()
+      
+    boot = ->
+      if vm.boot?
+        vmObj.start ->
+          console.log "vm #{vm.name} started"
+          
+          
+
+#    .accel('kvm')
+#    .net()
+#    .hd('ub1210.img')
+#    
+#     if @vmImageChecked()
+#       vm['newImageSize'] = @imageSize()
+#     else
+#       vm['image']    = @selectedImage()
+#       @images.remove @selectedImage()
+#     sock.emit 'createVm', vm
+
+
 
 webServer.on 'error', (e) ->
   console.error "webServer error: #{e}"
-  
-emitToAll = (msg, data) ->
-  for i,sock of socks
-    sock.emit msg, data
 
 ###
 #   read images
