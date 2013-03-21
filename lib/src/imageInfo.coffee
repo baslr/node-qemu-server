@@ -17,10 +17,10 @@ exports.info = (name, callback) ->
       letter = size.pop()
       size   = size.join ''
       
-      console.log size
-      
       if      letter is 'K'
         size = size * 1024
+      else if letter is 'M'  
+        size = size * 1024 * 1024
       else if letter is 'G'
         size = size * 1024 * 1024 * 1024
       b['disk_size']   = size

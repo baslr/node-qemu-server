@@ -9,7 +9,7 @@ class ImageViewModel
     for n,i in @images()
       if n.name is name
         ncp = $.extend {}, n
-        ncp.percentUsed = newPercent
+        ncp.percentUsed = "#{newPercent}%"
         @images.replace n, ncp
         
   add: (image) ->
@@ -52,7 +52,7 @@ class VmViewModel
   
   add: (image) ->
     for n,i in @images()
-      if n is image.name
+      if n is image
         return
     @images.push image
   
@@ -94,10 +94,9 @@ vmVM     = new VmViewModel()
     $.notification msg:msg.msg, type:msg.type, fixed:true
     
   sock.on 'image', (image) ->
-    console.log image
-  
-    image['percentUsed'] = "#{100/image['virtual_size'] * image['disk_size']}%"
     imagesVM.add image
+    imagesVM.changePercentage image.name, image.percentUsed
+
     vmVM.add image.name
     
   sock.on 'iso', (name) ->

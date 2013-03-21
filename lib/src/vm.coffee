@@ -1,6 +1,7 @@
 os   = require 'os'
-net  = require 'net'
 proc = require 'child_process'
+
+qmp  = require './qmp'
 
 class Vm
   constructor: (@name) ->
@@ -10,165 +11,92 @@ class Vm
     @bin          = if os.type().toLowerCase() is 'darwin' then 'qemu-system-x86_64' else if os.type().toLowerCase() is 'linux' then 'qemu'
 
     # set from extern
-    @qmpPort   = 0
-    @startArgs = []
+    @startArgs = undefined
+    @qmp       = new qmp.Qmp()
     
-  start: (callback) ->
+  start: (cb) ->
     @startVm()
-    @connectQmp ->
-      callback()
+    console.log @startArgs.qmpPort
+    @qmp.connect @startArgs.qmpPort, cb
     
   startVm: ->
-    @process = proc.spawn @bin, @startArgs, stdio: 'inherit', detached: true
+    @process = proc.spawn @bin, @startArgs.args, stdio: 'inherit', detached: true
     
     @process.on 'exit', (code, signal) ->
       console.log "qemuVM exit with code: #{code} and signal: #{signal}"
 
-  ###
-  #   qmq stuff
-  ###
-  connectQmp: (callback) ->
-    @qmpSocket = net.connect @qmpPort
+#   ###
+#   #   qmq stuff
+#   ###
+#   connectQmp: (callback) ->
+#     @qmpSocket = net.connect @startArgs.qmpPort
+#     
+#     @qmpSocket.on 'connect', =>
+#       console.log "qemuVm qmp connected"
+#       @qmpSocket.write '{"execute":"qmp_capabilities"}'
+#       
+#       callback()
+#       
+#     @qmpSocket.on 'data', (data) =>
+#       data = data.toString().split '\r\n'      
+#       data.pop()                                                                # remove last ''
+# 
+#       for json in data
+#         try
+#           parsedData = JSON.parse json.toString()
+#           if @dataCallback?
+#             if parsedData.error?
+#               @dataCallback 'error':parsedData.error
+#             else if parsedData.timestamp?
+#               continue
+#             else if parsedData.return?
+#               if 0 is Object.keys(parsedData.return).length
+#                 @dataCallback status:'ok'
+#               else
+#                 @dataCallback 'data':parsedData.return
+#             else
+#               console.error "cant process Data"
+#               console.error parsedData
+#             @dataCallback = undefined
+#           else
+#             console.log "no callback defined:"
+#             console.dir parsedData
+#         catch e
+#           console.error "cant parse returned json, Buffer is:"
+#           console.error json.toString()
+# 
+#     @qmpSocket.on 'error', (err) =>
+#       console.error "qmpConnectError try reconnect"
+#       @connectQmp callback
+#       
+#   qmpCommand: (cmd, callback) ->
+#     @dataCallback = callback
+#     @qmpSocket.write JSON.stringify execute:cmd
+#       
+#   reconnectQmp: (qmpPort, callback) ->
+#     @startArgs.qmpPort = qmpPort
+#     @connectQmp callback
     
-    @qmpSocket.on 'connect', =>
-      console.log "qemuVm qmp connected"
-      @qmpSocket.write '{"execute":"qmp_capabilities"}'
-      
-      callback()
-      
-    @qmpSocket.on 'data', (data) =>
-      data = data.toString().split '\r\n'      
-      data.pop()                                                                # remove last ''
-
-      for json in data
-        try
-          parsedData = JSON.parse json.toString()
-          if @dataCallback?
-            if parsedData.error?
-              @dataCallback 'error':parsedData.error
-            else if parsedData.timestamp?
-              continue
-            else if parsedData.return?
-              if 0 is Object.keys(parsedData.return).length
-                @dataCallback status:'ok'
-              else
-                @dataCallback 'data':parsedData.return
-            else
-              console.error "cant process Data"
-              console.error parsedData
-            @dataCallback = undefined
-          else
-            console.log "no callback defined:"
-            console.dir parsedData
-        catch e
-          console.error "cant parse returned json, Buffer is:"
-          console.error json.toString()
-
-    @qmpSocket.on 'error', (err) =>
-      console.error "qmpConnectError try reconnect"
-      @connectQmp callback
-      
-  qmpCommand: (cmd, callback) ->
-    @dataCallback = callback
-    @qmpSocket.write JSON.stringify execute:cmd
-      
-  reconnectQmp: (qmpPort, callback) ->
-    @qmpPort = qmpPort
-    @connectQmp callback      
-
-  ###
-  #   QEMU START OPTIONS  
-  ###      
-  pushCmd: (cmd, opts) ->
-    @startArgs.push cmd
-    @startArgs.push opts
-  
-  hd: (img) ->
-    @pushCmd '-drive', "file=images/#{img}.img,media=disk"
-    return this
-  cd: (img) ->
-    @pushCmd '-drive', "file=isos/#{img}.iso,media=cdrom"
-    return this
-
-  boot: (type, once = true) ->
-    args = ''
-    if once is true
-      args += 'once='
-
-    if      type is 'hd'
-      args = "#{args}c"
-    else if type is 'cd'
-      args = "#{args}d"
-    else if type is 'net'
-      args = "#{args}n"
-    
-    @pushCmd '-boot', args
-    return this
-
-  ram: (ram) ->
-    @pushCmd '-m', ram
-    return this
-    
-  cpus: (n) ->
-    @pushCmd '-smp', n
-    return this
-    
-  kvm: ->
-    @startArgs.push '-enable-kvm'
-    return this
-    
-  accel: (accels) ->
-    @pushCmd '-machine', "accel=#{accels}"
-    return this
-    
-  vnc: (vncPort) ->
-    @pushCmd '-vnc', ":#{vncPort}"
-    return this
-    
-  mac: (mac) ->
-    @macAddr = mac
-    return this
-
-  net: ->
-    @pushCmd '-net', "nic,macaddr=#{@macAddr}"
-    @pushCmd '-net', 'tap'
-    return this
-    
-  gfx: (gfx = false) ->
-    if gfx is false
-      @startArgs.push '-nographic'
-    return this
-      
-  qmp: (qmpPort) ->
-    @qmpPort = qmpPort
-    @pushCmd '-qmp', "tcp:127.0.0.1:#{qmpPort},server"
-    return this
-    
-  keyboard: (keyboard) ->
-    @pushCmd '-k', keyboard
-    return this
-    
-  daemon: ->
-    @startArgs.push '-daemonize'
+  setArgs: (args) ->
+    @startArgs = args
     
   ###
   #   QMP commands
   ###  
-  pause: (callback) ->
-    @qmpCommand 'stop', callback
+  pause: (cb) ->
+    @qmp.pause cb
 
-  reset: (callback) ->
-    @qmpCommand 'system_reset', callback
+  reset: (cb) ->
+    @qmp.reset cb
     
-  resume: (callback) ->
-    @qmpCommand 'cont', callback
+  resume: (cb) ->
+    @qmp.resume cb
 
-  shutdown: (callback) ->
-    @qmpCommand 'system_powerdown', callback
+  shutdown: (cb) ->
+    @qmp.shutdown cb
 
-  stop: (callback) ->
-    @qmpCommand 'stopp', callback
-    
+  stop: (cb) ->
+    @qmp.stop cb
 
 exports.Vm = Vm
   
@@ -193,35 +121,9 @@ exports.Vm = Vm
 # 
 # qVM.reconnectQmp 4442, ->
 #   console.log "reconnected to qmp"  
-# 
-# setTimeout ->
-#   qVM.pause (data) ->
-#     if data.status is 'ok'
-#       console.log "pause vm ok"
-#     else
-#       console.dir data
-# , 10000
-# 
-# setTimeout ->
-#   qVM.resume (data) ->
-#     if data.status is 'ok'
-#       console.log "resume vm ok"
-#     else
-#       console.dir data
-# , 20000
-# 
-# 
-# setTimeout ->
-#   qVM.stop (data) ->
-#     if data.status is 'ok'
-#       console.log "stop vm ok"
-#     else
-#       console.dir data
-# , 30000
-# 
   
   # qemu  -cpu kvm64
-  
+
 
 ###    
   

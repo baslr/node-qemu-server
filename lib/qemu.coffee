@@ -1,9 +1,12 @@
 
-Vm    = require('./src/vm').Vm
+Args  = require('./src/args').Args
 Image = require('./src/image').Image
+Vm    = require('./src/vm').Vm
 
-exports.Vm    = Vm
+exports.Args  = Args
 exports.Image = Image
+exports.Vm    = Vm
+
 
 
 exports.createImage = (cnf, callback) ->
