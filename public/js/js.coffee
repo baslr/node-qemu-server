@@ -43,6 +43,7 @@ class VmViewModel
     @vmImageChecked = ko.observable false
     @bootOnceIso    = ko.observable true
     @startVm        = ko.observable false
+    @vncEnabled     = ko.observable true
     
     @checkCreate    = ko.computed ->
       if @vmName().length > 3 and ( @images().length or @vmImageChecked())
@@ -60,7 +61,8 @@ class VmViewModel
     vm = {  name : @vmName()
           , cpus : @selectedCpu().num
           , m    : @selectedMemory().num
-          , boot : @startVm() }
+          , boot : @startVm()
+          , vnc  : @vncEnabled() }
           
     if @bootOnceIso()
       vm['bootOnce'] = @selectedIso()

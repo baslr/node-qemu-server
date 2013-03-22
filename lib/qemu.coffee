@@ -7,8 +7,6 @@ exports.Args  = Args
 exports.Image = Image
 exports.Vm    = Vm
 
-
-
 exports.createImage = (cnf, callback) ->
   img = new Image cnf
   img.create callback

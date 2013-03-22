@@ -82,7 +82,6 @@ ioServer.sockets.on 'connection', (sock) ->
     args.cpus(vm.cpus)
         .ram(vm.m)
         .gfx()
-        .vnc(qmpStartPort-15000)
         .qmp(qmpStartPort)
         .keyboard('de')
         .mac('52:54:00:12:34:52')
@@ -95,6 +94,9 @@ ioServer.sockets.on 'connection', (sock) ->
     if vm['bootOnce']?
       args.cd vm['bootOnce']
       args.boot 'cd'
+      
+    if vm.vnc is true
+      args.vnc qmpStartPort-15000
       
     if vm['image']?
       args.hd vm['image']
