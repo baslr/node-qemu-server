@@ -78,10 +78,10 @@
                   </div>
                 </div>
                 
-                <div class="control-group" data-bind="visible: createImage()">
+                <div class="control-group">
                   <label class="control-label" for="imageSize">hd image size in GiByte</label>
                   <div class="controls">
-                    <input data-bind="value: imageSize" type="text" id="imageSize" />
+                    <input data-bind="value: imageSize, enable: createImage()" type="text" id="imageSize" />
                   </div>
                 </div>
 
@@ -99,10 +99,10 @@
                   </div>
                 </div>
                 
-                <div class="control-group" data-bind="visible: !createImage() && images().length > 0">
+                <div class="control-group">
                   <label class="control-label" for="vmImageName">select image name </label>
                   <div class="controls">
-                    <select data-bind="options: images, value: selectedImage" class="input-medium" id="vmImageName"></select> 
+                    <select data-bind="options: images, value: selectedImage, enable: !createImage() && images().length > 0" class="input-medium" id="vmImageName"></select> 
                   </div>
                 </div>
                 
@@ -114,10 +114,10 @@
                   </div>
                 </div>
                 
-                <div class="control-group" data-bind="visible: bootOnceIso()">
+                <div class="control-group">
                   <label class="control-label" for="vmIso">select iso image</label>
                   <div class="controls">
-                    <select data-bind="options: isos, value: selectedIso" class="input-large" id="vmIso"></select>
+                    <select data-bind="options: isos, value: selectedIso, enable: bootOnceIso()" class="input-large" id="vmIso"></select>
                   </div>
                 </div>
 
@@ -150,7 +150,7 @@
                   </div>
                 </div>
               </form>
-selectedKeyboard
+
             </div>
           </div>
         </div>

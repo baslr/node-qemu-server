@@ -4,8 +4,11 @@ proc = require 'child_process'
 class Process
   constructor: ->
     @process = undefined
-    @bin     = if os.type().toLowerCase() is 'darwin' then 'qemu-system-x86_64' else if os.type().toLowerCase() is 'linux' then 'qemu'
-  
+    @bin     = if os.type().toLowerCase() is 'darwin'
+                 'qemu-system-x86_64'
+               else if os.type().toLowerCase() is 'linux'
+                 'qemu'
+
   start: (args) ->
     @process = proc.spawn @bin, args, {stdio: 'inherit', detached: true}
     
