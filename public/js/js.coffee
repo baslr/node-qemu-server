@@ -24,9 +24,10 @@ class ImageViewModel
     
 class VmViewModel
   constructor: ->
-    @images = ko.observableArray()
-    @isos   = ko.observableArray() #  [{name:'deiban'},{name:'ubuntu'}]
-    @cpus   = []
+    @images    = ko.observableArray()
+    @isos      = ko.observableArray() #  [{name:'deiban'},{name:'ubuntu'}]
+    @keyboards = ko.observableArray ['de']
+    @cpus      = []
     for i in [1..8]
       @cpus.push {num:i, cpu:"#{i} cpus"}
       
@@ -34,19 +35,20 @@ class VmViewModel
     for i in [1..32]
       @memory.push {num:i*128, mem:"#{i*128} MiByte"}
 
-    @selectedCpu    = ko.observable @cpus[1]
-    @selectedMemory = ko.observable @memory[7]
-    @selectedImage  = ko.observable()
-    @selectedIso    = ko.observable()
-    @vmName         = ko.observable('')
-    @imageSize      = ko.observable 100
-    @vmImageChecked = ko.observable false
-    @bootOnceIso    = ko.observable true
-    @startVm        = ko.observable false
-    @vncEnabled     = ko.observable true
+    @selectedCpu      = ko.observable @cpus[1]
+    @selectedMemory   = ko.observable @memory[7]
+    @selectedImage    = ko.observable()
+    @selectedIso      = ko.observable()
+    @selectedKeyboard = ko.observable 'de'
+    @vmName           = ko.observable ''
+    @imageSize        = ko.observable 100
+    @createImage      = ko.observable false
+    @bootOnceIso      = ko.observable true
+    @startVm          = ko.observable false
+    @vncEnabled       = ko.observable true
     
     @checkCreate    = ko.computed ->
-      if @vmName().length > 3 and ( @images().length or @vmImageChecked())
+      if @vmName().length > 3 and ( @images().length or @createImage())
         return true
       return false
     , this
@@ -58,29 +60,35 @@ class VmViewModel
     @images.push image
   
   create: (a) ->
-    vm = {  name : @vmName()
-          , cpus : @selectedCpu().num
-          , m    : @selectedMemory().num
-          , boot : @startVm()
-          , vnc  : @vncEnabled() }
-          
+    vm = { name : @vmName()
+         , hardware: {
+             cpus : @selectedCpu().num
+             ram  : @selectedMemory().num
+             hds  : []
+             isos : [] }
+         , settings: {
+             boot     : @startVm()
+             bootOnce : @bootOnceIso()
+             vnc      : @vncEnabled()
+             keyboard : @selectedKeyboard() }}
+
     if @bootOnceIso()
-      vm['bootOnce'] = @selectedIso()
+      vm.hardware.isos.push @selectedIso()
     
-    if @vmImageChecked()
-      vm['newImageSize'] = @imageSize()
+    if @createImage()
+      console.log {name:@vmName(), size:@imageSize()}
+      vm.hardware.hds.push {name:@vmName(), size:@imageSize()}
     else
-      vm['image']    = @selectedImage()
-      @images.remove @selectedImage()
+      vm.hardware.hds.push @selectedImage()
+
     sock.emit 'createVm', vm
+
+#      @images.remove @selectedImage()
+
+
 
 imagesVM = new ImageViewModel()
 vmVM     = new VmViewModel()
-
-# setTimeout ->
-#   vmVM.images.removeAll()
-#   vmVM.images.push {text:'dd'}
-# , 10000
 
 ($ document).ready ->
   console.log "DOC -> ready"

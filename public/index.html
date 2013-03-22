@@ -73,12 +73,12 @@
                 <div class="control-group">
                   <div class="controls">
                     <label class="checkbox">
-                      <input type="checkbox" data-bind="checked: vmImageChecked">also create an hd-image
+                      <input type="checkbox" data-bind="checked: createImage">also create an hd-image
                     </label>
                   </div>
                 </div>
                 
-                <div class="control-group" data-bind="visible: vmImageChecked()">
+                <div class="control-group" data-bind="visible: createImage()">
                   <label class="control-label" for="imageSize">hd image size in GiByte</label>
                   <div class="controls">
                     <input data-bind="value: imageSize" type="text" id="imageSize" />
@@ -99,7 +99,7 @@
                   </div>
                 </div>
                 
-                <div class="control-group" data-bind="visible: !vmImageChecked() && images().length > 0">
+                <div class="control-group" data-bind="visible: !createImage() && images().length > 0">
                   <label class="control-label" for="vmImageName">select image name </label>
                   <div class="controls">
                     <select data-bind="options: images, value: selectedImage" class="input-medium" id="vmImageName"></select> 
@@ -118,6 +118,13 @@
                   <label class="control-label" for="vmIso">select iso image</label>
                   <div class="controls">
                     <select data-bind="options: isos, value: selectedIso" class="input-large" id="vmIso"></select>
+                  </div>
+                </div>
+
+                <div class="control-group">
+                  <label class="control-label" for="keyboard">keyboard layout</label>
+                  <div class="controls">
+                    <select data-bind="options: keyboards, value: selectedKeyboard" class="input-large" id="keyboard"></select>
                   </div>
                 </div>
                 
@@ -143,7 +150,7 @@
                   </div>
                 </div>
               </form>
-
+selectedKeyboard
             </div>
           </div>
         </div>
