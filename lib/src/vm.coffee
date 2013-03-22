@@ -7,15 +7,14 @@ class Vm
     @qmp       = new qmp.Qmp()
 
     # set from extern    
-    @startArgs = undefined
+    @args = undefined
 
   start: (cb) ->
-    @process.start @startArgs.args
-    console.log @startArgs.qmpPort
-    @qmp.connect @startArgs.qmpPort, cb
+    @process.start @args.args
+    @qmp.connect   @args.qmpPort, cb
 
   setArgs: (args) ->
-    @startArgs = args
+    @args = args
     
   ###
   #   QMP commands

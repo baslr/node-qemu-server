@@ -10,15 +10,14 @@ class Args
   ###
   #   QEMU START OPTIONS  
   ###      
-  pushCmd: (cmd, opts) ->
-    @args.push cmd
-    @args.push opts
+  pushArg: ->
+    @args.push arg for arg in arguments
   
   hd: (img) ->
-    @pushCmd '-drive', "file=images/#{img}.img,media=disk"
+    @pushArg '-drive', "file=images/#{img}.img,media=disk"
     return this
   cd: (img) ->
-    @pushCmd '-drive', "file=isos/#{img}.iso,media=cdrom"
+    @pushArg '-drive', "file=isos/#{img}.iso,media=cdrom"
     return this
 
   boot: (type, once = true) ->
@@ -33,27 +32,27 @@ class Args
     else if type is 'net'
       args = "#{args}n"
     
-    @pushCmd '-boot', args
+    @pushArg '-boot', args
     return this
 
   ram: (ram) ->
-    @pushCmd '-m', ram
+    @pushArg '-m', ram
     return this
     
   cpus: (n) ->
-    @pushCmd '-smp', n
+    @pushArg '-smp', n
     return this
     
   kvm: ->
-    @args.push '-enable-kvm'
+    @pushArg '-enable-kvm'
     return this
     
   accel: (accels) ->
-    @pushCmd '-machine', "accel=#{accels}"
+    @pushArg '-machine', "accel=#{accels}"
     return this
     
   vnc: (port) ->
-    @pushCmd '-vnc', ":#{port}"
+    @pushArg '-vnc', ":#{port}"
     return this
     
   mac: (addr) ->
@@ -61,26 +60,25 @@ class Args
     return this
 
   net: ->
-    @pushCmd '-net', "nic,macaddr=#{@macAddr}"
-    @pushCmd '-net', 'tap'
+    @pushArg '-net', "nic,macaddr=#{@macAddr}", '-net', 'tap'
     return this
     
   gfx: (gfx = false) ->
     if gfx is false
-      @args.push '-nographic'
+      @pushArg '-nographic'
     return this
       
   qmp: (port) ->
     @qmpPort = port
-    @pushCmd '-qmp', "tcp:127.0.0.1:#{port},server"
+    @pushArg '-qmp', "tcp:127.0.0.1:#{port},server"
     return this
     
   keyboard: (keyboard) ->
-    @pushCmd '-k', keyboard
+    @pushArg '-k', keyboard
     return this
     
   daemon: ->
-    @args.push '-daemonize'
+    @pushArg '-daemonize'
     return this
     
 exports.Args = Args

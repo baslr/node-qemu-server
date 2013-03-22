@@ -12,7 +12,7 @@ class Qmp
     else if typeof port is 'number'
       @port = port
       
-    setTimeout =>  
+    setTimeout =>                                                               # give the qemu process time to start
       @sock = net.connect @port
       
       @sock.on 'connect', =>

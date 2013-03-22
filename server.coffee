@@ -1,7 +1,6 @@
 http       = require 'http'
 exec       = require('child_process').exec
 fs         = require 'fs'
-os         = require 'os'
 nodeStatic = require 'node-static'
 qemu       = require './lib/qemu'
 
@@ -68,50 +67,21 @@ ioServer.sockets.on 'connection', (sock) ->
         sock.emit 'iso', iso.split('.')[0]
         
   sock.on 'createVm', (vm) ->
-    boot = ->
-      if vm.boot?
-        vmObj.start ->
-          console.log "vm #{vm.name} started"
-
-    console.log vm
-    vms[vm.name] = qemu.createVm vm.name
-    vmObj = vms[vm.name]
-    args  = new qemu.Args()
-    vmObj.setArgs args
+    vm['settings']['qmpPort'] = qmpStartPort
     
-    args.cpus(vm.cpus)
-        .ram(vm.m)
-        .gfx()
-        .qmp(qmpStartPort)
-        .keyboard('de')
-        .mac('52:54:00:12:34:52')
-        
-    if os.type().toLowerCase() is 'linux'
-      args.accel 'kvm'
-        
-    console.dir args
-         
-    if vm['bootOnce']?
-      args.cd vm['bootOnce']
-      args.boot 'cd'
-      
-    if vm.vnc is true
-      args.vnc qmpStartPort-15000
-      
-    if vm['image']?
-      args.hd vm['image']
+    if vm.settings.vnc?
+      vm.settings.vnc = qmpStartPort - 15000
 
-    if vm['newImageSize']?
-      qemu.createImage {name:vm.name, size:vm.newImageSize}, (ret) ->
-        if ret.status is 'success'
-          args.hd vm.name
-          images[vm.name] = ret.image 
-          boot()
-    else
-      boot()
-    qmpStartPort++
-
-#    .net()
+    qemu.createVm vm, (ret, obj) ->
+      if ret.status is 'error'
+        sock.emit 'msg', {type:'error', msg:'vm !created'}
+      else
+        vms[vm.name] = obj
+        if vm.settings.boot is true
+          obj.start ->
+            console.log "vm #{vm.name} started"
+        qmpStartPort++
+        sock.emit 'msg', {type:'success', msg:'vm created'}
 
 setInterval ->
   for i,img of images
@@ -126,7 +96,6 @@ webServer.on 'error', (e) ->
 ###
 #   read images
 ###
-
 exec "cd images && ls -v *.img", (err, stdout, stderr) ->
   imgs = stdout.split '\n'
   imgs.pop()
