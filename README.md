@@ -96,3 +96,19 @@ qVm.stop()     | {"name": "quit"}
     
     qVm.start ->
       # do something
+      
+### vm config
+    name: string                                         # string
+      hardware:
+        ram  : uint
+        cpus : uint
+        hds  : []{name:strings,size:uint},string         # if hd not existence create, with size
+        isos : []strings
+        mac  : '11:22:33:44:55:66'
+  
+      settings:
+        qmpPort  : uint                                  # not exposed to user
+        keyboard : string
+        vnc      : unit                                  # vnc port, port = vncPort + 5900
+        bootOnce : true xor false
+        boot     : true xor false
