@@ -33,14 +33,14 @@ class Image
         else
           callback {status:'error', data:['image already existing']}
         
-  info: (callback) ->
-    imageInfo.info @name, callback
+  info: (cb) ->
+    imageInfo.info @name, cb
         
-  delete: (callback) ->
+  delete: (cb) ->
     fs.unlink "images/#{@name}.img", (err) ->
       if err?
-        callback status:'error'
+        cb status:'error'
       else
-        callback status:'success'
+        cb status:'success'
 
 exports.Image = Image
