@@ -1,9 +1,9 @@
-fs        = require 'fs'
-exec      = require('child_process').exec
-imageInfo = require './imageInfo'
+fs          = require 'fs'
+imageInfo   = require './image/info'
+imageCreate = require './image/create'
 
 class Image
-  constructor: (img, size) ->
+  constructor: (img = undefined, size = undefined) ->
     if      typeof img is 'object'    and typeof size is 'undefined'
       @name = img.name                
       @size = img.size                
@@ -14,32 +14,36 @@ class Image
       @name = img
     else if typeof img is 'undefined' and typeof size is 'undefined'
       @name = @size = ''
-
-  create: (img, callback) ->
+  #
+  # @call   imgCfg, cb
+  # @call   cb
+  #
+  # @return cb ret, this
+  #
+  create: (img, cb) ->
     if typeof img is 'object'
       @name = img.name
       @size = img.size
 
     if typeof img is 'function'
-      callback = img
-      
-      exec "cd images && ls #{@name}.img", (err, stdout, stderr) =>
-        if err? and stdout is ''
-          exec "qemu-img create -f qcow2 images/#{@name}.img #{@size}G", (err, stdout, stderr) =>    
-            if err? or stderr isnt ''
-              callback {status:'error', data:[err,stderr]}
-            else
-              callback status:'success', image:this
-        else
-          callback {status:'error', data:['image already existing']}
-        
+      cb = img
+
+    if @name is '' and @size is ''
+      cb {status:'error', data:'no name and size set'}
+    else
+      imageCreate.create this, cb
+  ###
+  # @call   cb
+  #
+  # @return cb ret        
+  ###
   info: (cb) ->
     imageInfo.info @name, cb
         
   delete: (cb) ->
     fs.unlink "images/#{@name}.img", (err) ->
       if err?
-        cb status:'error'
+        cb {status:'error', data:err}
       else
         cb status:'success'
 

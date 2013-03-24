@@ -69,7 +69,7 @@ ioServer.sockets.on 'connection', (sock) ->
   sock.on 'createVm', (vm) ->
     vm['settings']['qmpPort'] = qmpStartPort
     
-    if vm.settings.vnc?
+    if vm.settings.vnc? and vm.settings.vnc is true
       vm.settings.vnc = qmpStartPort - 15000
 
     qemu.createVm vm, (ret, obj) ->
@@ -103,15 +103,3 @@ exec "cd images && ls -v *.img", (err, stdout, stderr) ->
   for img in imgs
     img = img.split('.')[0]
     images[img] = new qemu.Image img
-
-
-
-# load vm stats from database
-
-#-v     Natürliche Sortierung von (Versions)nummern im Text
-
-# mongoOne = new qemu.QemuVm 'mongo-one'
-# vms['mongo-one'] = mongoOne
-# 
-# mongoOne.reconnectQmp 4442, ->
-#   console.log "reconnected to qmp mongoOne"
