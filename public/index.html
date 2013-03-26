@@ -39,7 +39,7 @@
           
           <div data-bind="foreach: images" id="imagesList">
             <div class="well well-small">
-              <span data-bind="text: name"></span>
+              <span data-bind="text: name"></span>   diskSize
               <div class="progress progress-info">              
                 <div class="bar" data-bind="style: { width: percentUsed }"></div>
               </div>
@@ -144,6 +144,21 @@
                   </div>
                 </div>
                 
+                <div class="control-group">
+                  <div class="controls">
+                    <label class="checkbox">
+                      <input type="checkbox" data-bind="checked: netEnabled">enable net
+                    </label>
+                  </div>
+                </div>
+
+                <div class="control-group">
+                  <label class="control-label" for="macAddress">mac address</label>
+                  <div class="controls">
+                    <input type="text" data-bind="value: macAddr, enable: netEnabled()" id="macAddress">
+                  </div>
+                </div>
+
                 <div class="control-group">
                   <div class="controls">
                     <button data-bind="click: create, enable: checkCreate" class="btn btn-primary">create</button>

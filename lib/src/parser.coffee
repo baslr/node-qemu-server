@@ -27,6 +27,7 @@ vmCfgToArgs = (cfg, cb = ->) ->
       .gfx()
       .qmp( cfg.settings.qmpPort)
       .keyboard(cfg.settings.keyboard)
+#      .cpu('kvm64')
       
   if os.type().toLowerCase() is 'linux'        # GNU / LINUX accelerate with kvm
     args.accel 'kvm'
@@ -38,8 +39,9 @@ vmCfgToArgs = (cfg, cb = ->) ->
   if cfg.settings.vnc
     args.vnc cfg.settings.vnc
     
-  if cfg.hardware.mac?
-    args.mac cgf.hardware.mac
+  if cfg.hardware.mac? and cfg.hardware.mac.length is 17
+    args.mac cfg.hardware.mac
+    args.net()
     
   if cfg.settings.bootOnce
     args.boot 'cd', true
@@ -59,6 +61,7 @@ vmCfgToArgs = (cfg, cb = ->) ->
       qemu.createImage hd, (ret) ->
         nNumOfHdsToCreate--
         if ret.status is 'success'
+          args.hd cfg.name
           if nNumOfHdsToCreate is 0
             cb {status:'success', data:'cfg parsed to args'}, args
         else

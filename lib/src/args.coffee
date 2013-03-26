@@ -47,6 +47,10 @@ class Args
     @pushArg '-enable-kvm'
     return this
     
+  cpu: (cpu) ->
+    @pushArg '-cpu', cpu
+    return this
+    
   accel: (accels) ->
     @pushArg '-machine', "accel=#{accels}"
     return this

@@ -1,6 +1,15 @@
 
 sock = undefined
 
+class ImageModel
+  constructor: (@image) ->
+    @name        = image.name
+    @percentUsed = image.percentUsed
+
+    @diskSize = ko.computed ->
+      return @image.disk_size / 1024 / 1024 / 1024
+    , this
+
 class ImageViewModel
   constructor: ->
     @images  = ko.observableArray()
@@ -8,7 +17,10 @@ class ImageViewModel
   changePercentage: (name, newPercent) ->
     for n,i in @images()
       if n.name is name
-        ncp = $.extend {}, n
+#        ncp = $.extend {}, n
+#        ncp.percentUsed = "#{newPercent}%"
+
+        ncp = new ImageModel n.image
         ncp.percentUsed = "#{newPercent}%"
         @images.replace n, ncp
         
@@ -16,7 +28,7 @@ class ImageViewModel
     for n,i in @images()
       if n.name is image.name
         return
-    @images.push image
+    @images.push new ImageModel image
     
   remove: (image) =>
     @images.remove image
@@ -46,6 +58,9 @@ class VmViewModel
     @bootOnceIso      = ko.observable true
     @startVm          = ko.observable false
     @vncEnabled       = ko.observable true
+
+    @netEnabled       = ko.observable false
+    @macAddr          = ko.observable ''
     
     @checkCreate    = ko.computed ->
       if @vmName().length > 3 and ( @images().length or @createImage())
@@ -65,7 +80,8 @@ class VmViewModel
              cpus : @selectedCpu().num
              ram  : @selectedMemory().num
              hds  : []
-             isos : [] }
+             isos : []
+             mac  : '' }
          , settings: {
              boot     : @startVm()
              bootOnce : @bootOnceIso()
@@ -81,6 +97,10 @@ class VmViewModel
     else
       vm.hardware.hds.push @selectedImage()
 
+    if @netEnabled() and @macAddr().length is 17
+      vm.hardware.mac = @macAddr()
+
+    console.dir vm
     sock.emit 'createVm', vm
 
 #      @images.remove @selectedImage()
