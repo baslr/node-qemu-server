@@ -2,6 +2,7 @@
 Vm     = require('./src/vm').Vm
 Image  = require('./src/image').Image
 parser = require('./src/parser')
+vmConf = require('./src/vmCfg')
 
 exports.Vm    = Vm
 exports.Image = Image
@@ -25,12 +26,16 @@ createVm = (vmCfg, cb) ->
     cb {status:'success'}, new Vm vmName                                        # name
   else if typeof vmCfg is 'object'
     vm = new Vm vmCfg.name                                                      # new vm with its name
-    
     parser.vmCfgToArgs vmCfg, (ret, args) ->                                    # call parser to parse config to qemu process start arguments 
       console.log ret
       if ret.status is 'success'
         vm.setArgs args
-        cb {status:'success'}, vm
+        vmConf.save vmCfg, (ret) ->
+          if ret.status is 'success'
+            cb {status:'success'}, vm
+          else
+            cb ret, undefined
+            
       else
         cb ret, undefined
 
