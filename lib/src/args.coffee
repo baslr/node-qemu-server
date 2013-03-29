@@ -14,7 +14,7 @@ class Args
     @args.push arg for arg in arguments
   
   hd: (img) ->
-    @pushArg '-drive', "file=images/#{img}.img,media=disk"
+    @pushArg '-drive', "file=images/#{img}.img,media=disk,cache=none,if=virtio"
     return this
   cd: (img) ->
     @pushArg '-drive', "file=isos/#{img}.iso,media=cdrom"
@@ -64,7 +64,7 @@ class Args
     return this
 
   net: ->
-    @pushArg '-net', "nic,macaddr=#{@macAddr}", '-net', 'tap'
+    @pushArg '-net', "nic,model=virtio,macaddr=#{@macAddr}", '-net', 'tap'
     return this
     
   gfx: (gfx = false) ->
@@ -86,3 +86,5 @@ class Args
     return this
     
 exports.Args = Args
+
+# qemu-system-x86_64 -smp 2 -m 1024 -nographic -qmp tcp:127.0.0.1:15004,server -k de -machine accel=kvm -drive file=/...,media=cdrom -vnc :4 -net nic,model=virtio,macaddr=... -net tap -boot once=d -drive file=/dev/...,cache=none,if=virtio

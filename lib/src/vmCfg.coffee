@@ -11,11 +11,19 @@ save = (vmCfg, cb) ->
       imgs.push n.name
       
   vmCfg.hardware.hds = imgs
-  
-  fs.open "vmConfigs/#{vmCfg.name}.json", 'w', (e, fd) ->
-    buff = new Buffer JSON.stringify vmCfg
-    fs.write fd, buff, 0, buff.length, 0, (e, w, b) ->
-      if e is null or e is undefined
-        cb {status:'success'}
+
+  fs.writeFile "vmConfigs/#{vmCfg.name}.json", JSON.stringify(vmCfg), (e) ->
+    if e is null or e is undefined
+      cb {status:'success'}
+    else
+      cb {status:'error'}
+
+open = (vmName, cb) ->
+  fs.readFile "vmConfigs/#{vmName}.json", (e, cfg) ->
+    if e is null or e is undefined
+      cb {status:'success', data:JSON.parse(cfg)}
+    else
+      cb {status:'error', data:undefined}
 
 exports.save = save
+exports.open = open
