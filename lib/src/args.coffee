@@ -3,7 +3,7 @@ crypto = require 'crypto'
 
 class Args
   constructor: ->
-    @args    = []
+    @args    = [ '-nographic']
     @qmpPort = 0
     @macAddr = crypto.randomBytes(6).toString('hex').match(/.{2}/g).join ':'
 
@@ -13,18 +13,32 @@ class Args
   pushArg: ->
     @args.push arg for arg in arguments
   
-  hd: (img) ->
-    @pushArg '-drive', "file=images/#{img}.img,media=disk,cache=none,if=virtio"
+  ###
+  #   no defaults, no default config
+  ###
+  nodefconfig: ->
+    @pushArg '-nodefconfig'
     return this
-  cd: (img) ->
-    @pushArg '-drive', "file=isos/#{img}.iso,media=cdrom"
+  
+  nodefaults: ->
+    @pushArg '-nodefaults'
     return this
 
+  ###
+  #   set harddrive, set cdromdrive
+  ###  
+  hd: (img, intf='ide') ->
+    @pushArg '-drive', "file=images/#{img}.img,media=disk,cache=none,if=#{intf}"
+    return this
+  cd: (img, intf='ide') ->
+    @pushArg '-drive', "file=isos/#{img},media=cdrom,if={#intf}"
+    return this
+  
   boot: (type, once = true) ->
     args = ''
     if once is true
       args += 'once='
-
+    
     if      type is 'hd'
       args = "#{args}c"
     else if type is 'cd'
@@ -34,57 +48,61 @@ class Args
     
     @pushArg '-boot', args
     return this
-
+  
   ram: (ram) ->
     @pushArg '-m', ram
     return this
-    
+  
   cpus: (n) ->
     @pushArg '-smp', n
     return this
-    
-  kvm: ->
-    @pushArg '-enable-kvm'
-    return this
-    
+  
   cpu: (cpu) ->
     @pushArg '-cpu', cpu
     return this
-    
+  
   accel: (accels) ->
     @pushArg '-machine', "accel=#{accels}"
     return this
-    
+  
+  kvm: ->
+    @pushArg '-enable-kvm'
+    return this
+  
   vnc: (port) ->
     @pushArg '-vnc', ":#{port}"
     return this
-    
+  
   mac: (addr) ->
     @macAddr = addr
     return this
-
-  net: ->
-    @pushArg '-net', "nic,model=virtio,macaddr=#{@macAddr}", '-net', 'tap'
+  
+  net: (macAddr, card = 'rtl8139')->
+    @mac macAddr
+    @pushArg '-net', "nic,model=#{card},macaddr=#{macAddr}", '-net', 'tap'
     return this
-    
-  gfx: (gfx = false) ->
-    if gfx is false
-      @pushArg '-nographic'
+  
+  vga: (vga = 'none') ->
+    @pushArg '-vga', vga
     return this
-      
+  
   qmp: (port) ->
     @qmpPort = port
     @pushArg '-qmp', "tcp:127.0.0.1:#{port},server"
     return this
-    
+  
   keyboard: (keyboard) ->
     @pushArg '-k', keyboard
     return this
-    
+  
   daemon: ->
     @pushArg '-daemonize'
     return this
-    
-exports.Args = Args
+  
+  balloon: ->
+    @pushArg '-balloon', 'virtio'
+    return this
+  
+module.exports.Args = Args
 
 # qemu-system-x86_64 -smp 2 -m 1024 -nographic -qmp tcp:127.0.0.1:15004,server -k de -machine accel=kvm -drive file=/...,media=cdrom -vnc :4 -net nic,model=virtio,macaddr=... -net tap -boot once=d -drive file=/dev/...,cache=none,if=virtio

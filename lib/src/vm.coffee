@@ -1,21 +1,29 @@
-proc = require './process'
-qmp  = require './qmp'
+proc   = require './process'
+qmp    = require './qmp'
+vmConf = require('./vmCfg')
 
 class Vm
-  constructor: (@name) ->
+  constructor: (@cfg, cb) ->
     @process   = new proc.Process()
     @qmp       = new qmp.Qmp()
 
-    # set from extern    
-    @args = undefined
+    if      typeof cfg is 'string'
+      @name = cfg
+    else if typeof cfg is 'object'
+      @name = cfg.name
+
+    vmConf.save @cfg
 
   start: (cb) ->
-    @process.start @args.args
-    @qmp.connect   @args.qmpPort, cb
-
-  setArgs: (args) ->
-    @args = args
-    
+    @process.start @cfg, ->
+    @qmp.connect   @cfg.settings.qmpPort, cb
+  
+  deleteProcess: ->
+    delete @process
+  
+  deleteQmp: ->
+    @qmp.shutdown()
+    delete @qmp
   ###
   #   QMP commands
   ###  
@@ -66,3 +74,28 @@ exports.Vm = Vm
 #       @qmpSocket.write '{"execute":"query-commands"}'  
 
 ###
+
+
+#     bHdCreation = flase
+#     hds         = []
+#     for hd in cfg.hardware.hds  
+#       if      typeof hd is 'object'
+#         nNumOfHdsToCreate++
+#         bHdCreation = true
+#       else if typeof hd is 'string'
+#         hds.push hd
+# 
+#   for hd in cfg.hardware.hds
+#     if typeof hd is 'object'
+#       bHdCreation = true
+#       qemu.createImage hd, (ret) ->
+#         nNumOfHdsToCreate--
+#         if ret.status is 'success'
+#           hds.push cfg.name
+#           cfg.hardware.hds = hds
+#           if nNumOfHdsToCreate is 0
+#             cb {status:'success', data:'cfg parsed to args'}, args
+#         else
+#           cb {status:'error', data:"cant create hd image"}
+#           
+#   if bHdCreation is false

@@ -11,13 +11,12 @@ info = (name, cb) ->
       if row is ''
         continue
       b[row.split(':')[0].replace(' ', '_')] = row.split(':')[1].replace ' ', ''
-
+    b['cluster_size'] = Number b['cluster_size']
     b['name']         = name
-    b['virtual_size'] = b['virtual_size'].split('(')[1].split(' ')[0]
+    b['virtual_size'] = Number b['virtual_size'].split('(')[1].split(' ')[0]
     
-    size   = b['disk_size'].split ''
-    letter = size.pop()
-    size   = size.join ''
+    size   = Number b['disk_size'].slice 0, -1
+    letter = b['disk_size'].slice -1
     
     if      letter is 'K'
       size = size * 1024

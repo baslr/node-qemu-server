@@ -3,24 +3,30 @@ net  = require 'net'
 
 class Qmp
   constructor:(@port) ->
-    @sock   = undefined
+    @socket = undefined
     @dataCb = undefined
+    
+  shutdown: ->
+    @socket.end()
+    @socket.destroy()
 
   connect: (port, cb) ->
     if      typeof port is 'function'
       cb = port
     else if typeof port is 'number'
       @port = port
+
+    console.log "QMP: try to connect to port #{@port}"
       
     setTimeout =>                                                               # give the qemu process time to start
-      @sock = net.connect @port
+      @socket = net.connect @port
       
-      @sock.on 'connect', =>
+      @socket.on 'connect', =>
         console.log "qmp connected"
-        @sock.write '{"execute":"qmp_capabilities"}'
+        @socket.write '{"execute":"qmp_capabilities"}'
         cb()
         
-      @sock.on 'data', (data) =>
+      @socket.on 'data', (data) =>
         jsons = data.toString().split '\r\n'
         jsons.pop()                                                             # remove last ''
   
@@ -48,15 +54,22 @@ class Qmp
             console.error "cant parse returned json, Buffer is:"
             console.error json.toString()
   
-      @sock.on 'error', (err) =>
-        console.error "qmpConnectError try reconnect"
-        @connect cb
-    , 100
+      @socket.on 'error', (e) =>
+        if e.message is 'This socket has been ended by the other party'
+          console.log 'qemu clossed connection'
+        else
+          console.error 'qmpConnectError try reconnect'
+          @connect cb
+    , 1000
       
-  sendCmd: (cmd, cb) ->
-    @dataCb = cb
-    @sock.write JSON.stringify execute:cmd
-      
+  sendCmd: (cmd, args, cb) ->
+    if typeof args is 'function'
+      @dataCb = args
+      @socket.write JSON.stringify execute:cmd
+    else
+      @dataCb = cb
+      @socket.write JSON.stringify {execute:cmd, arguments: args }
+
   reconnect: (port, cb) ->
     @connect port, cb
     
@@ -77,5 +90,8 @@ class Qmp
     
   stop: (cb) ->
     @sendCmd 'quit', cb
+  
+  balloon: (mem, cb) ->
+    @sendCmd 'balloon', {value:mem}, cb
   
 exports.Qmp = Qmp

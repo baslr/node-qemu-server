@@ -10,13 +10,13 @@ $.notification = (options) ->
   
   settings = $.extend settings, options  
 
-  notifications = 'error':'alert-error', 'info':'alert-info', 'success':'alert-success'
+  notifications = 'error':'alert-danger', 'info':'alert-info', 'success':'alert-success'
   div = ($ '<DIV/>').css( display:'none', 'z-index':1040).attr('data-dismiss':'alert', 'data-type':'notification').addClass 'alert fade in '+notifications[settings.type]
 
   div.attr 'id':new Date().getTime()
   
   if settings.fixed
-    div.css position:'fixed', top:'0px', left:'0px', width:($ window).width()-51 # position:absolute top:window.pageYOffset
+    div.css position:'fixed', top:'0px', left:'0px', width:($ window).width() # position:absolute top:window.pageYOffset
 #     ($ window).scroll ->
 #       div.css top:window.pageYOffset+'px'
 
@@ -26,7 +26,7 @@ $.notification = (options) ->
   if ($ 'BODY DIV[data-type="notification"]').length
     ($ 'BODY DIV[data-type="notification"]').remove()
     ($ 'BODY').prepend div
-    div.slideDown(1000)
+    div.slideDown(600)
     setTimeout ->
       div.slideUp ->
         div.remove()

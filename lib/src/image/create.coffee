@@ -7,7 +7,7 @@ create = (image, cb) ->
         if err? or stderr isnt ''
           cb {status:'error', data:[err,stderr]}
         else
-          cb status:'success', image:image
+          cb {status:'success', data:image}
     else
       cb {status:'error', data:['image already existing']}
 

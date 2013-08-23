@@ -4,13 +4,14 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>qemu-control</title>
     
-    <link href="/css/bootstrap.css" rel="stylesheet">
+    <link href="/css/bootstrap-3-0-0.css" rel="stylesheet">
 
-    <script type="text/javascript" rel="anonymous" src="/jsLibs/jquery-1-9-1.js"></script>
+    <script type="text/javascript" rel="anonymous" src="/jsLibs/jquery-2-0-3.js"></script>
     <script type="text/javascript" rel="anonymous" src="/jsLibs/socket.io.js"></script>
-    <script type="text/javascript" rel="anonymous" src="/jsLibs/knockout-2-2-1.js"></script>
+    <script type="text/javascript" rel="anonymous" src="/jsLibs/knockout-2-3-0.js"></script>
     <script type="text/javascript" rel="anonymous" src="/jsLibs/bootstrap-tab.js"></script>
     <script type="text/javascript" rel="anonymous" src="/jsLibs/jquery-plugin-notification.js"></script>
+    <script type="text/javascript" rel="anonymous" src="/js/classes.js"></script>
     <script type="text/javascript" rel="anonymous" src="/js/js.js"></script>
   </head>
 
@@ -18,176 +19,226 @@
     <div class="tabbable">
 
       <ul class="nav nav-tabs">
-        <li class="active"><a href="#listVmsTab"    data-toggle="tab">vms</a></li>
-        <li>               <a href="#listImagesTab" data-toggle="tab">images</a></li>
-        <li>               <a href="#createTab"     data-toggle="tab">create</a></li>
+        <li class="active"><a href="#listVMsTab"    data-toggle="tab">MVs</a></li>
+        <li>               <a href="#listDisksTab" data-toggle="tab">Disks</a></li>
+        <li>               <a href="#createDiskTab" data-toggle="tab">create Disk</a></li>
+        <li>               <a href="#createVMTab"   data-toggle="tab">create VM</a></li>
       </ul>
 
       <div class="tab-content">
 
-        <div class="tab-pane active" id="listVmsTab">
+        <div class="tab-pane active" id="listVMsTab">
         
-        <div data-bind="foreach: vms" id="vmsList">
+<!--         <div data-bind="foreach: vms" id="vmsList"> -->
 <!--           <span data-bind="text: " -->
-        </div>
+<!--              </div> -->
 
         </div>
         
-        <div class="tab-pane" id="listImagesTab">
+        <div class="tab-pane" id="listDisksTab" style="margin-left:20px;">
 
-          <h3>list of images</h3>
+          <h3>list of disks</h3>
           
           <div data-bind="foreach: images" id="imagesList">
             <div class="well well-small">
-              <span data-bind="text: name"></span>   diskSize
-              <div class="progress progress-info">              
-                <div class="bar" data-bind="style: { width: percentUsed }"></div>
+              Name <span data-bind="text: name"></span>, size <span data-bind="text: size() + ' GiB'"></span>, Used <span data-bind="text: used() + ' GiB'"></span>, Left <span data-bind="text: left() + ' GiB'"></span>
+              <div class="progress">              
+                <div class="progress-bar" data-bind="style: { width: percentUsed }"></div>
               </div>
               <button data-bind="click: $root.remove" class="btn btn-mini">delete image</button>  <!-- @ToDo click deletes image -->
             </div>
           </div>
         </div>
 
-        <div class="tab-pane" id="createTab">
+        <div class="tab-pane" id="createDiskTab">            
+              <div class="row">
+                <div class="col-md-offset-2 col-md-3">
+                  <h3>Create a disk</h3>
+                </div>
+              </div>
+
+  
+              <form class="form-horizontal" id="formDiskCreate" role="form">
+                <div class="form-group">
+                  <label for="diskName" class="col-md-2 control-label">disk name</label>
+                  <div class="col-md-3">
+                    <input type="text" class="form-control" id="diskName">
+                  </div>
+                </div>
+  
+                <div class="form-group">
+                  <label for="diskSize" class="col-md-2 control-label">Size in Gibibyte</label>
+                  <div class="col-md-3">
+                    <input type="number" class="form-control" id="diskSize">
+                    <span class="help-block"> 1 Gibibyte are 1024 * 1024 * 1024 Byte</span>
+                  </div>
+                </div>
+  
+                <div class="form-group">
+                  <div class="col-md-offset-2 col-md-3">
+                    <button type="button" id="createDisk" class="btn btn-primary">create disk</button>
+                  </div>
+                </div>
+              </form>
+        </div>
+            
+        <div class="tab-pane" id="createVMTab">
           <div class="row-fluid">
             <div class="span10" style="margin-left:20px;">
 
-              <h3>create image</h3>
+              <div class="row">
+                <div class="col-md-offset-2 col-md-3">
+                  <h3>Create a VM</h3>
+                </div>
+              </div>
               
-              <form id="createImageForm">
-                <input  id="imageName"   type="text"   placeholder="image name" />
-                <input  id="imageSize"   type="number" placeholder="size in gb" />
-                <a      id="createImage" style="margin-bottom:10px;" class="btn btn-primary">create</a>
-              </form>
+              <div class="row">
+                <form id="formVMcreate" class="form-horizontal" role="form">
 
+                <div class="col-md-6">
 
-              <form id="createVmForm" class="form-horizontal">
-                <h3>create vm</h3>
-                <div class="control-group">
-                  <label class="control-label" for="vmName">vm name</label>
-                  <div class="controls">
-                    <input data-bind="value: vmName" type="text" id="vmName" />
+                  <div class="form-group">
+                    <label for="vmName" class="col-md-2 control-label">VM name</label>
+                    <div class="col-md-8">
+                      <input data-bind="value: vmName" type="text" id="vmName" class="form-control">
+                      <span class="help-block">Provide a name for the VM.</span>
+                    </div>
                   </div>
-                </div>
+                  
+                  <div class="form-group">
+                    <label for="diskName" class="col-md-2 control-label">disk</label>
+                    <div class="col-md-8">
+                      <select data-bind="options: disks, value: disk" class="form-control" id="diskName"></select> 
+                      <span class="help-block">Select a disk</span>
+                    </div>
+                  </div>
+  
+                  <div class="form-group">
+                    <label for="vmIso" class="col-md-2 control-label">iso image</label>
+                    <div class="col-md-8">
+                      <select data-bind="options: isos, value: selectedIso" class="form-control" id="vmIso"></select> 
+                      <span class="help-block">Select a iso image</span>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <div class="col-md-offset-2 col-md-8">
+                      <label>
+                        <input type="checkbox" data-bind="checked: enableVGACard">
+                        Enable VGA support
+                      </label>
+                      <span class="help-block">linux does not need grafics, windows vga or qxl</span>
+                    </div>
+                  </div>
+                  
+                  <div class="form-group" data-bind="visible: enableVGACard()">
+                    <label for="vga" class="col-md-2 control-label">vga card</label>
+                    <div class="col-md-8">
+                      <select data-bind="options: vgaCards, value: vgaCard" class="form-control" id="vga"></select> 
+                      <span class="help-block">vga cards are none, standard (std) and paravirtual qxl</span>
+                    </div>
+                  </div>
+                  
+                  <div class="form-group">
+                    <div class="col-md-offset-2 col-md-8">
+                      <label>
+                        <input type="checkbox" data-bind="checked: bootVM">
+                        boot VM after creation
+                      </label>
+                      <span class="help-block">instantly boot VM after creation</span>
+                    </div>
+                  </div>
+                  
+                  <div class="form-group" data-bind="visible: bootVM()">
+                    <label for="bootDevice"  class="col-md-2 control-label">select boot device</label>
+                    <div class="col-md-8">
+                      <select data-bind="options: bootDevices, value: bootDevice" class="form-control" id="bootDevice"></select> 
+                      <span class="help-block">Select your boot device. boot from iso or disk.</span>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <div class="col-md-offset-2 col-md-8">
+                      <button data-bind="click: create, enable: checkCreate()" class="btn btn-primary">create</button>
+                      <span class="help-block">Create the VM with selected settings.</span>
+                    </div>
+                  </div>
+
+                </div> <!-- col-md-6 -->
+                <div class="col-md-6">
+                  
+                  <div class="form-group">
+                    <label for="vmCpus" class="col-md-2 control-label">CPU count</label>
+                    <div class="col-md-8">
+                      <select data-bind="options: cpus, optionsText:'cpu', value: selectedCpu" class="form-control" id="vmCpus"></select> 
+                      <span class="help-block">number of cpus</span>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="vmRam" class="col-md-2 control-label">RAM size</label>
+                    <div class="col-md-8">
+                      <select data-bind="options: memory, optionsText:'mem', value: selectedMemory" class="form-control" id="vmRam"></select> 
+                      <span class="help-block">maximal size of RAM</span>
+                    </div>
+                  </div>
                 
-                <div class="control-group">
-                  <div class="controls">
-                    <label class="checkbox">
-                      <input type="checkbox" data-bind="checked: createImage">also create an hd-image
-                    </label>
+                  <div class="form-group">
+                    <label for="keybLayout" class="col-md-2 control-label">Keyboard layout</label>
+                    <div class="col-md-8">
+                      <select data-bind="options: keyboards, value: keyboard" class="form-control" id="keybLayout"></select> 
+                      <span class="help-block">Select your keyboard layout</span>
+                    </div>
                   </div>
-                </div>
-                
-                <div class="control-group">
-                  <label class="control-label" for="imageSize">hd image size in GiByte</label>
-                  <div class="controls">
-                    <input data-bind="value: imageSize, enable: createImage()" type="text" id="imageSize" />
+                  
+                  <div class="form-group">
+                    <div class="col-md-offset-2 col-md-8">
+                      <label>
+                        <input type="checkbox" data-bind="checked: enableVNC">
+                        enable vnc
+                      </label>
+                      <span class="help-block">Connect to the VM via VNC</span>
+                    </div>
                   </div>
-                </div>
-
-                <div class="control-group">
-                  <label class="control-label" for="vmRam">specify vm ram</label>
-                  <div class="controls">
-                    <select data-bind="options: memory, optionsText:'mem', value: selectedMemory" class="input-medium" id="vmRam"></select>
+  
+                  <div class="form-group">
+                    <div class="col-md-offset-2 col-md-8">
+                      <label>
+                        <input type="checkbox" data-bind="checked: enableNet">
+                        enable networking
+                      </label>
+                      <span class="help-block">Enable Network Card</span>
+                    </div>
                   </div>
-                </div>
+                  
+                  <div class="form-group" data-bind="visible: enableNet()">
+                    <label for="macAddress" class="col-md-2 control-label">mac address</label>
+                    <div class="col-md-8">
+                      <div class="input-group">
+                        <input data-bind="value: macAddr" type="text" id="macAddress" class="form-control">
+                        <span class="input-group-btn">
+                          <button data-bind="click: generateMacAddr" class="btn btn-primary">generate</button> 
+                        </span>
+                      </div>
+                      <span class="help-block">mac address, example 01:23:45:67:89:01</span>
+                    </div>
+                  </div>
               
-                <div class="control-group">
-                  <label class="control-label" for="vmCpus">specify number of cpus</label>
-                  <div class="controls">
-                    <select data-bind="options: cpus, optionsText:'cpu', value: selectedCpu" class="input-medium" id="vmCpus"></select> 
+                  <div class="form-group" data-bind="visible: enableNet()">
+                    <label for="netCard"  class="col-md-2 control-label">Networkcard controller</label>
+                    <div class="col-md-8">
+                      <select data-bind="options: netCards, value: netCard, enable: macAddr().length == 17 && enableNet()" class="form-control" id="netCard"></select> 
+                      <span class="help-block">Select the network card controller. For Windows without spice guest tools installed use the rtl8139 controller. After installed guest tools you can switch to the faster virtio controller.</span>
+                    </div>
                   </div>
-                </div>
-                
-                <div class="control-group">
-                  <label class="control-label" for="vmImageName">select image name </label>
-                  <div class="controls">
-                    <select data-bind="options: images, value: selectedImage, enable: !createImage() && images().length > 0" class="input-medium" id="vmImageName"></select> 
-                  </div>
-                </div>
-                
-                <div class="control-group">
-                  <div class="controls">
-                    <label class="checkbox">
-                      <input type="checkbox" data-bind="checked: bootOnceIso">boot once from iso image
-                    </label>
-                  </div>
-                </div>
-                
-                <div class="control-group">
-                  <label class="control-label" for="vmIso">select iso image</label>
-                  <div class="controls">
-                    <select data-bind="options: isos, value: selectedIso, enable: bootOnceIso()" class="input-large" id="vmIso"></select>
-                  </div>
-                </div>
-
-                <div class="control-group">
-                  <label class="control-label" for="keyboard">keyboard layout</label>
-                  <div class="controls">
-                    <select data-bind="options: keyboards, value: selectedKeyboard" class="input-large" id="keyboard"></select>
-                  </div>
-                </div>
-                
-                <div class="control-group">
-                  <div class="controls">
-                    <label class="checkbox">
-                      <input type="checkbox" data-bind="checked: startVm">boot after creation
-                    </label>
-                  </div>
-                </div>
-                
-                <div class="control-group">
-                  <div class="controls">
-                    <label class="checkbox">
-                      <input type="checkbox" data-bind="checked: vncEnabled">enable vnc
-                    </label>
-                  </div>
-                </div>
-                
-                <div class="control-group">
-                  <div class="controls">
-                    <label class="checkbox">
-                      <input type="checkbox" data-bind="checked: netEnabled">enable net
-                    </label>
-                  </div>
-                </div>
-
-                <div class="control-group">
-                  <label class="control-label" for="macAddress">mac address</label>
-                  <div class="controls">
-                    <input type="text" data-bind="value: macAddr, enable: netEnabled()" id="macAddress">
-                  </div>
-                </div>
-
-                <div class="control-group">
-                  <div class="controls">
-                    <button data-bind="click: create, enable: checkCreate" class="btn btn-primary">create</button>
-                  </div>
+  
                 </div>
               </form>
+              </div>
 
             </div>
           </div>
         </div>
-            
-<!--
-  <div class="control-group">
-    <label class="control-label" for="inputPassword">Password</label>
-    <div class="controls">
-      <input type="password" id="inputPassword" placeholder="Password">
-    </div>
-  </div>
-  <div class="control-group">
-    <div class="controls">
-      <label class="checkbox">
-        <input type="checkbox"> Remember me
-      </label>
-      <button type="submit" class="btn">Sign in</button>
-    </div>
-  </div>
-</form>
--->
-
 
       </div>
       

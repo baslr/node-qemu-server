@@ -13,7 +13,8 @@ class Image
     else if typeof img is 'string'    and typeof size is 'undefined'
       @name = img
     else if typeof img is 'undefined' and typeof size is 'undefined'
-      @name = @size = ''
+      @name = ''
+      @size = ''
   #
   # @call   imgCfg, cb
   # @call   cb

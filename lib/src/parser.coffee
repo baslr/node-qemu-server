@@ -6,68 +6,46 @@ Args = require('./args').Args
 #
 # @return cb ret, new args Obj
 #
-vmCfgToArgs = (cfg, cb = ->) ->
-  if typeof cfg  isnt 'object'
-    cb {status:'error', data:'cfg must be an object'} 
-    return
-  if typeof cfg.name     isnt 'string'
-    cb {status:'error', data:'cfg.name must be an string'}  
-    return
-  if typeof cfg.hardware isnt 'object'
-    cb {status:'error', data:'cfg.hardware must be an object'}
-    return
-  if typeof cfg.settings isnt 'object'
-    cb {status:'error', data:'cfg.settings must be an object'}
-    return
-    
-  args   = new Args()
+module.exports.vmCfgToArgs = (cfg, cb = ->) ->
+  if      typeof cfg  isnt 'object'
+    throw 'cfg must be an object'
+  else if typeof cfg.name     isnt 'string'
+    throw 'cfg.name must be an string'  
+  else if typeof cfg.hardware isnt 'object'
+    throw 'cfg.hardware must be an object'
+  else if typeof cfg.settings isnt 'object'
+    throw 'cfg.settings must be an object'
 
+  args = new Args()
+
+  args.nodefconfig()
+      .nodefaults()
+  
   args.cpus(cfg.hardware.cpus)
       .ram( cfg.hardware.ram)
-      .gfx()
+      .vga( cfg.hardware.vgaCard)
       .qmp( cfg.settings.qmpPort)
       .keyboard(cfg.settings.keyboard)
-#      .cpu('kvm64')
+
+  if os.type().toLowerCase() is 'linux'
+    args.accel('kvm')
+        .kvm()
+
+  args.hd cfg.hardware.disk
+
+  if cfg.hardware.iso
+    args.cd cfg.hardware.iso
       
-  if os.type().toLowerCase() is 'linux'        # GNU / LINUX accelerate with kvm
-    args.accel 'kvm'
-      
-  if cfg.hardware.isos?
-    for iso in cfg.hardware.isos
-      args.cd iso
-  
+  if cfg.hardware.macAddr.length is 17
+    args.net cfg.hardware.macAddr, cfg.hardware.netCard
+
   if cfg.settings.vnc
     args.vnc cfg.settings.vnc
-    
-  if cfg.hardware.mac? and cfg.hardware.mac.length is 17
-    args.mac cfg.hardware.mac
-    args.net()
-    
-  if cfg.settings.bootOnce
-    args.boot 'cd', true
+  
+  if cfg.boot then switch cfg.boot
+      when 'disk' then args.boot 'hd', false
+      when 'iso'  then args.boot 'cd', false
+      
+  return args
 
-  bHdCreation       = false
-  nNumOfHdsToCreate = 0
-  for hd in cfg.hardware.hds
-    if      typeof hd is 'string'
-      args.hd hd
-    else if typeof hd is 'object'
-      nNumOfHdsToCreate++
-      bHdCreation = true
-
-  for hd in cfg.hardware.hds
-    if typeof hd is 'object'
-      bHdCreation = true
-      qemu.createImage hd, (ret) ->
-        nNumOfHdsToCreate--
-        if ret.status is 'success'
-          args.hd cfg.name
-          if nNumOfHdsToCreate is 0
-            cb {status:'success', data:'cfg parsed to args'}, args
-        else
-          cb {status:'error', data:"cant create hd image"}
-          
-  if bHdCreation is false
-    cb {status:'success', data:'cfg parsed to args'}, args
-    
-exports.vmCfgToArgs = vmCfgToArgs
+# os         : windows_x86,windows_x86_64 linux_x86_64
