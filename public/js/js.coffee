@@ -17,6 +17,8 @@ app.formCreateVMVM = formCreateVMVM
 
 
   app.socket.on 'set-disk', (disk) ->
+    console.log "set-disk"
+    console.dir  disk.name
     imagesVM.add disk
     imagesVM.changePercentage disk.name, disk.percentUsed
     formCreateVMVM.addDisk disk.name
@@ -26,15 +28,12 @@ app.formCreateVMVM = formCreateVMVM
   
   app.socket.on 'reset-create-vm-form', ->
     formCreateVMVM.reset()
-
-
     
   ($ 'FORM#formDiskCreate BUTTON#createDisk').click ->
-    disk = name:($ 'FORM#formDiskCreate INPUT#diskName').val()
-    disk.size = ($ 'FORM#formDiskCreate INPUT#diskSize').val()
+    disk = { name:($ 'FORM#formDiskCreate INPUT#diskName').val(), size:($ 'FORM#formDiskCreate INPUT#diskSize').val() }
     
-    console.dir disk  
-    #sock.emit 'createImage', img  
+    console.dir disk
+    app.socket.emit 'create-disk', disk
   
   ko.applyBindings imagesVM,       ($ 'DIV#imagesList').get    0
   ko.applyBindings formCreateVMVM, ($ 'FORM#formVMcreate').get 0

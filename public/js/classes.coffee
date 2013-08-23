@@ -33,7 +33,6 @@ class ImageViewModel
         @images.replace n, ncp
         
   add: (image) ->
-    console.dir image
     for n,i in @images()
       if n.name is image.name
         return

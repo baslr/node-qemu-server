@@ -2,21 +2,25 @@ exec = require('child_process').exec
 fs   = require 'fs'
 qemu = require './qemu'
 
-config = require './config'
+config       = require './config'
+socketServer = require './socketServer'
 
-images       = {}
-vms          = {}
-isos         = []
+isos  = []
+disks = {}
+vms   = {}
 
-createImage = (img, cb) ->
-  qemu.createImage img, (ret) ->
-    if      ret.status is 'success'
-      images[img.name] = ret.data
-      image.info (ret) ->  
-        cb {status:'success', data:ret}      
-    else if ret.status is 'error'
-      cb status:'error'
-      
+createDisk = (disk, cb) ->
+  qemu.createImage disk, (ret) ->
+    if      ret.status is 'error'
+      cb {status:'error', msg:'image not created'}
+
+    else if ret.status is 'success'
+      newDisk = ret.data
+      disks[disk.name] = newDisk
+
+      newDisk.info (ret) ->
+        cb {status:'success', msg:'image sucessfully created', data:ret}
+
 deleteImage = (img, cb) ->
   if images[img.name]?
     images[img.name].delete (ret) ->
@@ -65,18 +69,19 @@ readVmCfgs = ->
           console.log "vm #{cfg.name} started"
 
 ###
-#   read images
+#   read disks
 ###
-readImages = ->
+readDisks = ->
   exec "cd images && ls -v *.img", (err, stdout, stderr) ->
-    imgs = stdout.split '\n'
-    imgs.pop()
+    newDisks = stdout.split '\n'
+    newDisks.pop()
   
-    for img in imgs
-      img = img.split('.')[0]
-      images[img] = new qemu.Image img
-      
-    console.dir images
+    for disk in newDisks
+      disk = disk.split('.')[0]
+      disks[disk] = new qemu.Image disk
+    
+    console.log "disks found in images/"
+    console.dir disks
 
 ###
 #   read isos
@@ -92,7 +97,7 @@ getIsos = ->
   return isos
 
 getDisks = ->
-  return images
+  return disks
 
 getVms = ->
   return vms
@@ -107,16 +112,18 @@ module.exports.vmShutdown = (cfg, code, signal) ->
     
     delete vms[cfg.name]
     
-# setInterval ->
-#   console.dir vms
-# , 1000
+setInterval ->
+  for i,disk of disks
+    disk.info (ret) ->
+      socketServer.toAll 'set-disk', ret.data
+, 15 * 1000
 
-exports.createImage = createImage
+exports.createDisk = createDisk
 exports.deleteImage = deleteImage
 
-exports.readVmCfgs  = readVmCfgs
-exports.readImages  = readImages
-exports.readIsos    = readIsos
+exports.readVmCfgs = readVmCfgs
+exports.readDisks  = readDisks
+exports.readIsos   = readIsos
 
 exports.getIsos    = getIsos
 exports.getDisks   = getDisks
