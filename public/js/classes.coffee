@@ -22,13 +22,10 @@ class ImageViewModel
   constructor: ->
     @images  = ko.observableArray()
 
-  changePercentage: (name, newPercent) ->
+  changePercentage: (disk, newPercent) ->
     for n,i in @images()
-      if n.name is name
-#        ncp = $.extend {}, n
-#        ncp.percentUsed = "#{newPercent}%"
-
-        ncp = new ImageModel n.image
+      if n.name is disk.name
+        ncp = new ImageModel disk
         ncp.percentUsed = "#{newPercent}%"
         @images.replace n, ncp
         

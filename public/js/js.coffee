@@ -20,7 +20,7 @@ app.formCreateVMVM = formCreateVMVM
     console.log "set-disk"
     console.dir  disk.name
     imagesVM.add disk
-    imagesVM.changePercentage disk.name, disk.percentUsed
+    imagesVM.changePercentage disk, disk.percentUsed
     formCreateVMVM.addDisk disk.name
 
   app.socket.on 'set-iso', (name) ->
