@@ -212,6 +212,14 @@
                   </div>
                   
                   <div class="form-group">
+                    <label for="bootDevice"  class="col-md-2 control-label">select boot device</label>
+                    <div class="col-md-8">
+                      <select data-bind="options: bootDevices, value: bootDevice" class="form-control" id="bootDevice"></select> 
+                      <span class="help-block">Select your boot device. boot from iso or disk.</span>
+                    </div>
+                  </div>
+                  
+                  <div class="form-group">
                     <div class="col-md-offset-2 col-md-8">
                       <label>
                         <input type="checkbox" data-bind="checked: bootVM">
@@ -221,14 +229,6 @@
                     </div>
                   </div>
                   
-                  <div class="form-group" data-bind="visible: bootVM()">
-                    <label for="bootDevice"  class="col-md-2 control-label">select boot device</label>
-                    <div class="col-md-8">
-                      <select data-bind="options: bootDevices, value: bootDevice" class="form-control" id="bootDevice"></select> 
-                      <span class="help-block">Select your boot device. boot from iso or disk.</span>
-                    </div>
-                  </div>
-
                   <div class="form-group">
                     <div class="col-md-offset-2 col-md-8">
                       <button data-bind="click: create, enable: checkCreate()" class="btn btn-primary">create</button>
