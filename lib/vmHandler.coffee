@@ -36,7 +36,8 @@ module.exports.createVm = (vmCfg, cb) ->
          vmCfg.settings.vnc = config.getFreeVNCport()
 
   obj = qemu.createVm vmCfg
-  vms[vmCfg.name] = obj
+  vms.push obj
+  socketServer.toAll 'set-vm', vmCfg
 
   if vmCfg.settings.boot is true
     obj.start ->
