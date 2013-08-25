@@ -66,11 +66,11 @@ module.exports.processExit = (vmName, code, signal) ->
       vm.saveConfig()
       socketServer.toAll 'set-vm-status', vmName, 'stopped' # | running | paused 
     
-# setInterval ->
-#   for i,disk of disks
-#     disk.info (ret) ->
-#       socketServer.toAll 'set-disk', ret.data
-# , 60 * 1000
+setInterval ->
+  for disk in disks
+    Disk.info disk, (ret) ->
+      socketServer.toAll 'set-disk', ret.data
+, 60 * 1000
 
 
 ###

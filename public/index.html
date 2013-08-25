@@ -61,18 +61,18 @@
                 <td data-bind="text: hardware.disk"></td>
                 <td data-bind="text: hardware.iso == false ? 'none' : hardware.iso"</td>
                 <td>
-                  <button data-bind="click: $root.boot, visible: status() == 'stopped' "  class="btn btn-default btn-xs"><span class="glyphicon glyphicon-off" /></button>
+                  <button data-bind="click: $root.boot, visible: status() == 'stopped' "  class="btn btn-default btn-sm"><span class="glyphicon glyphicon-off" /></button>
                   
-                  <button data-bind="click: $root.pause, visible: status() != 'stopped' && status() != 'paused'" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-pause" /></button>
+                  <button data-bind="click: $root.pause, visible: status() != 'stopped' && status() != 'paused'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pause" /></button>
                   
-                  <button data-bind="click: $root.resume, visible: status() != 'stopped' && status() != 'running'" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-play" /></button>
+                  <button data-bind="click: $root.resume, visible: status() != 'stopped' && status() != 'running'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-play" /></button>
 
-                  <button data-bind="click: $root.stop, visible: status() != 'stopped'" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-stop" /></button>
+                  <button data-bind="click: $root.stop, visible: status() != 'stopped'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-stop" /></button>
 
-                  <button data-bind="click: $root.reset, visible: status() != 'stopped'" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-repeat" /></button>
-                  <button data-bind="click: $root.edit, visible: status() == 'stopped'" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-cog" /></button>
+                  <button data-bind="click: $root.reset, visible: status() != 'stopped'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-repeat" /></button>
+                  <button data-bind="click: $root.edit, visible: status() == 'stopped'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-cog" /></button>
                 </td>
-                <td><button data-bind="click: $root.remove" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-trash" /></button></td>
+                <td><button data-bind="click: $root.remove" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-trash" /></button></td>
               </tr>
             </tbody>
           </table>
@@ -117,7 +117,7 @@
                     <div class="progress-bar" data-bind="style: {width: percentUsed}" ></div>
                   </div>
                 </td>                
-                <td><button data-bind="click: $root.remove" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-trash" /></button></td>
+                <td><button data-bind="click: $root.remove" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-trash" /></button></td>
               </tr>
             </tbody>
           </table>
@@ -127,7 +127,7 @@
         <div class="tab-pane" id="listIsosTab" style="margin-left:20px;">
           <h3>list of ISOs</h3>
           
-          <div class="well well-small" id="uploadArea"><center><span class="glyphicon glyphicon-cloud-upload"></span> Drag and drop your ISO files here to upload them.</center>
+          <div style="margin-bottom:0px;" class="well well-small" id="uploadArea"><center><span class="glyphicon glyphicon-cloud-upload"></span> Drag and drop your ISO files here to upload them.</center>
           </div>
           <div class="progress" id="isoUploadProgressBar">              
             <div class="progress-bar"></div>
@@ -147,7 +147,7 @@
               <tr>
                 <td data-bind="text: name"></td>
                 <td data-bind="text: size"></td>
-                <td><button data-bind="click: $root.remove" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-trash" /></button></td>
+                <td><button data-bind="click: $root.remove" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-trash" /></button></td>
               </tr>
             </tbody>
           </table>
