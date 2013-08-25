@@ -67,7 +67,7 @@
                   
                   <button data-bind="click: $root.resume, visible: status() != 'stopped' && status() != 'running'" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-play" /></button>
 
-<!--                   <button data-bind="click: $root.stop" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-stop" /></button> -->
+                  <button data-bind="click: $root.stop, visible: status() != 'stopped'" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-stop" /></button>
 
                   <button data-bind="click: $root.reset, visible: status() != 'stopped'" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-repeat" /></button>
                   <button data-bind="click: $root.edit, visible: status() == 'stopped'" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-cog" /></button>

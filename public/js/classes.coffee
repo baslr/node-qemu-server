@@ -13,7 +13,7 @@ class VmsViewModel
     
   boot: (vm) ->
     console.log "Boot: #{vm.name}"
-    app.socket.emit 'boot', vm.name
+    app.socket.emit 'vm-boot', vm.name
     
   reset: (vm) ->
     console.log "Reset: #{vm.name}"
@@ -26,6 +26,10 @@ class VmsViewModel
   resume: (vm) ->
     console.log "Resume: #{vm.name}"
     app.socket.emit 'vm-resume', vm.name
+    
+  stop: (vm) ->
+    console.log "Stop: #{vm.name}"
+    app.socket.emit 'vm-stop', vm.name
 
   setStatus: (vmName, status) ->
     for vm in @vms()

@@ -102,6 +102,13 @@ module.exports.resumeVm = (vmName, cb) ->
       return
   cb {type:'error', msg:'VM not resumed'}  
   
+module.exports.stopVm = (vmName, cb) ->
+  for vm in vms
+    if vm.name is vmName
+      vm.stop cb
+      return
+  cb {type:'error', msg:'VM not stopped.'}  
+  
 
 module.exports.setVmStatus = (vmName, status) ->
   for vm in vms

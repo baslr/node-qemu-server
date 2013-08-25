@@ -28,7 +28,7 @@ module.exports.start = (httpServer) ->
       console.log "SOCK -> DIS #{sock.id} #{sock.handshake.address.address}"
       delete socks[sock.id]
       
-    sock.on 'boot', (vmName) ->
+    sock.on 'vm-boot', (vmName) ->
       console.log "Boot #{vmName}"
       vmHandler.boot vmName, (ret) ->
         sock.emit 'msg', ret
@@ -63,6 +63,16 @@ module.exports.start = (httpServer) ->
           ioServer.sockets.emit 'set-vm-status', vmName, 'running'
         else
           sock.emit 'msg', {type:'error', msg:'Cant resume VM'}
+    
+    sock.on 'vm-stop', (vmName) ->
+      console.log "VM stop #{vmName}"
+      vmHandler.stopVm vmName, (ret) ->
+        if ret.status is 'success'
+          sock.emit 'msg', {type:'success', msg:'VM stopped.'}
+          vmHandler.setVmStatus vmName, 'stopped'
+          ioServer.sockets.emit 'set-vm-status', vmName, 'stopped'
+        else
+          sock.emit 'msg', {type:'error', msg:'Cant stop VM'}
   
     sock.on 'create-disk', (disk) ->
       vmHandler.createDisk disk, (ret) ->
