@@ -1,14 +1,12 @@
 
-net  = require 'net'
+net       = require 'net'
+vmHandler = require '../vmHandler'
 
 class Qmp
-  constructor:(@port) ->
+  constructor:(@vmName) ->
     @socket = undefined
+    @port   = undefined
     @dataCb = undefined
-    
-  shutdown: ->
-    @socket.end()
-    @socket.destroy()
 
   connect: (port, cb) ->
     if      typeof port is 'function'
@@ -24,7 +22,7 @@ class Qmp
       @socket.on 'connect', =>
         console.log "qmp connected"
         @socket.write '{"execute":"qmp_capabilities"}'
-        cb()
+        cb {type:'success', msg:'connected to VM'}
         
       @socket.on 'data', (data) =>
         jsons = data.toString().split '\r\n'
@@ -33,6 +31,11 @@ class Qmp
         for json in jsons
           try
             parsedData = JSON.parse json.toString()
+            
+            if parsedData.event? and parsedData.event is 'SHUTDOWN'
+              console.log "qmp: vm #{@vmName} shutdown"
+              vmHandler.processExit @vmName, 0x47, 0x11
+            
             if @dataCb?
               if parsedData.error?
                 @dataCb 'error':parsedData.error

@@ -28,7 +28,7 @@ class Args
   #   set harddrive, set cdromdrive
   ###  
   hd: (img, intf='ide') ->
-    @pushArg '-drive', "file=images/#{img}.img,media=disk,cache=none,if=#{intf}"
+    @pushArg '-drive', "file=disks/#{img}.img,media=disk,cache=none,if=#{intf}"
     return this
   cd: (img, intf='ide') ->
     @pushArg '-drive', "file=isos/#{img},media=cdrom,if={#intf}"

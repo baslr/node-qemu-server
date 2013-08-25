@@ -6,9 +6,5 @@ socketServer = require './lib/socketServer'
 webServer.start()
 socketServer.start webServer.getHttpServer()
 
-
-vmHandler.readIsos()
-vmHandler.readDisks()
-
-vmHandler.readVmCfgs()
-
+vmHandler.loadFiles()
+vmHandler.reconnectVms()

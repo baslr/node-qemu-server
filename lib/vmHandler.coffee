@@ -1,44 +1,39 @@
-exec = require('child_process').exec
 fs   = require 'fs'
 qemu = require './qemu'
+
+Disk = require './src/disk'
 
 config       = require './config'
 socketServer = require './socketServer'
 
 isos  = []
-disks = {}
-vms   = {}
+disks = []
+vms   = []
 
-createDisk = (disk, cb) ->
-  qemu.createImage disk, (ret) ->
+module.exports.createDisk = (disk, cb) ->
+  Disk.create disk, (ret) ->
     if      ret.status is 'error'
-      cb {status:'error', msg:'image not created'}
+      cb {status:'error', msg:'disk not created'}
 
     else if ret.status is 'success'
-      newDisk = ret.data
-      disks[disk.name] = newDisk
+      disks.push disk.name
 
-      newDisk.info (ret) ->
-        cb {status:'success', msg:'image sucessfully created', data:ret}
-
-deleteImage = (img, cb) ->
-  if images[img.name]?
-    images[img.name].delete (ret) ->
-      cb ret
-      if ret.status is 'success'
-        delete images[img.name]
+      Disk.info disk.name, (ret) ->
+        cb {status:'success', msg:'disk sucessfully created', data:ret}
 
 ###
 #   create VM
-### 
+###
 module.exports.createVm = (vmCfg, cb) ->
-  for vmName of vms
-    if vmName is vmCfg.name
+  for vm in vms
+    if vm.name is vmCfg.name
       cb status:'error', msg:"VM with the name '#{vmCfg.name}' already exists"
       return
-
+  
+  vmCfg.status = 'stopped'
   vmCfg.settings['qmpPort'] = config.getFreeQMPport()    
-  if vmCfg.settings.vnc then vmCfg.settings.vnc = config.getFreeVNCport()
+  if vmCfg.settings.vnc
+         vmCfg.settings.vnc = config.getFreeVNCport()
 
   obj = qemu.createVm vmCfg
   vms[vmCfg.name] = obj
@@ -50,81 +45,135 @@ module.exports.createVm = (vmCfg, cb) ->
 
   cb {status:'success', msg:'created vm'}
 
-###
-#   read vmConfigs
-###
-readVmCfgs = ->
-  exec "cd vmConfigs && ls -v *.json", (err, stdout, stderr) ->
-    cfgs = stdout.split '\n'
-    cfgs.pop()
-    
-    for cfg in cfgs
-      cfg = JSON.parse fs.readFileSync "vmConfigs/#{cfg}"
-      
-      obj = qemu.createVm cfg
-      console.log obj
-      vms[cfg.name] = obj
-      if cfg.settings.boot is true
-        obj.start ->
-          console.log "vm #{cfg.name} started"
 
 ###
-#   read disks
-###
-readDisks = ->
-  exec "cd images && ls -v *.img", (err, stdout, stderr) ->
-    newDisks = stdout.split '\n'
-    newDisks.pop()
+  NEW ISO
+###  
+module.exports.newIso = (isoName) ->
+  newIso = {name:isoName, size:fs.statSync("#{process.cwd()}/isos/#{isoName}").size}
+  isos.push newIso
+  socketServer.toAll 'set-iso', newIso
   
-    for disk in newDisks
-      disk = disk.split('.')[0]
-      disks[disk] = new qemu.Image disk
+
+module.exports.processExit = (vmName, code, signal) ->
+  console.log "qemu process exit VM #{vmName}"
+
+  for vm in vms
+    if vm.name is vmName
+      vm.cfg.status = 'stopped'
+      vm.saveConfig()
+      socketServer.toAll 'set-vm-status', vmName, 'stopped' # | running | paused 
     
-    console.log "disks found in images/"
-    console.dir disks
+# setInterval ->
+#   for i,disk of disks
+#     disk.info (ret) ->
+#       socketServer.toAll 'set-disk', ret.data
+# , 60 * 1000
+
 
 ###
-#   read isos
+
 ###
-readIsos = ->
-  exec "cd isos && ls -v *.iso", (e, stdout, stderr) ->
-    ns = stdout.split '\n'
-    ns.pop()
-    isos.push iso for iso in ns
+module.exports.boot = (vmName, cb) ->
+  for vm in vms
+    if vm.name is vmName
+      vm.start cb
+      return
+  cb {type:'error', msg:'VM not available'}
+  
+module.exports.resetVm = (vmName, cb) ->
+  for vm in vms
+    if vm.name is vmName
+      vm.reset cb
+      return
+  cb {type:'error', msg:'VM not available'}
+
+module.exports.pauseVm = (vmName, cb) ->
+  for vm in vms
+    if vm.name is vmName
+      vm.pause cb
+      return
+  cb {type:'error', msg:'VM not paused'}
+  
+module.exports.resumeVm = (vmName, cb) ->
+  for vm in vms
+    if vm.name is vmName
+      vm.resume cb
+      return
+  cb {type:'error', msg:'VM not resumed'}  
+  
+
+module.exports.setVmStatus = (vmName, status) ->
+  for vm in vms
+    if vm.name is vmName
+      vm.cfg.status = status
+      vm.saveConfig()
 
 
-getIsos = ->
+###
+  RETURN ISOS, DISKS, VMS
+###
+module.exports.getIsos = ->
   return isos
 
-getDisks = ->
+module.exports.getDisks = ->
   return disks
-
-getVms = ->
+  
+module.exports.getVms = ->
   return vms
 
-module.exports.vmShutdown = (cfg, code, signal) ->
-  console.log "VM #{cfg.name} shut down"
 
-  if vms[cfg.name]?
-    vm = vms[cfg.name]
-    vm.deleteProcess()
-    vm.deleteQmp()
+###
+  DELETE DISK, ISO
+###
+module.exports.deleteIso = (isoName) ->
+  try
+    fs.unlinkSync "#{process.cwd()}/isos/#{isoName}"
     
-    delete vms[cfg.name]
+    for iso,i in isos
+      if iso.name is isoName
+        isos.splice i,1
+        return true
+  catch e
+    return false
+  return false
+
+module.exports.deleteDisk = (diskName) ->
+  for disk,i in disks
+    if disk is diskName
+      if Disk.delete disk
+        disks.splice i, 1
+        return true
+      else
+        return false
+  return false
+
+
+###
+  SET UP ISOS, DISKS, VM CONFIGS
+###
+module.exports.loadFiles = ->
+  for isoName in config.getIsoFiles()                                           # iso  files
+    isos.push {name:isoName, size:fs.statSync("#{process.cwd()}/isos/#{isoName}").size}
+  console.log "isos found in isos/"
+  console.dir  isos
+  
+  disks.push diskName.split('.')[0] for diskName in config.getDiskFiles()       # disk files
+
+  
+  console.log "disks found in disks/"
+  console.dir  disks    
+  
+  for config in config.getVmConfigs()                                           # vm config files
+    vms.push qemu.createVm JSON.parse fs.readFileSync "#{process.cwd()}/vmConfigs/#{config}"
     
-setInterval ->
-  for i,disk of disks
-    disk.info (ret) ->
-      socketServer.toAll 'set-disk', ret.data
-, 15 * 1000
+  console.log "vms found in vmConfigs/"
+  console.dir  vms
 
-exports.createDisk = createDisk
-exports.deleteImage = deleteImage
-
-exports.readVmCfgs = readVmCfgs
-exports.readDisks  = readDisks
-exports.readIsos   = readIsos
-
-exports.getIsos    = getIsos
-exports.getDisks   = getDisks
-exports.getVms     = getVms
+module.exports.reconnectVms = ->
+  for vm in vms
+    if vm.cfg.status isnt 'stopped'
+      console.log "VM #{vm.name} isnt stopped"
+      vm.connectQmp (ret) ->
+        console.dir ret
+  

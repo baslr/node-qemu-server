@@ -1,7 +1,7 @@
 exec = require('child_process').exec
 
-info = (name, cb) ->
-  exec "qemu-img info images/#{name}.img", (err, stdout, stderr) =>    
+module.exports = (name, cb) ->
+  exec "qemu-img info disks/#{name}.img", (err, stdout, stderr) =>    
     if err? or stderr isnt ''
       cb {status:'error', data:[err,stderr]}
       return
@@ -28,5 +28,3 @@ info = (name, cb) ->
     b['percentUsed'] = 100/b['virtual_size']*b['disk_size']
 
     cb status:'success', data:b
-    
-exports.info = info

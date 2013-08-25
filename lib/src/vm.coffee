@@ -4,26 +4,26 @@ vmConf = require('./vmCfg')
 
 class Vm
   constructor: (@cfg, cb) ->
-    @process   = new proc.Process()
-    @qmp       = new qmp.Qmp()
-
     if      typeof cfg is 'string'
       @name = cfg
     else if typeof cfg is 'object'
       @name = cfg.name
 
+    @process   = new proc.Process()
+    @qmp       = new qmp.Qmp @name
+
+    vmConf.save @cfg
+    
+  saveConfig: ->
     vmConf.save @cfg
 
   start: (cb) ->
-    @process.start @cfg, ->
+    @process.start @cfg
     @qmp.connect   @cfg.settings.qmpPort, cb
   
-  deleteProcess: ->
-    delete @process
+  connectQmp: (cb) ->
+    @qmp.connect   @cfg.settings.qmpPort, cb  
   
-  deleteQmp: ->
-    @qmp.shutdown()
-    delete @qmp
   ###
   #   QMP commands
   ###  

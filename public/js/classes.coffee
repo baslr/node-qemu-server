@@ -1,5 +1,55 @@
 @app = socket:undefined, c:{}
 
+class VmsViewModel
+  constructor: ->
+    @vms = ko.observableArray()
+    
+  add: (vmIn) ->
+    for vm in @vms()
+      if vm.name is vmIn.name
+        return
+    vmIn.status = ko.observable vmIn.status
+    @vms.push vmIn
+    
+  boot: (vm) ->
+    console.log "Boot: #{vm.name}"
+    app.socket.emit 'boot', vm.name
+    
+  reset: (vm) ->
+    console.log "Reset: #{vm.name}"
+    app.socket.emit 'vm-reset', vm.name
+    
+  pause: (vm) ->
+    console.log "Pause: #{vm.name}"
+    app.socket.emit 'vm-pause', vm.name
+  
+  resume: (vm) ->
+    console.log "Resume: #{vm.name}"
+    app.socket.emit 'vm-resume', vm.name
+
+  setStatus: (vmName, status) ->
+    for vm in @vms()
+      if vm.name is vmName
+        vm.status status
+
+
+class IsosViewModel
+  constructor: ->
+    @isos = ko.observableArray()
+    
+  add : (iso) ->
+    iso.size = (iso.size / 1024 / 1024 / 1024).toFixed 3
+    @isos.push iso
+    
+  remove: (iso) ->
+    console.log "delete iso #{iso.name}"
+    app.socket.emit 'delete-iso', iso.name
+    
+  delete: (isoName) ->
+    @isos.remove (iso) ->
+      return iso.name is isoName
+
+
 class ImageModel
   constructor: (@image) ->
     @name        = image.name
@@ -7,16 +57,17 @@ class ImageModel
     @format      = image.file_format
 
     @used = ko.computed ->
-      return @image.disk_size / 1024 / 1024 / 1024
+      return (@image.disk_size / 1024 / 1024 / 1024).toFixed 3
     , this
     
     @size = ko.computed ->
-      return @image.virtual_size / 1024 / 1024 / 1024
+      return (@image.virtual_size / 1024 / 1024 / 1024).toFixed 3
     , this
     
     @left = ko.computed ->
-      return (@image.virtual_size - @image.disk_size) / 1024 / 1024 / 1024
+      return ((@image.virtual_size - @image.disk_size) / 1024 / 1024 / 1024).toFixed 3
     , this
+
 
 class ImageViewModel
   constructor: ->
@@ -35,17 +86,21 @@ class ImageViewModel
         return
     @images.push new ImageModel image
     
-  remove: (image) =>
-    @images.remove image
-    app.socket.emit 'deleteImage', image
-    
+  remove: (disk) ->
+    app.socket.emit 'delete-disk', disk.name
+  
+  delete: (diskName) ->
+    @images.remove (disk) ->
+      return disk.name is diskName
+
+
 class FormCreateVMViewModel
   constructor: ->
     @disks = ko.observableArray()
     @isos  = ko.observableArray ['none'] # ['debian', 'ubuntu' ]
     
-    @bootDevices = ['disk',    'iso'    ]
-    @keyboards   = ['de',      'en-us'  ]
+    @bootDevices = ['disk',        'iso']
+    @keyboards   = ['de',        'en-us']
     @netCards    = ['virtio',  'rtl8139']
     @vgaCards    = ['none', 'std', 'qxl']
 
@@ -106,11 +161,19 @@ class FormCreateVMViewModel
         return
     @disks.push newDisk
     
-  addIso: (newIso) ->
+  addIso: (isoName) ->
     for iso in @isos()
-      if iso is newIso
+      if iso is isoName
         return
-    @isos.push newIso
+    @isos.push isoName
+    
+  deleteIso: (isoName) ->
+    @isos.remove (iso) ->
+      return iso is isoName
+      
+  deleteDisk: (diskName) ->
+    @disks.remove (disk) ->
+      return disk is diskName
   
   create: ->
     console.log "create VM"
@@ -144,3 +207,5 @@ class FormCreateVMViewModel
 app.c.ImageModel            = ImageModel
 app.c.ImageViewModel        = ImageViewModel
 app.c.FormCreateVMViewModel = FormCreateVMViewModel
+app.c.IsosViewModel         = IsosViewModel
+app.c.VmsViewModel          = VmsViewModel

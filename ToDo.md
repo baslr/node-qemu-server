@@ -15,3 +15,20 @@
     qImage.create conf, (ret) ->
       if ret.status is 'success'
       # creation ok
+
+
+
+@ToDo
+
+
+  
+vmHandler.scanForRunningVms
+  - qmp port scann de ports die belegt sind
+  
+  
+Delete disk
+ - click on button
+ - client emits delete-disk
+ - server trys to delete disk
+ - server emits delete-disk
+ - client removes it from gui
