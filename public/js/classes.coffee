@@ -112,7 +112,7 @@ class FormCreateVMViewModel
     @cpus.push {num:i, cpu:"#{i} cpus"} for i in [1..48]
 
     @memory = []
-    @memory.push {num:i*128, mem:"#{i*256} MiByte"} for i in [1..128]
+    @memory.push {num:i*256, mem:"#{i*256} MiByte"} for i in [1..128]
 
     @selectedCpu    = ko.observable()
     @selectedMemory = ko.observable()
