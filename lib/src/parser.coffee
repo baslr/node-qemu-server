@@ -42,7 +42,7 @@ module.exports.vmCfgToArgs = (cfg, cb = ->) ->
   if cfg.settings.vnc
     args.vnc cfg.settings.vnc
   
-  if cfg.boot then switch cfg.boot
+  if cfg.boot then switch cfg.bootDevice
       when 'disk' then args.boot 'hd', false
       when 'iso'  then args.boot 'cd', false
       
