@@ -42,6 +42,8 @@ module.exports.createVm = (vmCfg, cb) ->
     obj.start ->
       console.log "vm #{vmCfg.name} started"
       cb {status:'success', msg:'vm created and started'}
+      socketServer.toAll 'set-vm-status', vmCfg.name, 'running'
+      ob.saveConfig()
 
   cb {status:'success', msg:'created vm'}
 
@@ -171,8 +173,8 @@ module.exports.loadFiles = ->
   console.log "disks found in disks/"
   console.dir  disks    
   
-  for config in config.getVmConfigs()                                           # vm config files
-    vms.push qemu.createVm JSON.parse fs.readFileSync "#{process.cwd()}/vmConfigs/#{config}"
+  for vmCfg in config.getVmConfigs()                                            # vm config files
+    vms.push qemu.createVm JSON.parse fs.readFileSync "#{process.cwd()}/vmConfigs/#{vmCfg}"
     
   console.log "vms found in vmConfigs/"
   console.dir  vms
