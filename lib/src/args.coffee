@@ -31,7 +31,7 @@ class Args
     @pushArg '-drive', "file=disks/#{img}.img,media=disk,cache=none,if=#{intf}"
     return this
   cd: (img, intf='ide') ->
-    @pushArg '-drive', "file=isos/#{img},media=cdrom,if={#intf}"
+    @pushArg '-drive', "file=isos/#{img},media=cdrom,if=#{intf}"
     return this
   
   boot: (type, once = true) ->
