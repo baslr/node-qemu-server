@@ -44,6 +44,7 @@ module.exports.createVm = (vmCfg, cb) ->
       console.log "vm #{vmCfg.name} started"
       cb {status:'success', msg:'vm created and started'}
       socketServer.toAll 'set-vm-status', vmCfg.name, 'running'
+      obj.cfg.status = 'running'
       obj.saveConfig()
 
   cb {status:'success', msg:'created vm'}
