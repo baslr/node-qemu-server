@@ -35,6 +35,12 @@ class VmsViewModel
     for vm in @vms()
       if vm.name is vmName
         vm.status status
+  
+  diskUsed: (diskName) ->
+    for vm in @vms()
+      if vm.hardware.disk is diskName
+        return true
+    return false
 
 
 class IsosViewModel

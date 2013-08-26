@@ -34,7 +34,9 @@ app.vmsVM          = vmsVM
     console.dir  disk
     imagesVM.add disk
     imagesVM.changePercentage disk, disk.percentUsed
-    formCreateVMVM.addDisk disk.name
+    
+    if ! vmsVM.diskUsed disk.name
+      formCreateVMVM.addDisk disk.name
 
   app.socket.on 'set-iso', (iso) ->
     formCreateVMVM.addIso iso.name
