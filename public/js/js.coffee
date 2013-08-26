@@ -22,6 +22,9 @@ app.vmsVM          = vmsVM
     console.dir vm
     vmsVM.add vm
     
+    if vm.disk
+      formCreateVMVM.deleteDisk vm.disk
+  
   app.socket.on 'set-vm-status', (vmName, status) ->
     console.log "VM status #{vmName} #{status}"
     vmsVM.setStatus vmName, status
