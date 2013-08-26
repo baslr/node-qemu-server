@@ -14,7 +14,7 @@ class Qmp
     else if typeof port is 'number'
       @port = port
 
-    console.log "QMP: try to connect to VM #{@name} with port #{@port}"
+    console.log "QMP: try to connect to VM #{@vmName} with port #{@port}"
       
     setTimeout =>                                                               # give the qemu process time to start
       @socket = net.connect @port
