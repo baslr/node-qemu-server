@@ -26,6 +26,9 @@ module.exports.vmCfgToArgs = (cfg, cb = ->) ->
       .vga( cfg.hardware.vgaCard)
       .qmp( cfg.settings.qmpPort)
       .keyboard(cfg.settings.keyboard)
+      
+  if cfg.hardware.cpu
+    args.cpu cfg.hardware.cpu
 
   if os.type().toLowerCase() is 'linux'
     args.accel('kvm')

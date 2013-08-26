@@ -114,13 +114,18 @@ class FormCreateVMViewModel
     @netCards    = ['virtio',  'rtl8139']
     @vgaCards    = ['none', 'std', 'qxl']
 
-    @cpus   = []
+    @cpuModels = ['qemu32', 'qemu64', 'kvm32', 'kvm64', 'core2duo', 'SandyBridge', 'Haswell']
+    @cpus      = []
     @cpus.push {num:i, cpu:"#{i} cpus"} for i in [1..48]
+
 
     @memory = []
     @memory.push {num:i*256, mem:"#{i*256} MiByte"} for i in [1..128]
 
-    @selectedCpu    = ko.observable()
+    @cpuCount       = ko.observable()
+    @enableCpuModel = ko.observable()
+    @cpuModel       = ko.observable()
+
     @selectedMemory = ko.observable()
     @disk           = ko.observable()
     @selectedIso    = ko.observable()
@@ -147,7 +152,10 @@ class FormCreateVMViewModel
     , this
 
   reset: ->
-    @selectedCpu    @cpus[1]
+    @cpuCount       @cpus[1]
+    @enableCpuModel false
+    @cpuModel       @cpuModels[3]
+
     @selectedMemory @memory[7]
     @disk           ''
     @selectedIso    @isos[0]
@@ -189,7 +197,8 @@ class FormCreateVMViewModel
     console.log "create VM"
     vm = { name : @vmName()
          , hardware: {
-             cpus    : @selectedCpu().num
+             cpus    : @cpuCount().num
+             cpu     : if @enableCpuModel() then @cpuModel() else false
              ram     : @selectedMemory().num
              disk    : @disk()
              iso     : if @selectedIso() isnt 'none' then @selectedIso() else false
