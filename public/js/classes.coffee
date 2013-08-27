@@ -150,7 +150,9 @@ class FormCreateVMViewModel
     @reset()
 
     @checkCreate = ko.computed ->
-      if @vmName().length > 3 and @disks().length
+      if 2 < @vmName().length and
+         ( (@diskOrPartition() is 'partition' and 1 < @partition().length) or 
+           (@diskOrPartition() is 'disk'      and @disk() isnt undefined) )
         return true
       return false
     , this
