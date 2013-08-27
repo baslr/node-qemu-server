@@ -70,9 +70,6 @@ app.vmsVM          = vmsVM
   ko.applyBindings isosVM,         ($ 'TBODY#isosList').get    0
   ko.applyBindings vmsVM,          ($ 'TBODY#vmList').get      0
   
-  formCreateVMVM.addDisk 'keksss.img'
-  formCreateVMVM.addDisk 'stulle.img'
-  
   uploadCB = (res) ->
     console.log res.data.status
 

@@ -127,8 +127,12 @@ class FormCreateVMViewModel
     @cpuModel       = ko.observable()
 
     @selectedMemory = ko.observable()
-    @disk           = ko.observable()
-    @selectedIso    = ko.observable()
+
+    @diskOrPartition = ko.observable()
+    @partition       = ko.observable()
+    @disk            = ko.observable()
+    @selectedIso     = ko.observable()
+    
     @keyboard       = ko.observable()
 
     @vmName        = ko.observable()
@@ -157,8 +161,12 @@ class FormCreateVMViewModel
     @cpuModel       @cpuModels[3]
 
     @selectedMemory @memory[7]
-    @disk           ''
-    @selectedIso    @isos[0]
+
+    @diskOrPartition 'disk'
+    @partition       '/dev/sd'
+    @disk            ''
+    @selectedIso     @isos[0]
+
     @keyboard       @keyboards[0]
 
     @vmName        ''
@@ -197,17 +205,18 @@ class FormCreateVMViewModel
     console.log "create VM"
     vm = { name : @vmName()
          , hardware: {
-             cpus    : @cpuCount().num
-             cpu     : if @enableCpuModel() then @cpuModel() else false
-             ram     : @selectedMemory().num
-             disk    : @disk()
-             iso     : if @selectedIso() isnt 'none' then @selectedIso() else false
-             macAddr : if @enableNet()  and @macAddr().length is 17 then @macAddr() else false
-             netCard : if @enableNet()  and @macAddr().length is 17 then @netCard() else false
-             vgaCard : if @enableVGACard() then @vgaCard()                          else 'none' }
+             cpus      : @cpuCount().num
+             cpu       : if @enableCpuModel() then @cpuModel() else false
+             ram       : @selectedMemory().num
+             disk      : if @diskOrPartition() is 'disk'      then @disk()      else false
+             partition : if @diskOrPartition() is 'partition' then @partition() else false
+             iso       : if @selectedIso() isnt 'none' then @selectedIso() else false
+             macAddr   : if @enableNet()  and @macAddr().length is 17 then @macAddr() else false
+             netCard   : if @enableNet()  and @macAddr().length is 17 then @netCard() else false
+             vgaCard   : if @enableVGACard() then @vgaCard()                          else 'none' }
          , settings: {
              boot       : @bootVM()
-             bootDevice : if @bootVM() then @bootDevice() else false
+             bootDevice : @bootDevice()
              vnc        : @enableVNC()
              keyboard   : @keyboard() }}
 

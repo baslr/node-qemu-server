@@ -34,7 +34,10 @@ module.exports.vmCfgToArgs = (cfg, cb = ->) ->
     args.accel('kvm')
         .kvm()
 
-  args.hd cfg.hardware.disk
+  if      cfg.hardware.disk
+    args.hd cfg.hardware.disk
+  else if cfg.hardware.partition
+    args.partition cfg.hardware.partition
 
   if cfg.hardware.iso
     args.cd cfg.hardware.iso

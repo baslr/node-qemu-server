@@ -58,7 +58,7 @@
                 <td data-bind="text: hardware.ram + 'MB'"></td>
                 <td data-bind="text: hardware.vgaCard"></td>
                 <td data-bind="text: ':'+settings.vnc"></td>
-                <td data-bind="text: hardware.disk"></td>
+                <td data-bind="text: false != hardware.disk ? hardware.disk : hardware.partition "></td>
                 <td data-bind="text: hardware.iso == false ? 'none' : hardware.iso"</td>
                 <td>
                   <button data-bind="click: $root.boot, visible: status() == 'stopped' "  class="btn btn-default btn-sm"><span class="glyphicon glyphicon-off" /></button>
@@ -178,6 +178,25 @@
                   </div>
                   
                   <div class="form-group">
+                    <label for="netCard"  class="col-md-2 control-label">disk or partition</label>
+                    <div class="col-md-8">
+                      <div class="radio">
+                        <label>
+                          <input type="radio" name="diskOrPartition" value="disk" data-bind="checked: diskOrPartition" />
+                          Disk
+                        </label>
+                      </div>
+
+                      <div class="radio">
+                        <label>
+                          <input type="radio" name="diskOrPartition" value="partition" data-bind="checked: diskOrPartition" />
+                          Partition
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="form-group" data-bind="visible: diskOrPartition() == 'disk'">
                     <label for="diskName" class="col-md-2 control-label">disk</label>
                     <div class="col-md-8">
                       <select data-bind="options: disks, value: disk" class="form-control" id="diskName"></select> 
@@ -185,6 +204,14 @@
                     </div>
                   </div>
   
+                  <div class="form-group" data-bind="visible: diskOrPartition() == 'partition'">
+                    <label for="partition" class="col-md-2 control-label">partition</label>
+                    <div class="col-md-8">
+                      <input data-bind="value: partition" type="text" id="partition" class="form-control">
+                      <span class="help-block">Write the complete partition path.</span>
+                    </div>
+                  </div>
+                  
                   <div class="form-group">
                     <label for="vmIso" class="col-md-2 control-label">iso image</label>
                     <div class="col-md-8">
@@ -321,6 +348,11 @@
                       <span class="help-block">Select the network card controller. For Windows without spice guest tools installed use the rtl8139 controller. After installed guest tools you can switch to the faster virtio controller.</span>
                     </div>
                   </div>
+                  
+
+ 
+                  
+                  
   
                 </div>
               </form>
