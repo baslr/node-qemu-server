@@ -11,6 +11,9 @@ class VmsViewModel
     vmIn.status = ko.observable vmIn.status
     @vms.push vmIn
     
+    @vms.sort (left, right) ->
+      return left.vms.name == right.name ? 0 : (left.name < right.name ? -1 : 1)
+    
   boot: (vm) ->
     console.log "Boot: #{vm.name}"
     app.socket.emit 'vm-boot', vm.name
