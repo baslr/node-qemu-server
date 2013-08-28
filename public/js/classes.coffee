@@ -142,6 +142,7 @@ class FormCreateVMViewModel
     @bootVM        = ko.observable()
     @bootDevice    = ko.observable()
     @enableVNC     = ko.observable()
+    @enableSpice   = ko.observable()
     
     @enableVGACard = ko.observable()
     @vgaCard       = ko.observable()
@@ -178,6 +179,7 @@ class FormCreateVMViewModel
     @bootVM        false
     @bootDevice    @bootDevices[0]
     @enableVNC     true
+    @enableSpice   true
     
     @enableVGACard false
     @vgaCard       @vgaCards[0]
@@ -223,6 +225,7 @@ class FormCreateVMViewModel
              boot       : @bootVM()
              bootDevice : @bootDevice()
              vnc        : @enableVNC()
+             spice      : @enableSpice()
              keyboard   : @keyboard() }}
 
     app.socket.emit 'create-VM', vm

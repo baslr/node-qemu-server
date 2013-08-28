@@ -31,9 +31,11 @@ module.exports.createVm = (vmCfg, cb) ->
       return
   
   vmCfg.status = 'stopped'
-  vmCfg.settings['qmpPort'] = config.getFreeQMPport()    
+  vmCfg.settings['qmpPort'] = config.getFreeQMPport()
   if vmCfg.settings.vnc
-         vmCfg.settings.vnc = config.getFreeVNCport()
+    vmCfg.settings.vnc      = config.getFreeVNCport()
+  if vmCfg.settings.spice
+    vmCfg.settings.spice    = config.getFreeSPICEport()
 
   obj = qemu.createVm vmCfg
   vms.push obj
@@ -175,8 +177,19 @@ module.exports.loadFiles = ->
   console.log "disks found in disks/"
   console.dir  disks    
   
-  for vmCfg in config.getVmConfigs()                                            # vm config files
-    vms.push qemu.createVm JSON.parse fs.readFileSync "#{process.cwd()}/vmConfigs/#{vmCfg}"
+  for vmCfgFile in config.getVmConfigs()                                        # vm config files
+    vmCfg = JSON.parse fs.readFileSync "#{process.cwd()}/vmConfigs/#{vmCfgFile}"
+
+    if vmCfg.settings.qmpPort
+      config.setToUsed 'qmp',     vmCfg.settings.qmpPort
+    if vmCfg.settings.vnc
+      config.setToUsed 'vnc',     vmCfg.settings.vnc
+    if vmCfg.settings.spice
+      config.setToUsed 'spice', vmCfg.settings.spice
+
+    vms.push qemu.createVm vmCfg
+  
+  config.write()
     
   console.log "vms found in vmConfigs/"
   console.dir  vms

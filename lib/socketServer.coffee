@@ -97,7 +97,6 @@ module.exports.start = (httpServer) ->
         sock.emit 'msg', {type:'error', msg:"Can't delete iso #{isoName}."}
           
     sock.on 'create-VM', (vmCfg) ->
-      console.dir vmCfg
       vmHandler.createVm vmCfg, (ret) ->
         sock.emit 'msg', ret
         
