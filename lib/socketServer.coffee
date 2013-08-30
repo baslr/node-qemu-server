@@ -28,52 +28,10 @@ module.exports.start = (httpServer) ->
       console.log "SOCK -> DIS #{sock.id} #{sock.handshake.address.address}"
       delete socks[sock.id]
       
-    sock.on 'vm-boot', (vmName) ->
-      console.log "Boot #{vmName}"
-      vmHandler.boot vmName, (ret) ->
-        sock.emit 'msg', ret
-        if ret.type is 'success'
-          vmHandler.setVmStatus vmName, 'running'
-          ioServer.sockets.emit 'set-vm-status', vmName, 'running'
-          
-    sock.on 'vm-reset', (vmName) ->
-      console.log "VM reset #{vmName}"
-      vmHandler.resetVm vmName, (ret) ->
-        if ret.status is 'success'
-          sock.emit 'msg', {type:'success', msg:'System resetted.'}
-        else
-          sock.emit 'msg', {type:'error',   msg:'System reset not possible.'}
-          
-    sock.on 'vm-pause', (vmName) ->
-      console.log "VM pause #{vmName}"
-      vmHandler.pauseVm vmName, (ret) ->
-        if ret.status is 'success'
-          sock.emit 'msg', {type:'success', msg:'VM paused'}
-          vmHandler.setVmStatus vmName, 'paused'
-          ioServer.sockets.emit 'set-vm-status', vmName, 'paused'
-        else
-          sock.emit 'msg', {type:'error', msg:'Cant pause VM'}
-    
-    sock.on 'vm-resume', (vmName) ->
-      console.log "VM resume #{vmName}"
-      vmHandler.resumeVm vmName, (ret) ->
-        if ret.status is 'success'
-          sock.emit 'msg', {type:'success', msg:'VM resumed'}
-          vmHandler.setVmStatus vmName, 'running'
-          ioServer.sockets.emit 'set-vm-status', vmName, 'running'
-        else
-          sock.emit 'msg', {type:'error', msg:'Cant resume VM'}
-    
-    sock.on 'vm-stop', (vmName) ->
-      console.log "VM stop #{vmName}"
-      vmHandler.stopVm vmName, (ret) ->
-        if ret.status is 'success'
-          sock.emit 'msg', {type:'success', msg:'VM stopped.'}
-          vmHandler.setVmStatus vmName, 'stopped'
-          ioServer.sockets.emit 'set-vm-status', vmName, 'stopped'
-        else
-          sock.emit 'msg', {type:'error', msg:'Cant stop VM'}
-  
+    sock.on 'qmp-command', (qmpCmd, vmName) ->
+      console.log "QMP-Command #{qmpCmd}"
+      vmHandler.qmpCommand qmpCmd, vmName
+
     sock.on 'create-disk', (disk) ->
       vmHandler.createDisk disk, (ret) ->
         sock.emit 'msg', ret
@@ -81,7 +39,7 @@ module.exports.start = (httpServer) ->
           sock.emit 'reset-create-disk-form'
           ioServer.sockets.emit 'set-disk', ret.data.data
 
-    
+
     sock.on 'delete-disk', (diskName) ->
       if vmHandler.deleteDisk diskName
         sock.emit 'msg', {type:'success', msg:'image deleted'}

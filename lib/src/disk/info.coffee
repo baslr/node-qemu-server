@@ -17,7 +17,7 @@ module.exports = (name, cb) ->
       info['disk_size']   = info['actual_size']
       info['name']        = name
       info['percentUsed'] = 100/info['virtual_size']*info['disk_size']
-      console.dir info
+
       cb status:'success', data:info
   else if os.type().toLowerCase() is 'linux'
     exec "qemu-img info #{process.cwd()}/disks/#{name}.img", (err, stdout, stderr) =>    

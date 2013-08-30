@@ -22,7 +22,11 @@ class Vm
     @qmp.connect   @cfg.settings.qmpPort, cb
   
   connectQmp: (cb) ->
-    @qmp.connect   @cfg.settings.qmpPort, cb  
+    @qmp.connect   @cfg.settings.qmpPort, cb
+    
+  stopQMP: ->
+    delete @qmp
+    @qmp   = new qmp.Qmp @name
   
   ###
   #   QMP commands

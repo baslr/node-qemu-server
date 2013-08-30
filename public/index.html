@@ -61,7 +61,7 @@
                 <td data-bind="text: false != hardware.disk ? hardware.disk : hardware.partition "></td>
                 <td data-bind="text: hardware.iso == false ? 'none' : hardware.iso"</td>
                 <td>
-                  <button data-bind="click: $root.boot, visible: status() == 'stopped' "  class="btn btn-default btn-sm"><span class="glyphicon glyphicon-off" /></button>
+                  <button data-bind="click: $root.start, visible: status() == 'stopped' "  class="btn btn-default btn-sm"><span class="glyphicon glyphicon-off" /></button>
                   
                   <button data-bind="click: $root.pause, visible: status() != 'stopped' && status() != 'paused'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pause" /></button>
                   

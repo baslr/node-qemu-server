@@ -60,4 +60,17 @@ module.exports.getVmConfigs = ->
   return vms
 
 
+module.exports.getVmHandlerExtensions = ->
+  filesIn = fs.readdirSync "#{process.cwd()}/lib/src/vmHandlerExtensions"
+  files = {}
+  for file in filesIn
+    files[file.split('.')[0]] = true
+  out = []
+  
+  for i of files
+    out.push i
+  
+  return out
+
+
 # ls #{process.cwd()}/isos/*.iso|sort -f

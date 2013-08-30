@@ -22,7 +22,7 @@ class Qmp
       @socket.on 'connect', =>
         console.log "qmp connected"
         @socket.write '{"execute":"qmp_capabilities"}'
-        cb {type:'success', msg:'connected to VM'}
+        cb status:'success'
         
       @socket.on 'data', (data) =>
         jsons = data.toString().split '\r\n'
@@ -31,10 +31,20 @@ class Qmp
         for json in jsons
           try
             parsedData = JSON.parse json.toString()
+            if parsedData.event? then event = parsedData.event else event = undefined
+
+            console.log " - - - QMP-START-DATA - - -"
+            console.dir  parsedData
+            console.log " - - - QMP-END-DATA - - -"
             
-            if parsedData.event? and parsedData.event is 'SHUTDOWN'
-              console.log "qmp: vm #{@vmName} shutdown"
-              vmHandler.processExit @vmName, 0x47, 0x11
+            if parsedData.QMP?.version? and parsedData.QMP?.capabilities?
+               parsedData.timestamp = new Date().getTime()
+               event                = 'START' 
+            
+            if parsedData.timestamp? and event?
+              if vmHandler[event]?
+                console.log "QMP: call vmHandler[#{event}] for VM #{@vmName}"
+                vmHandler[event] @vmName
             
             if @dataCb?
               if parsedData.error?
@@ -51,15 +61,17 @@ class Qmp
                 console.error parsedData
               @dataCb = undefined
             else
-              console.log "no callback defined:"
-              console.dir parsedData
+#               console.log "no callback defined:"
+#               console.dir parsedData
           catch e
             console.error "cant parse returned json, Buffer is:"
-            console.error json.toString()
+            console.error  json.toString()
+            console.error "error is:"
+            console.dir    e
   
       @socket.on 'error', (e) =>
         if e.message is 'This socket has been ended by the other party'
-          console.log 'qemu clossed connection'
+          console.log 'qemu closed connection'
         else
           console.error 'qmpConnectError try reconnect'
           @connect cb

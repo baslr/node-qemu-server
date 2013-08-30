@@ -6,6 +6,7 @@ Disk = require './src/disk'
 config       = require './config'
 socketServer = require './socketServer'
 
+qmpStatusTranslation = {'start':'running', 'reset':'running', 'pause':'paused', 'resume':'running', 'stop':'stopped'}
 isos  = []
 disks = []
 vms   = []
@@ -59,62 +60,45 @@ module.exports.newIso = (isoName) ->
   newIso = {name:isoName, size:fs.statSync("#{process.cwd()}/isos/#{isoName}").size}
   isos.push newIso
   socketServer.toAll 'set-iso', newIso
-  
 
-module.exports.processExit = (vmName, code, signal) ->
-  console.log "qemu process exit VM #{vmName}"
-
-  for vm in vms
-    if vm.name is vmName
-      vm.cfg.status = 'stopped'
-      vm.saveConfig()
-      socketServer.toAll 'set-vm-status', vmName, 'stopped' # | running | paused 
     
-setInterval ->
-  for disk in disks
-    Disk.info disk, (ret) ->
-      socketServer.toAll 'set-disk', ret.data
-, 60 * 1000
+# setInterval ->
+#   for disk in disks
+#     Disk.info disk, (ret) ->
+#       socketServer.toAll 'set-disk', ret.data
+# , 60 * 1000
+
+
+module.exports.loadExtensions = ->
+  files = config.getVmHandlerExtensions()
+  console.log "Found vmHandlerExtensions:"
+  console.dir  files
+  
+  for file in files
+    @setExtensionCallback file
+
+module.exports.setExtensionCallback = (extension) ->
+  module.exports[extension] = (vmName) ->
+    for vm in vms
+      if vm.name is vmName
+        (require "#{process.cwd()}/lib/src/vmHandlerExtensions/#{extension}") vm
 
 
 ###
 
 ###
-module.exports.boot = (vmName, cb) ->
+module.exports.qmpCommand = (qmpCmd, vmName, cb) ->
   for vm in vms
     if vm.name is vmName
-      vm.start cb
+      vm[qmpCmd](->)
       return
   cb {type:'error', msg:'VM not available'}
   
-module.exports.resetVm = (vmName, cb) ->
-  for vm in vms
-    if vm.name is vmName
-      vm.reset cb
-      return
-  cb {type:'error', msg:'VM not available'}
 
-module.exports.pauseVm = (vmName, cb) ->
+module.exports.stopQMP = (vmName) ->
   for vm in vms
     if vm.name is vmName
-      vm.pause cb
-      return
-  cb {type:'error', msg:'VM not paused'}
-  
-module.exports.resumeVm = (vmName, cb) ->
-  for vm in vms
-    if vm.name is vmName
-      vm.resume cb
-      return
-  cb {type:'error', msg:'VM not resumed'}  
-  
-module.exports.stopVm = (vmName, cb) ->
-  for vm in vms
-    if vm.name is vmName
-      vm.stop cb
-      return
-  cb {type:'error', msg:'VM not stopped.'}  
-  
+      vm.stopQMP()
 
 module.exports.setVmStatus = (vmName, status) ->
   for vm in vms
