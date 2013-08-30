@@ -76,6 +76,13 @@ class Args
     @pushArg '-vnc', ":#{port}"
     return this
   
+  spice: (port, addr, password = false) ->
+    if password is false
+      @pushArg "-spice port=#{port},addr=#{addr},disable-ticketing"
+    else
+      @pushArg "-spice port=#{port},addr=#{addr},password='#{password}'"
+    return this  
+  
   mac: (addr) ->
     @macAddr = addr
     return this

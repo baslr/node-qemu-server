@@ -188,8 +188,6 @@ module.exports.loadFiles = ->
       config.setToUsed 'spice', vmCfg.settings.spice
 
     vms.push qemu.createVm vmCfg
-  
-  config.write()
     
   console.log "vms found in vmConfigs/"
   console.dir  vms

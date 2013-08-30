@@ -5,30 +5,30 @@ vncPorts   = {}
 spicePorts = {}
 
 qmpPorts[Number port+15000]  = false for port in [1..255]
-vncPorts[Number port+5900]   = false for port in [1..255]
+vncPorts[Number port]        = false for port in [1..255]
 spicePorts[Number port+15300]= false for port in [1..255]
 
 module.exports.setToUsed = (proto, port) ->
   switch proto
-    when 'qmp'   then qmpPorts[Number port]      = true
-    when 'vnc'   then vncPorts[Number port+5900] = true
-    when 'spice' then spicePorts[Number port]    =true
+    when 'qmp'   then qmpPorts[Number port]   = true
+    when 'vnc'   then vncPorts[Number port]   = true
+    when 'spice' then spicePorts[Number port] = true
 
 module.exports.getFreeQMPport = ->
   for port,used of qmpPorts
-    if ! used
+    if not used
       @setToUsed 'qmp', port
       return Number port
 
 module.exports.getFreeVNCport = ->
   for port,used of vncPorts
-    if ! used
+    if not used
       @setToUsed 'vnc', port
       return Number port
 
 module.exports.getFreeSPICEport = ->
   for port,used of spicePorts
-    if ! used
+    if not used
       @setToUsed 'spice', port
       return Number port
 
@@ -61,6 +61,3 @@ module.exports.getVmConfigs = ->
 
 
 # ls #{process.cwd()}/isos/*.iso|sort -f
-
-module.exports.write = ->
-  fs.writeFileSync "config/test.json", JSON.stringify {qmp:qmpPorts, vnc:vncPorts, spice:spicePorts}

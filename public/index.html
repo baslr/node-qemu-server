@@ -72,7 +72,7 @@
                   <button data-bind="click: $root.reset, visible: status() != 'stopped'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-repeat" /></button>
                   <button data-bind="click: $root.edit, visible: status() == 'stopped'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-cog" /></button>
                 </td>
-                <td><button data-bind="click: $root.remove" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-trash" /></button></td>
+                <td><button data-bind="click: $root.remove, visible: status() == 'stopped'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-trash" /></button></td>
               </tr>
             </tbody>
           </table>
