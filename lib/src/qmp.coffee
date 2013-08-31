@@ -36,10 +36,6 @@ class Qmp
             console.log " - - - QMP-START-DATA - - -"
             console.dir  parsedData
             console.log " - - - QMP-END-DATA - - -"
-            
-            if parsedData.QMP?.version? and parsedData.QMP?.capabilities?
-               parsedData.timestamp = new Date().getTime()
-               event                = 'START' 
 
             if parsedData.return?.status?     and
                parsedData.return?.singlestep? and

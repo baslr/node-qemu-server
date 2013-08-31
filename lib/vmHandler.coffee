@@ -6,7 +6,6 @@ Disk = require './src/disk'
 config       = require './config'
 socketServer = require './socketServer'
 
-qmpStatusTranslation = {'start':'running', 'reset':'running', 'pause':'paused', 'resume':'running', 'stop':'stopped'}
 isos  = []
 disks = []
 vms   = []
@@ -84,12 +83,6 @@ module.exports.stopQMP = (vmName) ->
     if vm.name is vmName
       vm.stopQMP()
 
-module.exports.setVmStatus = (vmName, status) ->
-  for vm in vms
-    if vm.name is vmName
-      vm.cfg.status = status
-      vm.saveConfig()
-
 
 ###
   RETURN ISOS, DISKS, VMS
@@ -152,17 +145,13 @@ module.exports.loadFiles = ->
     vms.push qemu.createVm vmCfg
     
   console.log "vms found in vmConfigs/"
-  console.dir  vms
+  console.log  vms.length
 
 module.exports.reconnectVms = ->
   for vm in vms
     if vm.cfg.status isnt 'stopped'
       console.log "VM #{vm.name} isnt stopped"
-      @connectQmp vm
-
-module.exports.connectQmp = (vm) ->
-  vm.connectQmp (ret) ->
-    vm.status()
+      vm.connectQmp ->
 
 module.exports.loadExtensions = ->
   files = config.getVmHandlerExtensions()
