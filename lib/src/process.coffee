@@ -12,11 +12,11 @@ class Process
       args     = parser.vmCfgToArgs vmCfg
       @process = proc.spawn @bin, args.args, {stdio: 'inherit', detached: true}
 
-      console.log "QEMU start-parameters: #{args.args.join(' ')}"
+      console.log "QEMU-Process: Start-Parameters: #{args.args.join(' ')}"
 
       @process.on 'exit', (code, signal) ->
-        if code is 0 then console.log   "qemu process exit clean."
-        else              console.error "qemu process exit with error: #{code}, signal: #{signal}"
+        if code is 0 then console.log   "QEMU-Process: exit clean."
+        else              console.error "QEMU-Process: exit with error: #{code}, signal: #{signal}"
         vmHandler.SHUTDOWN vmCfg.name
     catch e
       console.error "process:start:e"
