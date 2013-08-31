@@ -1,4 +1,4 @@
-
+os     = require 'os'
 crypto = require 'crypto'
 
 class Args
@@ -89,7 +89,12 @@ class Args
   
   net: (macAddr, card = 'rtl8139')->
     @mac macAddr
-    @pushArg '-net', "nic,model=#{card},macaddr=#{macAddr}", '-net', 'tap'
+    
+    if os.type().toLowerCase() is 'darwin'
+      @pushArg '-net', "nic,model=#{card},macaddr=#{macAddr}", '-net', 'user'
+    else
+      @pushArg '-net', "nic,model=#{card},macaddr=#{macAddr}", '-net', 'tap'
+
     return this
   
   vga: (vga = 'none') ->
@@ -111,6 +116,14 @@ class Args
   
   balloon: ->
     @pushArg '-balloon', 'virtio'
+    return this
+    
+  noStart: ->
+    @pushArg '-S'
+    return this
+  
+  noShutdown: ->
+    @pushArg '-no-shutdown'
     return this
   
 module.exports.Args = Args
