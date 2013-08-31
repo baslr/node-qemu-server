@@ -13,7 +13,11 @@ class Vm
     @qmp       = new qmp.Qmp @name
 
     vmConf.save @cfg
-    
+  
+  setStatus: (status) ->
+    @cfg.status = status
+    @saveConfig()
+  
   saveConfig: ->
     vmConf.save @cfg
 
@@ -25,6 +29,7 @@ class Vm
     @qmp.connect   @cfg.settings.qmpPort, cb
     
   stopQMP: ->
+    console.log "VM #{@name}: stopQMP called"
     delete @qmp
     @qmp   = new qmp.Qmp @name
   
@@ -45,6 +50,9 @@ class Vm
 
   stop: (cb) ->
     @qmp.stop cb
+    
+  status: ->
+    @qmp.status()
 
 exports.Vm = Vm
   

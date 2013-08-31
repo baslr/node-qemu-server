@@ -47,8 +47,7 @@ module.exports.createVm = (vmCfg, cb) ->
       console.log "vm #{vmCfg.name} started"
       cb {status:'success', msg:'vm created and started'}
       socketServer.toAll 'set-vm-status', vmCfg.name, 'running'
-      obj.cfg.status = 'running'
-      obj.saveConfig()
+      obj.setStatus 'running'
 
   cb {status:'success', msg:'created vm'}
 
@@ -67,21 +66,6 @@ module.exports.newIso = (isoName) ->
 #     Disk.info disk, (ret) ->
 #       socketServer.toAll 'set-disk', ret.data
 # , 60 * 1000
-
-
-module.exports.loadExtensions = ->
-  files = config.getVmHandlerExtensions()
-  console.log "Found vmHandlerExtensions:"
-  console.dir  files
-  
-  for file in files
-    @setExtensionCallback file
-
-module.exports.setExtensionCallback = (extension) ->
-  module.exports[extension] = (vmName) ->
-    for vm in vms
-      if vm.name is vmName
-        (require "#{process.cwd()}/lib/src/vmHandlerExtensions/#{extension}") vm
 
 
 ###
@@ -110,14 +94,9 @@ module.exports.setVmStatus = (vmName, status) ->
 ###
   RETURN ISOS, DISKS, VMS
 ###
-module.exports.getIsos = ->
-  return isos
-
-module.exports.getDisks = ->
-  return disks
-  
-module.exports.getVms = ->
-  return vms
+module.exports.getIsos  = -> return isos
+module.exports.getDisks = -> return disks
+module.exports.getVms   = -> return vms
 
 
 ###
@@ -147,7 +126,7 @@ module.exports.deleteDisk = (diskName) ->
 
 
 ###
-  SET UP ISOS, DISKS, VM CONFIGS
+  SET UP ISOS, DISKS, VM CONFIGS, exttensions
 ###
 module.exports.loadFiles = ->
   for isoName in config.getIsoFiles()                                           # iso  files
@@ -156,7 +135,6 @@ module.exports.loadFiles = ->
   console.dir  isos
   
   disks.push diskName.split('.')[0] for diskName in config.getDiskFiles()       # disk files
-
   
   console.log "disks found in disks/"
   console.dir  disks    
@@ -180,6 +158,22 @@ module.exports.reconnectVms = ->
   for vm in vms
     if vm.cfg.status isnt 'stopped'
       console.log "VM #{vm.name} isnt stopped"
-      vm.connectQmp (ret) ->
-        console.dir ret
+      @connectQmp vm
+
+module.exports.connectQmp = (vm) ->
+  vm.connectQmp (ret) ->
+    vm.status()
+
+module.exports.loadExtensions = ->
+  files = config.getVmHandlerExtensions()
+  console.log "Found vmHandlerExtensions:"
+  console.dir  files
   
+  for file in files
+    @setExtensionCallback file
+
+module.exports.setExtensionCallback = (extension) ->
+  module.exports[extension] = (vmName) ->
+    for vm in vms
+      if vm.name is vmName
+        (require "#{process.cwd()}/lib/src/vmHandlerExtensions/#{extension}") vm
