@@ -20,7 +20,7 @@ class Qmp
       @socket = net.connect @port
       
       @socket.on 'connect', =>
-        console.log "qmp connected"
+        console.log "qmp connected to #{@vmName}"
         @socket.write '{"execute":"qmp_capabilities"}'
         cb status:'success'
         
@@ -40,7 +40,18 @@ class Qmp
             if parsedData.QMP?.version? and parsedData.QMP?.capabilities?
                parsedData.timestamp = new Date().getTime()
                event                = 'START' 
-            
+
+            if parsedData.return?.status?     and
+               parsedData.return?.singlestep? and
+               parsedData.return?.running?
+              parsedData.timestamp = new Date().getTime()
+              if      parsedData.return.status is 'paused'
+                event = 'STOP'
+              else if parsedData.return.status is 'running' and parsedData.return.running is true
+                parsedData.timestamp = new Date().getTime()
+                event = 'RESUME'
+
+            # handle events
             if parsedData.timestamp? and event?
               if vmHandler[event]?
                 console.log "QMP: call vmHandler[#{event}] for VM #{@vmName}"
@@ -71,9 +82,9 @@ class Qmp
   
       @socket.on 'error', (e) =>
         if e.message is 'This socket has been ended by the other party'
-          console.log 'qemu closed connection'
+          console.log 'QEMU closed connection'
         else
-          console.error 'qmpConnectError try reconnect'
+          console.error 'QMP: ConnectError try reconnect'
           @connect cb
     , 1000
       
@@ -105,6 +116,9 @@ class Qmp
     
   stop: (cb) ->
     @sendCmd 'quit', cb
+    
+  status: ->
+    @sendCmd 'query-status', ->
   
   balloon: (mem, cb) ->
     @sendCmd 'balloon', {value:mem}, cb
