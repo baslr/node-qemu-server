@@ -62,7 +62,7 @@ module.exports.newIso = (isoName) ->
     
 setInterval ->
   for vm in vms
-    if vm.cfg.status is 'running'
+    if vm.cfg.status is 'running' and -1 is vm.cfg.disk.search /^\//
       Disk.info vm.cfg.disk, (ret) ->
         socketServer.toAll 'set-disk', ret.data
 , 60 * 1000
