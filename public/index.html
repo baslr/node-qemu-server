@@ -52,8 +52,7 @@
                 <td data-bind="text: name"></td>
                 <td>
                   <div style="margin-bottom:0px;padding:0px;text-align:center;" class="alert" data-bind="text: status, css: { 'alert-danger': status() == 'stopped', 'alert-success' : status() == 'running', 'alert-warning' : status() == 'paused'}"></div>
-                
-<!--                  data-bind=", style:{backgroundColor: }"> --></td>
+                </td>
                 <td data-bind="text: hardware.cpus"></td>
                 <td data-bind="text: hardware.ram + 'MB'"></td>
                 <td data-bind="text: hardware.vgaCard"></td>
@@ -99,23 +98,18 @@
             <thead>
               <tr>
                 <th>Name</th>
-                <th>Size (GiByte)</th>
-                <th>Used (GiByte)</th>
-                <th>Left (GiByte)</th>
-                <th>Visualized used disk space.</th>
+                <th>Diskspace.</th>
                 <th>Delete</th>
               </tr>
             </thead>
             <tbody data-bind="foreach: images" id="imagesList">
               <tr>
                 <td data-bind="text: name"></td>
-                <td data-bind="text: size"></td>
-                <td data-bind="text: used()"></td>
-                <td data-bind="text: left()"></td>
                 <td>
                   <div class="progress">              
                     <div class="progress-bar" data-bind="style: {width: percentUsed}" ></div>
                   </div>
+<span data-bind="text: used()+'GiB of '+size()+'GiB used, left '+left()+'GiB'"></span>
                 </td>                
                 <td><button data-bind="click: $root.remove" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-trash" /></button></td>
               </tr>
