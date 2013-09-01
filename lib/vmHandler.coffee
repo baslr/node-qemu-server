@@ -62,8 +62,8 @@ module.exports.newIso = (isoName) ->
     
 setInterval ->
   for vm in vms
-    if vm.cfg.status is 'running' and vm.cfg.disk isnt false
-      Disk.info vm.cfg.disk, (ret) ->
+    if vm.cfg.status is 'running' and vm.cfg.hardware.disk isnt false
+      Disk.info vm.cfg.hardware.disk, (ret) ->
         socketServer.toAll 'set-disk', ret.data
 , 60 * 1000
 
