@@ -60,11 +60,12 @@ module.exports.newIso = (isoName) ->
   socketServer.toAll 'set-iso', newIso
 
     
-# setInterval ->
-#   for disk in disks
-#     Disk.info disk, (ret) ->
-#       socketServer.toAll 'set-disk', ret.data
-# , 60 * 1000
+setInterval ->
+  for vm in vms
+    if vm.cfg.status is 'running'
+      Disk.info vm.cfg.disk, (ret) ->
+        socketServer.toAll 'set-disk', ret.data
+, 60 * 1000
 
 
 ###
