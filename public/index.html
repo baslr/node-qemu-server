@@ -20,6 +20,7 @@
     <div class="tabbable">
 
       <ul class="nav nav-tabs">
+        <li>               <a href="#listHostTab"   data-toggle="tab">Host</a></li>
         <li class="active"><a href="#listVMsTab"    data-toggle="tab">VMs</a></li>
         <li>               <a href="#listDisksTab"  data-toggle="tab"><span class="glyphicon glyphicon-hdd" /></a></li>
         <li>               <a href="#listIsosTab"   data-toggle="tab">Manage ISOs</a></li>
@@ -27,6 +28,34 @@
       </ul>
 
       <div class="tab-content">
+
+        <!-- HOST TAB -->
+        <div class="tab-pane" id="listHostTab">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>hostname</th>
+                <th>CPUs</th>
+                <th>RAM</th>
+                <th>free RAM</th>
+                <th>load now</th>
+                <th>load 5min ago</th>
+                <th>load 15min ago</th>
+              </tr>
+            </thead>
+            <tbody id="hostTable">
+              <tr>
+                <td data-bind="text: host().hostname"></td>
+                <td data-bind="text: host().cpus"></td>
+                <td data-bind="text: host().ram"></td>
+                <td data-bind="text: host().freeRam"></td>
+                <th data-bind="text: host().l[0]"></th>
+                <th data-bind="text: host().l[1]"></th>
+                <th data-bind="text: host().l[2]"></th>
+              </tr>
+            </tbody>
+          </table>
+        </div> <!-- #listHostTab -->
 
         <!-- LIST VMs TAB -->
         <div class="tab-pane active" id="listVMsTab">

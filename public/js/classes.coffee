@@ -1,5 +1,14 @@
 @app = socket:undefined, c:{}
 
+class HostViewModel
+  constructor: ->
+    @host = ko.observable()
+    
+  set: (host) ->
+    host.freeRam = "#{(host.freeRam/1024/1024).toFixed 3} MiB"
+    host.ram     = "#{(host.ram/1024/1024).toFixed 3} MiB"
+    @host host
+
 class VmsViewModel
   constructor: ->
     @vms = ko.observableArray()
@@ -251,3 +260,4 @@ app.c.ImageViewModel        = ImageViewModel
 app.c.FormCreateVMViewModel = FormCreateVMViewModel
 app.c.IsosViewModel         = IsosViewModel
 app.c.VmsViewModel          = VmsViewModel
+app.c.HostViewModel         = HostViewModel

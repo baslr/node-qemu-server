@@ -3,6 +3,8 @@ qemu = require './qemu'
 
 Disk = require './src/disk'
 
+host = require './src/host'
+
 config       = require './config'
 socketServer = require './socketServer'
 
@@ -67,6 +69,10 @@ setInterval ->
         socketServer.toAll 'set-disk', ret.data
 , 60 * 1000
 
+setInterval ->
+  socketServer.toAll 'set-host', host()
+, 15 * 1000
+  
 
 ###
 

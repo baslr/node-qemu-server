@@ -3,9 +3,11 @@ imagesVM       = new app.c.ImageViewModel()
 formCreateVMVM = new app.c.FormCreateVMViewModel()
 isosVM         = new app.c.IsosViewModel()
 vmsVM          = new app.c.VmsViewModel()
+hostVM         = new app.c.HostViewModel()
 
 app.formCreateVMVM = formCreateVMVM
 app.vmsVM          = vmsVM
+app.hostVM         = hostVM
 
 ($ document).ready ->
   console.log "DOC -> ready"
@@ -16,6 +18,9 @@ app.vmsVM          = vmsVM
       
   app.socket.on 'msg', (msg) ->
     $.notification msg:msg.msg, type:msg.type, fixed:true
+    
+  app.socket.on 'set-host', (host) ->
+    hostVM.set host
 
 
   app.socket.on 'set-vm', (vm) ->
@@ -65,10 +70,13 @@ app.vmsVM          = vmsVM
     console.dir disk
     app.socket.emit 'create-disk', disk
   
+  hostVM.set {hostname:'-', cpus:0, ram:0, freeRam:0, l:[0,0,0]}
+
   ko.applyBindings imagesVM,       ($ 'TBODY#imagesList').get  0
   ko.applyBindings formCreateVMVM, ($ 'FORM#formVMcreate').get 0
   ko.applyBindings isosVM,         ($ 'TBODY#isosList').get    0
   ko.applyBindings vmsVM,          ($ 'TBODY#vmList').get      0
+  ko.applyBindings hostVM,         ($ 'TBODY#hostTable').get   0
   
   uploadCB = (res) ->
     console.log res.data.status
