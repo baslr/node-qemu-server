@@ -57,7 +57,7 @@
           </table>
         </div> <!-- #listHostTab -->
 
-        <!-- LIST VMs TAB -->
+        <!-- LIST GUESTS TAB -->
         <div class="tab-pane active" id="listVMsTab">
           <table class="table table-striped">
             <thead>
@@ -77,8 +77,8 @@
             <tbody data-bind="foreach: vms" id="vmList">
               <tr>
                 <td data-bind="text: name"></td>
-                <td>
-                  <div style="margin-bottom:0px;padding:0px;text-align:center;" class="alert" data-bind="text: status, css: { 'alert-danger': status() == 'stopped', 'alert-success' : status() == 'running', 'alert-warning' : status() == 'paused'}"></div>
+                <td style="cursor:pointer;" data-bind="click: $parent.expandStatus">
+                  <div style="margin-bottom:0px; padding:0px; text-align:center;" class="alert" data-bind="text: status, css: { 'alert-danger': status() == 'stopped', 'alert-success' : status() == 'running', 'alert-warning' : status() == 'paused'}"></div>
                 </td>
                 <td data-bind="text: hardware.cpus"></td>
                 <td data-bind="text: hardware.ram + 'MB'"></td>
@@ -87,18 +87,29 @@
                 <td data-bind="text: false != hardware.disk ? hardware.disk : hardware.partition "></td>
                 <td data-bind="text: hardware.iso == false ? 'none' : hardware.iso"</td>
                 <td>
-                  <button data-bind="click: $root.start, visible: status() == 'stopped' "  class="btn btn-default btn-sm"><span class="glyphicon glyphicon-off" /></button>
-                  
-                  <button data-bind="click: $root.pause, visible: status() != 'stopped' && status() != 'paused'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pause" /></button>
-                  
-                  <button data-bind="click: $root.resume, visible: status() != 'stopped' && status() != 'running'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-play" /></button>
 
-                  <button data-bind="click: $root.stop, visible: status() != 'stopped'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-stop" /></button>
+                  
 
-                  <button data-bind="click: $root.reset, visible: status() != 'stopped'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-repeat" /></button>
+                  
+
+
+
+
+
                   <button data-bind="click: $root.edit, visible: status() == 'stopped'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-cog" /></button>
                 </td>
                 <td><button data-bind="click: $root.remove, visible: status() == 'stopped'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-trash" /></button></td>
+              </tr>
+              <tr data-bind="visible: expandedStatus">
+                <td>
+                </td>
+                <td colspan="9">
+                  <button data-bind="click: $root.start, visible: status() == 'stopped' "  class="btn btn-default btn-sm"><span class="glyphicon glyphicon-off" /></button>
+                  <button data-bind="click: $root.pause, visible: status() != 'stopped' && status() != 'paused'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pause" /></button>
+                  <button data-bind="click: $root.resume, visible: status() != 'stopped' && status() != 'running'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-play" /></button>
+                  <button data-bind="click: $root.stop, visible: status() != 'stopped'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-stop" /></button>
+                  <button data-bind="click: $root.reset, visible: status() != 'stopped'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-repeat" /></button>
+                </td>
               </tr>
             </tbody>
           </table>

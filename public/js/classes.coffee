@@ -12,12 +12,18 @@ class HostViewModel
 class VmsViewModel
   constructor: ->
     @vms = ko.observableArray()
-    
+  
+  expandStatus: (item) ->
+    console.log "expand Status"
+    item.expandedStatus !item.expandedStatus()
+  
   add: (vmIn) ->
     for vm in @vms()
       if vm.name is vmIn.name
         return
     vmIn.status = ko.observable vmIn.status
+    vmIn.expandedStatus = ko.observable false
+
     @vms.push vmIn
     
     @vms.sort (left, right) ->
