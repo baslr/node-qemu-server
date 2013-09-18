@@ -77,7 +77,7 @@
             <tbody data-bind="foreach: vms" id="vmList">
               <tr>
                 <td data-bind="text: name"></td>
-                <td style="cursor:pointer;" data-bind="click: $parent.expandStatus">
+                <td style="cursor:pointer;" data-bind="click: $parent.expandStatus" >
                   <div style="margin-bottom:0px; padding:0px; text-align:center;" class="alert" data-bind="text: status, css: { 'alert-danger': status() == 'stopped', 'alert-success' : status() == 'running', 'alert-warning' : status() == 'paused'}"></div>
                 </td>
                 <td data-bind="text: hardware.cpus"></td>
@@ -85,21 +85,15 @@
                 <td data-bind="text: hardware.vgaCard"></td>
                 <td data-bind="text: ':'+settings.vnc"></td>
                 <td data-bind="text: false != hardware.disk ? hardware.disk : hardware.partition "></td>
-                <td data-bind="text: hardware.iso == false ? 'none' : hardware.iso"</td>
+                <td style="cursor:pointer;" data-bind="text: hardware.iso == false ? 'none' : hardware.iso, click: $parent.expandIso"</td>
                 <td>
-
-                  
-
-                  
-
-
-
 
 
                   <button data-bind="click: $root.edit, visible: status() == 'stopped'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-cog" /></button>
                 </td>
                 <td><button data-bind="click: $root.remove, visible: status() == 'stopped'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-trash" /></button></td>
               </tr>
+
               <tr data-bind="visible: expandedStatus">
                 <td>
                 </td>
@@ -109,6 +103,13 @@
                   <button data-bind="click: $root.resume, visible: status() != 'stopped' && status() != 'running'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-play" /></button>
                   <button data-bind="click: $root.stop, visible: status() != 'stopped'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-stop" /></button>
                   <button data-bind="click: $root.reset, visible: status() != 'stopped'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-repeat" /></button>
+                </td>
+              </tr>
+              <tr data-bind="visible: expandedIso() && hardware.iso != false">
+                <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td>
+
+                <td colspan="3">
+                  Eject ISO
                 </td>
               </tr>
             </tbody>
