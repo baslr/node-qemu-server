@@ -16,6 +16,10 @@ class VmsViewModel
   expandStatus: (item) ->
     console.log "expand Status"
     item.expandedStatus !item.expandedStatus()
+    
+  expandIso: (item) ->
+    console.log "expand Iso"
+    item.expandedIso !item.expandedIso()
   
   add: (vmIn) ->
     for vm in @vms()
@@ -23,6 +27,7 @@ class VmsViewModel
         return
     vmIn.status = ko.observable vmIn.status
     vmIn.expandedStatus = ko.observable false
+    vmIn.expandedIso    = ko.observable false
 
     @vms.push vmIn
     
