@@ -23,6 +23,8 @@ module.exports.vmCfgToArgs = (cfg, cb = ->) ->
 
   args.nodefconfig()
       .nodefaults()
+#       .noStart()
+#       .noShutdown()
   
   args.cpus(cfg.hardware.cpus)
       .ram( cfg.hardware.ram)
@@ -64,7 +66,7 @@ module.exports.vmCfgToArgs = (cfg, cb = ->) ->
   if cfg.settings.vnc
     args.vnc cfg.settings.vnc
     
-  if cfg.boot then switch cfg.bootDevice
+  if cfg.settings.boot then switch cfg.settings.bootDevice
       when 'disk' then args.boot 'hd', false
       when 'iso'  then args.boot 'cd', false
       
