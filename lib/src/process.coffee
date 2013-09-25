@@ -15,7 +15,7 @@ class Process
 
       console.log "QEMU-Process: Start-Parameters: #{args.args.join(' ')}"
       console.log "pinnig QEMU-Process"
-      pin @process.pid, vmConf.cpus
+      pin @process.pid, vmConf.hardware.cpus
 
       @process.on 'exit', (code, signal) ->
         if code is 0 then console.log   "QEMU-Process: exit clean."
