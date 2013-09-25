@@ -26,4 +26,4 @@ module.exports = (pid, cpuCount) ->
   
   exec "taskset -c -p #{cpuList} #{pid}", {maxBuffer: 10*1024}, (e, stdout, stderr) ->
     if e? then console.dir e
-    else console.log "taskset for pid #{pid} with cpulist #{cpuList} executed}"
+    else console.log "taskset for pid #{pid} with cpulist #{cpuList} executed"
