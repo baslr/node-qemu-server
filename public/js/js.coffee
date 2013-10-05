@@ -82,4 +82,8 @@ app.hostVM         = hostVM
     console.log res.data.status
 
   ($ 'DIV#uploadArea').uploader {progressBar:'DIV#isoUploadProgressBar', post:'iso-upload', callback: uploadCB}
-    
+  
+  typeahead = ($ 'INPUT#cpuModelName').typeahead local:app.formCreateVMVM.getCpuModels(), limit:10 
+  typeahead.on 'typeahead:selected', (evt, data) ->
+    app.formCreateVMVM.cpuModel data.qValue
+

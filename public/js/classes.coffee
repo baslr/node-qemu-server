@@ -32,7 +32,7 @@ class VmsViewModel
     @vms.push vmIn
     
     @vms.sort (left, right) ->
-      return left.vms.name == right.name ? 0 : (left.name < right.name ? -1 : 1)
+      return left.name is right.name ? 0 : (left.name < right.name ? -1 : 1)
   
   start: (vm) ->
     console.log "Start: #{vm.name}"
@@ -137,7 +137,50 @@ class FormCreateVMViewModel
     @netCards    = ['virtio',  'rtl8139']
     @vgaCards    = ['none', 'std', 'qxl']
 
-    @cpuModels = ['qemu32', 'qemu64', 'kvm32', 'kvm64', 'core2duo', 'SandyBridge', 'Haswell']
+    @cpuModels = [  {value:'QEMU 32-bit Virtual CPU version 1.6.0', qValue:'qemu32', tokens:['32bit', 'qemu']}
+                  , {value:'QEMU 64-bit Virtual CPU version 1.6.0', qValue:'qemu64', tokens:['64bit', 'qemu']}
+                  , {value:'Common 32-bit KVM processor',           qValue:'kvm32',  tokens:['32bit', 'kvm']}
+                  , {value:'Common 64-bit KVM processor',           qValue:'kvm64',  tokens:['64bit', 'kvm']}
+                  , {value:'Intel® Pentium I',   qValue:'pentium',  tokens:['intel', 'pentium']}
+                  , {value:'Intel® Pentium II',  qValue:'pentium2', tokens:['intel', 'pentium']}
+                  , {value:'Intel® Pentium III', qValue:'pentium3', tokens:['intel', 'pentium']}
+                  , {value:'Intel® Core(TM)2 Duo CPU T7700  @ 2.40GHz', qValue:'core2duo',    tokens:['intel', 'core2duo']}
+                  , {value:'Intel® Xeon E312xx (Sandy Bridge)',         qValue:'SandyBridge', tokens:['intel', 'sandy', 'bridge']}
+                  , {value:'Intel® Core Processor (Haswell)',           qValue:'Haswell',     tokens:['intel', 'haswell']}
+                  , {value:'KVM processor with all supported host features (only available in KVM mode)', qValue:'host', tokens:['host', '64bit']} ]
+
+# x86           qemu64  QEMU Virtual CPU version 1.6.0
+# x86           qemu32  QEMU Virtual CPU version 1.6.0
+# x86            kvm64  Common KVM processor
+# x86            kvm32  Common 32-bit KVM processor
+
+# x86          pentium
+# x86         pentium2
+# x86         pentium3
+# x86         core2duo  Intel(R) Core(TM)2 Duo CPU     T7700  @ 2.40GHz
+# x86      SandyBridge  Intel Xeon E312xx (Sandy Bridge)
+# x86          Haswell  Intel Core Processor (Haswell)
+# x86             host
+
+
+
+
+# x86          coreduo  Genuine Intel(R) CPU           T2600  @ 2.16GHz
+# x86              486
+# x86             n270  Intel(R) Atom(TM) CPU N270   @ 1.60GHz
+# x86           Conroe  Intel Celeron_4x0 (Conroe/Merom Class Core 2)
+# x86           Penryn  Intel Core 2 Duo P9xxx (Penryn Class Core 2)
+# x86          Nehalem  Intel Core i7 9xx (Nehalem Class Core i7)
+# x86         Westmere  Westmere E56xx/L56xx/X56xx (Nehalem-C)
+# x86           athlon  QEMU Virtual CPU version 1.6.0
+# x86           phenom  AMD Phenom(tm) 9550 Quad-Core Processor
+# x86       Opteron_G1  AMD Opteron 240 (Gen 1 Class Opteron)
+# x86       Opteron_G2  AMD Opteron 22xx (Gen 2 Class Opteron)
+# x86       Opteron_G3  AMD Opteron 23xx (Gen 3 Class Opteron)
+# x86       Opteron_G4  AMD Opteron 62xx class CPU
+# x86       Opteron_G5  AMD Opteron 63xx class CPU
+                  
+
     @cpus      = []
     @cpus.push {num:i, cpu:"#{i} cpus"} for i in [1..48]
 
@@ -184,7 +227,7 @@ class FormCreateVMViewModel
   reset: ->
     @cpuCount       @cpus[1]
     @enableCpuModel false
-    @cpuModel       @cpuModels[3]
+    @cpuModel       @cpuModels[3].qValue
 
     @selectedMemory @memory[7]
 
@@ -207,6 +250,9 @@ class FormCreateVMViewModel
     @enableNet false
     @macAddr   ''
     @netCard   @netCards[1]
+  
+  getCpuModels: ->
+    return @cpuModels
 
   addDisk: (newDisk) ->
     for disk in @disks()

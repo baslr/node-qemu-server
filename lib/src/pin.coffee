@@ -3,8 +3,7 @@ os   = require 'os'
 exec = require('child_process').exec
 
 curPin  = 0
-pinMask = []
-pinMask.push 0 for [1..os.cpus().length]
+pinMask = for [1..os.cpus().length] then 0
 
 module.exports = (pid, cpuCount) ->
   if os.platform() isnt 'linux'

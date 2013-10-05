@@ -5,8 +5,10 @@
     <title>qemu-control</title>
     
     <link href="/vendor/css/bootstrap-3-0-0.css" rel="stylesheet">
+    <link href="/vendor/css/type.css" rel="stylesheet">
 
     <script type="text/javascript" rel="anonymous" src="/vendor/jsLibs/jquery-2-0-3.js"></script>
+    <script type="text/javascript" rel="anonymous" src="/vendor/jsLibs/typeahead-0-9-3.js"></script>
     <script type="text/javascript" rel="anonymous" src="/vendor/jsLibs/socket.io.js"></script>
     <script type="text/javascript" rel="anonymous" src="/vendor/jsLibs/knockout-2-3-0.js"></script>
     <script type="text/javascript" rel="anonymous" src="/vendor/jsLibs/bootstrap-tab.js"></script>
@@ -21,10 +23,10 @@
 
       <ul class="nav nav-tabs">
         <li>               <a href="#listHostTab"   data-toggle="tab">Host</a></li>
-        <li class="active"><a href="#listVMsTab"    data-toggle="tab">VMs</a></li>
+        <li class="active"><a href="#listVMsTab"    data-toggle="tab">Guests</a></li>
         <li>               <a href="#listDisksTab"  data-toggle="tab"><span class="glyphicon glyphicon-hdd" /></a></li>
         <li>               <a href="#listIsosTab"   data-toggle="tab">Manage ISOs</a></li>
-        <li>               <a href="#createVMTab"   data-toggle="tab">create VM</a></li>
+        <li>               <a href="#createVMTab"   data-toggle="tab">Guest creation</a></li>
       </ul>
 
       <div class="tab-content">
@@ -186,27 +188,20 @@
           </table>
         </div> <!-- listIsoTab -->
         
-        <!-- CREATE VM TAB -->
+        <!-- GUEST CREATION TAB -->
         <div class="tab-pane" id="createVMTab">
           <div class="row-fluid">
-            <div class="span10" style="margin-left:20px;">
-
-              <div class="row">
-                <div class="col-md-offset-2 col-md-3">
-                  <h3>Create a VM</h3>
-                </div>
-              </div>
-              
+            <div class="span10" style="margin-left:20px;margin-top:10px;">
               <div class="row">
                 <form id="formVMcreate" class="form-horizontal" role="form">
 
                 <div class="col-md-6">
 
                   <div class="form-group">
-                    <label for="vmName" class="col-md-2 control-label">VM name</label>
+                    <label for="vmName" class="col-md-2 control-label">Guest name</label>
                     <div class="col-md-8">
                       <input data-bind="value: vmName" type="text" id="vmName" class="form-control">
-                      <span class="help-block">Provide a name for the VM.</span>
+                      <span class="help-block">Provide a name for the Guest.</span>
                     </div>
                   </div>
                   
@@ -311,17 +306,17 @@
                     <div class="col-md-offset-2 col-md-8">
                       <label>
                         <input type="checkbox" data-bind="checked: enableCpuModel">
-                        select CPU model
+                        CPU model
                       </label>
                       <span class="help-block">enable cpu model selection</span>
                     </div>
                   </div>
-
+                  
                   <div class="form-group" data-bind="visible: enableCpuModel()">
-                    <label for="cpuModel" class="col-md-2 control-label">CPU model</label>
+                    <label for="vmName" class="col-md-2 control-label">CPU model</label>
                     <div class="col-md-8">
-                      <select data-bind="options: cpuModels, value: cpuModel" class="form-control" id="cpuModel"></select> 
-                      <span class="help-block">select specific CPU model</span>
+                      <input id="cpuModelName" type="text" id="vmName" class="form-control">
+                      <span class="help-block">type your cpu model.</span>
                     </div>
                   </div>
 
