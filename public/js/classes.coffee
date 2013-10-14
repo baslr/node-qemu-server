@@ -127,18 +127,22 @@ class ImageViewModel
       return disk.name is diskName
 
 
+
+
+
+
 class FormCreateVMViewModel
   constructor: ->
     @disks = ko.observableArray()
-    @isos  = ko.observableArray ['none'] # ['debian', 'ubuntu' ]
+    @isos  = ko.observableArray ['none']
     
     @bootDevices = ['disk',        'iso']
-    @keyboards   = ['de',        'en-us']
-    @netCards    = ['virtio',  'rtl8139']
-    @vgaCards    = ['none', 'std', 'qxl']
+    @keyboards   = ['ar', 'da', 'de',  'de-ch', 'en-gb', 'en-us', 'es', 'et', 'fi', 'fo', 'fr', 'fr-be', 'fr-ca', 'fr-ch', 'hr', 'hu', 'is', 'it', 'ja', 'lt', 'lv', 'mk', 'nl', 'nl-be', 'no', 'pl', 'pt', 'pt-br', 'ru', 'sl', 'sv', 'th', 'tr']
+    @netCards    = ['e1000', 'i82551', 'i82557b', 'i82559er', 'ne2k_pci', 'pcnet', 'rtl8139', 'virtio']
+    @graphics    = ['none', 'std', 'qxl']
 
-    @cpuModels = [  {value:'QEMU 32-bit Virtual CPU version 1.6.0', qValue:'qemu32', tokens:['32bit', 'qemu']}
-                  , {value:'QEMU 64-bit Virtual CPU version 1.6.0', qValue:'qemu64', tokens:['64bit', 'qemu']}
+    @cpuModels = [  {value:'QEMU 32-bit Virtual CPU version 1.6.1', qValue:'qemu32', tokens:['32bit', 'qemu']}
+                  , {value:'QEMU 64-bit Virtual CPU version 1.6.1', qValue:'qemu64', tokens:['64bit', 'qemu']}
                   , {value:'Common 32-bit KVM processor',           qValue:'kvm32',  tokens:['32bit', 'kvm']}
                   , {value:'Common 64-bit KVM processor',           qValue:'kvm64',  tokens:['64bit', 'kvm']}
                   , {value:'Intel® Pentium I',   qValue:'pentium',  tokens:['intel', 'pentium']}
@@ -149,8 +153,8 @@ class FormCreateVMViewModel
                   , {value:'Intel® Core Processor (Haswell)',           qValue:'Haswell',     tokens:['intel', 'haswell']}
                   , {value:'KVM processor with all supported host features (only available in KVM mode)', qValue:'host', tokens:['host', '64bit']} ]
 
-# x86           qemu64  QEMU Virtual CPU version 1.6.0
-# x86           qemu32  QEMU Virtual CPU version 1.6.0
+# x86           qemu64  QEMU Virtual CPU version 1.6.1
+# x86           qemu32  QEMU Virtual CPU version 1.6.1
 # x86            kvm64  Common KVM processor
 # x86            kvm32  Common 32-bit KVM processor
 
@@ -179,37 +183,40 @@ class FormCreateVMViewModel
 # x86       Opteron_G3  AMD Opteron 23xx (Gen 3 Class Opteron)
 # x86       Opteron_G4  AMD Opteron 62xx class CPU
 # x86       Opteron_G5  AMD Opteron 63xx class CPU
-                  
-
-    @cpus      = []
-    @cpus.push {num:i, cpu:"#{i} cpus"} for i in [1..48]
-
-
+    
+    
     @memory = []
-    @memory.push {num:i*256, mem:"#{i*256} MiByte"} for i in [1..128]
-
-    @cpuCount       = ko.observable()
-    @enableCpuModel = ko.observable()
+    @memory.push    {num:i, mem:"#{i} MiByte"} for i in [128,256,512,1024,2048,4096,6144,8192,16384]
+    
     @cpuModel       = ko.observable()
-
+    
+    @sockets        = (i for i in [1..4])
+    @socketCount    = ko.observable()
+    
+    @cores          = (i for i in [1..20])
+    @coreCount      = ko.observable()
+    
+    @threads        = (i for i in [1..20])
+    @threadCount    = ko.observable()
+    
     @selectedMemory = ko.observable()
-
+    
+    @graphic        = ko.observable()
+    
     @diskOrPartition = ko.observable()
     @partition       = ko.observable()
     @disk            = ko.observable()
     @selectedIso     = ko.observable()
     
     @keyboard       = ko.observable()
-
-    @vmName        = ko.observable()
-    @bootVM        = ko.observable()
+    
+    @guestName      = ko.observable()
+    @bootGuest      = ko.observable()
     @bootDevice    = ko.observable()
     @enableVNC     = ko.observable()
     @enableSpice   = ko.observable()
     
-    @enableVGACard = ko.observable()
-    @vgaCard       = ko.observable()
-
+    
     @enableNet = ko.observable()
     @macAddr   = ko.observable()
     @netCard   = ko.observable()
@@ -217,7 +224,7 @@ class FormCreateVMViewModel
     @reset()
 
     @checkCreate = ko.computed ->
-      if 2 < @vmName().length and
+      if 2 < @guestName().length and
          ( (@diskOrPartition() is 'partition' and 1 < @partition().length) or 
            (@diskOrPartition() is 'disk'      and @disk() isnt undefined) )
         return true
@@ -225,31 +232,31 @@ class FormCreateVMViewModel
     , this
 
   reset: ->
-    @cpuCount       @cpus[1]
-    @enableCpuModel false
-    @cpuModel       @cpuModels[3].qValue
-
-    @selectedMemory @memory[7]
-
+    @cpuModel       @cpuModels[1]
+    @socketCount    1
+    @coreCount      2
+    @threadCount    4
+    
+    @selectedMemory @memory[4]
+    
+    @graphic        @graphics[0]
+    
     @diskOrPartition 'disk'
     @partition       '/dev/sd'
     @disk            ''
     @selectedIso     @isos[0]
-
-    @keyboard       @keyboards[0]
-
-    @vmName        ''
-    @bootVM        false
+    
+    @keyboard       @keyboards[2]
+    
+    @guestName     ''
+    @bootGuest     false
     @bootDevice    @bootDevices[0]
     @enableVNC     true
     @enableSpice   true
     
-    @enableVGACard false
-    @vgaCard       @vgaCards[0]
-
     @enableNet false
-    @macAddr   ''
-    @netCard   @netCards[1]
+    @generateMacAddr()
+    @netCard   @netCards[6]
   
   getCpuModels: ->
     return @cpuModels
@@ -276,24 +283,28 @@ class FormCreateVMViewModel
   
   create: ->
     console.log "create VM"
-    vm = { name : @vmName()
-         , hardware: {
-             cpus      : @cpuCount().num
-             cpu       : if @enableCpuModel() then @cpuModel() else false
-             ram       : @selectedMemory().num
-             disk      : if @diskOrPartition() is 'disk'      then @disk()      else false
-             partition : if @diskOrPartition() is 'partition' then @partition() else false
-             iso       : if @selectedIso() isnt 'none' then @selectedIso() else false
-             macAddr   : if @enableNet()  and @macAddr().length is 17 then @macAddr() else false
-             netCard   : if @enableNet()  and @macAddr().length is 17 then @netCard() else false
-             vgaCard   : if @enableVGACard() then @vgaCard()                          else 'none' }
-         , settings: {
-             boot       : @bootVM()
+    vm = { name : @guestName() }
+    vm.hardware = {}
+    hardware = vm.hardware
+    hardware.cpu = {model:@cpuModel().qValue, sockets:@socketCount(), cores:@coreCount(), threads:@threadCount()}
+    hardware.ram = @selectedMemory().num
+    
+    hardware.disk      = if @diskOrPartition() is 'disk'      then @disk()      else false
+    hardware.partition = if @diskOrPartition() is 'partition' then @partition() else false
+    hardware.iso       = if @selectedIso() isnt 'none' then @selectedIso() else false
+
+    hardware.net = {mac: @macAddr(), nic:@netCard()} if @enableNet()
+    
+    hardware.vgaCard = @graphic()
+
+    vm.settings = {
+             boot       : @bootGuest()
              bootDevice : @bootDevice()
              vnc        : @enableVNC()
              spice      : @enableSpice()
-             keyboard   : @keyboard() }}
-
+             keyboard   : @keyboard() }
+    
+    console.dir vm
     app.socket.emit 'create-VM', vm
 #    @images.remove @disk()
 

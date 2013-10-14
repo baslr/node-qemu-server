@@ -1,6 +1,6 @@
 
-for mod in ['info', 'create', 'delete']
-  module.exports[mod] = require "./disk/#{mod}"
+module.exports[mod] = require "./disk/#{mod}" for mod in ['info', 'create', 'delete']
+  
 
 # module.exports.create = require './disk/info'
 # module.exports.info   = require './disk/create'

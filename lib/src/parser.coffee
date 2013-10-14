@@ -19,26 +19,42 @@ module.exports.vmCfgToArgs = (cfg, cb = ->) ->
   else if typeof cfg.settings isnt 'object'
     throw 'cfg.settings must be an object'
 
+  conf = cfg
   args = new Args()
 
   args.nodefconfig()
       .nodefaults()
 #       .noStart()
 #       .noShutdown()
+
+  args.accel('kvm').kvm() if osType is 'linux'
   
-  args.cpus(cfg.hardware.cpus)
-      .ram( cfg.hardware.ram)
+  args.ram( cfg.hardware.ram)
       .vga( cfg.hardware.vgaCard)
       .qmp( cfg.settings.qmpPort)
       .keyboard(cfg.settings.keyboard)
-      
-  if cfg.hardware.cpu
-    args.cpu cfg.hardware.cpu
+  
+  
+  # CPU CONF
+  # cpu: Object
+  #   cores: 8
+  #   model: "Haswell"
+  #   sockets: 4
+  #   threads: 8
+  cpu = conf.hardware.cpu
+  
+  # MODEL // -cpu model
+  args.cpuModel cpu.model
+  
+  # SMP // -smp [cpus=]n[,cores=cores][,threads=threads][,sockets=sockets][,maxcpus=maxcpus]
+  args.cpus "cores=#{cpu.cores},threads=#{cpu.threads},sockets=#{cpu.sockets}"
 
-  if osType is 'linux'
-    args.accel('kvm')
-        .kvm()
+  # NET CONF
+  if conf.hardware.net?
+    net = conf.hardware.net
+    args.net net.mac, net.nic
 
+  
   ipAddr = []
   for interfaceName,intfce of os.networkInterfaces()
     for m in intfce
@@ -59,10 +75,7 @@ module.exports.vmCfgToArgs = (cfg, cb = ->) ->
 
   if cfg.hardware.iso
     args.cd cfg.hardware.iso
-      
-  if cfg.hardware.macAddr.length is 17
-    args.net cfg.hardware.macAddr, cfg.hardware.netCard
-
+  
   if cfg.settings.vnc
     args.vnc cfg.settings.vnc
     

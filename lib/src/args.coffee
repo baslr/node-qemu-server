@@ -60,8 +60,8 @@ class Args
     @pushArg '-smp', n
     return this
   
-  cpu: (cpu) ->
-    @pushArg '-cpu', cpu
+  cpuModel: (model) ->
+    @pushArg '-cpu', model
     return this
   
   accel: (accels) ->

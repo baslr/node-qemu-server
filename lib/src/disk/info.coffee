@@ -1,7 +1,8 @@
-exec = require('child_process').exec
-os   = require 'os'
+exec    = require('child_process').exec
+version = require '../version'
+
 module.exports = (name, cb) ->
-  if os.type().toLowerCase() is 'darwin'
+  if version.getVersion() is '1.6.1'
     exec "qemu-img info --output=json #{process.cwd()}/disks/#{name}.img", (err, stdout, stderr) =>    
       if err? or stderr isnt ''
         cb {status:'error', data:[err,stderr]}
@@ -19,7 +20,7 @@ module.exports = (name, cb) ->
       info['percentUsed'] = 100/info['virtual_size']*info['disk_size']
 
       cb status:'success', data:info
-  else if os.type().toLowerCase() is 'linux'
+  else
     exec "qemu-img info #{process.cwd()}/disks/#{name}.img", (err, stdout, stderr) =>    
       if err? or stderr isnt ''
         cb {status:'error', data:[err,stderr]}

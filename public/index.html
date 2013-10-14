@@ -89,8 +89,6 @@
                 <td data-bind="text: false != hardware.disk ? hardware.disk : hardware.partition "></td>
                 <td style="cursor:pointer;" data-bind="text: hardware.iso == false ? 'none' : hardware.iso, click: $parent.expandIso"</td>
                 <td>
-
-
                   <button data-bind="click: $root.edit, visible: status() == 'stopped'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-cog" /></button>
                 </td>
                 <td><button data-bind="click: $root.remove, visible: status() == 'stopped'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-trash" /></button></td>
@@ -190,218 +188,511 @@
         
         <!-- GUEST CREATION TAB -->
         <div class="tab-pane" id="createVMTab">
-          <div class="row-fluid">
-            <div class="span10" style="margin-left:20px;margin-top:10px;">
-              <div class="row">
-                <form id="formVMcreate" class="form-horizontal" role="form">
+          <div class="row" style="margin:20px;">
+            <div class="col-md-2">
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Settings</h3>
+                </div> <!-- .panel-heading -->
+                <div class="panel-body">
+                  <ul class="nav nav-pills nav-stacked">
+                    <li><a data-toggle="tab" data-target="#summaryTab"   >Summary</a></li>
+                    <li><a data-toggle="tab" data-target="#nameTab"      >Name</a></li>
+                    <li><a data-toggle="tab" data-target="#cpuTab"       >CPU</a></li>
+                    <li><a data-toggle="tab" data-target="#memoryTab"    >Memory</a></li>
+                    <li><a data-toggle="tab" data-target="#graphicsTab"  >Graphics</a></li>
+                    <li><a data-toggle="tab" data-target="#diskTab"      >Disk</a></li>
+                    <li><a data-toggle="tab" data-target="#isoTab"       >ISO</a></li>
+                    <li><a data-toggle="tab" data-target="#networkingTab">Networking</a></li>
+                    <li><a data-toggle="tab" data-target="#vncTab"       >VNC</a></li>
+                    <li><a data-toggle="tab" data-target="#spiceTab"     >SPICE</a></li>
+                    <li><a data-toggle="tab" data-target="#keyboardTab"  >Keyboard</a></li>
+                    <li><a data-toggle="tab" data-target="#bootTab"      >Boot</a></li>
+                  </ul>
+                </div> <!-- .panel-body -->
+              </div> <!-- .panel panel-default -->
+            </div> <!-- col-md-2 -->
+            <div class="col-md-10">
+              <form id="formVMcreate" class="form-horizontal" role="form">
+                <div class="tab-content">
+                  <!--
+                  
+                  SUMMARY
+                  
+                  -->
+                  <div class="tab-pane" id="summaryTab">
+                    <div class="panel panel-default">
+                      <div class="panel-heading">
+                        <h3 class="panel-title">Summary</h3>
+                      </div> <!-- .panel-heading -->
+                      <div class="panel-body">
+                      
+                        <dl class="dl-horizontal">
+                          <dt>Guestname</dt>
+                          <!-- ko if: guestName().length <= 2 -->
+                            <dd><span class="label label-danger">Guestname missing xor to short (Minimum 3 letters)</span></dd>
+                          <!-- /ko -->
+                          <!-- ko if: guestName().length > 2 -->
+                            <dd data-bind="text: guestName"></dd>
+                          <!-- /ko -->
+                          <dt>&nbsp;</dt>
+                          <dd>&nbsp;</dd>
+                          <dt>CPU</dt>
+                          <dd></dd>
+                          <dt>Model</dt>
+                          <dd data-bind="text: cpuModel().value"></dd>
+                          <dt>Sockets</dt>
+                          <dd data-bind="text: socketCount"></dd>
+                          <dt>Cores</dt>
+                          <dd data-bind="text: coreCount"></dd>
+                          <dt>Threads</dt>
+                          <dd data-bind="text: threadCount"></dd>
+                          <dt>&nbsp;</dt>
+                          <dd>&nbsp;</dd>
+                          <dt>Memory</dt>
+                          <dd><!-- ko text:selectedMemory().num --><!-- /ko --> MiByte</dd>
+                          <dt>Graphics</dt>
+                          <dd data-bind="text: graphic"></dd>
+                          <!-- ko if: diskOrPartition() == 'disk' -->
+                            <dt>Disk</dt>
+                            <!-- ko if: disk() == undefined -->
+                              <dd><span class="label label-danger">Select a disk</span></dd>
+                            <!-- /ko -->
+                            <!-- ko if: disk() != undefined -->
+                              <dd data-bind="text: disk"></dd>
+                            <!-- /ko -->
+                          <!-- /ko -->
+                          <!-- ko if: diskOrPartition() == 'partition' -->
+                            <dt>Partition</dt>
+                            <dd data-bind="text: partition"></dd>
+                          <!-- /ko -->
+                          <!-- ko if: selectedIso() != 'none' -->
+                            <dt>ISO</dt>
+                            <dd data-bind="text: selectedIso"></dd>
+                          <!-- /ko -->
+                          <!-- ko if: enableNet() -->
+                            <dt>&nbsp;</dt>
+                            <dd>&nbsp;</dd>
+                            <dt>Networking</dt>
+                            <dd></dd>
+                            <dt>MAC Address</dt>
+                            <dd data-bind="text: macAddr"></dd>
+                            <dt>NIC</dt>
+                            <dd data-bind="text: netCard"></dd>
+                            <dt>&nbsp;</dt>
+                            <dd>&nbsp;</dd>
+                          <!-- /ko -->
+                          <!-- ko if: enableVNC() -->
+                            <dt>VNC</dt>
+                            <dd>yes</dd>
+                          <!-- /ko -->
+                          <!-- ko if: enableSpice() -->
+                            <dt>SPICE</dt>
+                            <dd>yes</dd>
+                          <!-- /ko -->
+                          <dt>Keyboard</dt>
+                          <dd data-bind="text: keyboard"></dd>
+                          <dt>Boot</dt>
+                          <dd data-bind="text: bootDevice"></dd>
+                          <!-- ko if: bootGuest() -->
+                            <dt></dt>
+                            <dd>on startup</dd>
+                          <!-- /ko -->
+                        </dl>
+                        
+                        <div class="form-group">
+                          <div class="col-md-offset-2 col-md-8">
+                            <button data-bind="click: create, enable: checkCreate()" class="btn btn-primary">create</button>
+                            <span class="help-block">Create the VM with selected settings.</span>
+                          </div>
+                        </div> <!-- form-group -->
+                        
+                      </div> <!-- .panel-body -->
+                    </div> <!-- .panel .panel-default -->
+                  </div> <!-- .tab-pane #summaryTab -->
+                  
+                  <!--
+                  
+                  NAME SETTING
+                  
+                  -->
+                  <div class="tab-pane" id="nameTab">
+                    <div class="panel panel-default">
+                      <div class="panel-heading">
+                        <h3 class="panel-title">Guestname</h3>
+                      </div> <!-- .panel-heading -->
+                      <div class="panel-body">
+                        
+                        <div class="form-group">
+                          <label for="guestName" class="col-md-2 control-label">Guestname</label>
+                          <div class="col-md-8">
+                            <input data-bind="value: guestName" type="text" id="guestName" class="form-control">
+                            <span class="help-block">Provide a name for the Guest. (Minimum 2 letters.)</span>
+                          </div>
+                        </div> <!-- form-group -->
+                        
+                      </div> <!-- .panel-body -->
+                    </div> <!-- .panel .panel-default -->
+                  </div> <!-- .tab-pane #summaryTab -->
+                  
+                  <!--
+                  
+                  CPU SETTINGS -smp cores=12,threads=12,sockets=1 
+                  
+                  -->
+                  <div class="tab-pane" id="cpuTab">
+                    <div class="panel panel-default">
+                      <div class="panel-heading">
+                        <h3 class="panel-title">CPUs</h3>
+                      </div> <!-- .panel-heading -->
+                      <div class="panel-body">
+                      
+                        <div class="form-group">
+                          <label for="cpuModel" class="col-md-2 control-label">CPU model</label>
+                          <div class="col-md-8">
+                            <input id="cpuModel" type="text" class="form-control" value="QEMU 64-bit Virtual CPU version 1.6.1">
+                            <span class="help-block">Type your cpu model.</span>
+                          </div>
+                        </div> <!-- form-group -->
+                        
+                        <div class="form-group">
+                          <label for="socketCount" class="col-md-2 control-label">Sockets</label>
+                          <div class="col-md-8">
+                            <select data-bind="options: sockets, value: socketCount" class="form-control" id="socketCount"></select>
+                            <span class="help-block">Number of sockets</span>
+                          </div>
+                        </div> <!-- form-group -->
+                        
+                        <div class="form-group">
+                          <label for="coreCount" class="col-md-2 control-label">Cores</label>
+                          <div class="col-md-8">
+                            <select data-bind="options: cores, value: coreCount" class="form-control" id="coreCount"></select>
+                            <span class="help-block">Number of cores per socket</span>
+                          </div>
+                        </div> <!-- form-group -->
+                        
+                        <div class="form-group">
+                          <label for="threadCount" class="col-md-2 control-label">Threads</label>
+                          <div class="col-md-8">
+                            <select data-bind="options: threads, value: threadCount" class="form-control" id="threadCount"></select>
+                            <span class="help-block">Number of threads per core</span>
+                          </div>
+                        </div> <!-- form-group -->
+                        
+                      </div> <!-- .panel-body -->
+                    </div> <!-- .panel .panel-default -->
+                  </div> <!-- .tab-pane #cpuTab -->
+                  
+                  <!--
+                  
+                  MEMORY SETTINGS
+                  
+                  -->
+                  <div class="tab-pane" id="memoryTab">
+                    <div class="panel panel-default">
+                      <div class="panel-heading">
+                        <h3 class="panel-title">Memory</h3>
+                      </div> <!-- .panel-heading -->
+                      <div class="panel-body">  
 
-                <div class="col-md-6">
-
-                  <div class="form-group">
-                    <label for="vmName" class="col-md-2 control-label">Guest name</label>
-                    <div class="col-md-8">
-                      <input data-bind="value: vmName" type="text" id="vmName" class="form-control">
-                      <span class="help-block">Provide a name for the Guest.</span>
-                    </div>
-                  </div>
+                        <div class="form-group">
+                          <label for="vmRam" class="col-md-2 control-label">RAM size</label>
+                          <div class="col-md-8">
+                            <select data-bind="options: memory, optionsText:'mem', value: selectedMemory" class="form-control" id="vmRam"></select> 
+                            <span class="help-block">maximal size of RAM</span>
+                          </div>
+                        </div> <!-- .form-group -->
+                      
+                      </div> <!-- .panel-body -->
+                    </div> <!-- .panel .panel-default -->
+                  </div> <!-- .tab-pane #memoryTab -->
                   
-                  <div class="form-group">
-                    <label for="netCard"  class="col-md-2 control-label">disk or partition</label>
-                    <div class="col-md-8">
-                      <div class="radio">
-                        <label>
-                          <input type="radio" name="diskOrPartition" value="disk" data-bind="checked: diskOrPartition" />
-                          Disk
-                        </label>
-                      </div>
-
-                      <div class="radio">
-                        <label>
-                          <input type="radio" name="diskOrPartition" value="partition" data-bind="checked: diskOrPartition" />
-                          Partition
-                        </label>
-                      </div>
-                    </div>
-                  </div>
+                  <!--
                   
-                  <div class="form-group" data-bind="visible: diskOrPartition() == 'disk'">
-                    <label for="diskName" class="col-md-2 control-label">disk</label>
-                    <div class="col-md-8">
-                      <select data-bind="options: disks, value: disk" class="form-control" id="diskName"></select> 
-                      <span class="help-block">Select a disk</span>
-                    </div>
-                  </div>
-  
-                  <div class="form-group" data-bind="visible: diskOrPartition() == 'partition'">
-                    <label for="partition" class="col-md-2 control-label">partition</label>
-                    <div class="col-md-8">
-                      <input data-bind="value: partition" type="text" id="partition" class="form-control">
-                      <span class="help-block">Write the complete partition path.</span>
-                    </div>
-                  </div>
+                  GRAPHICS SETTINGS
                   
-                  <div class="form-group">
-                    <label for="vmIso" class="col-md-2 control-label">iso image</label>
-                    <div class="col-md-8">
-                      <select data-bind="options: isos, value: selectedIso" class="form-control" id="vmIso"></select> 
-                      <span class="help-block">Select a iso image</span>
-                    </div>
-                  </div>
-
-                  <div class="form-group">
-                    <div class="col-md-offset-2 col-md-8">
-                      <label>
-                        <input type="checkbox" data-bind="checked: enableVGACard">
-                        Enable VGA support
-                      </label>
-                      <span class="help-block">linux does not need grafics, windows vga or qxl</span>
-                    </div>
-                  </div>
+                  -->
+                  <div class="tab-pane" id="graphicsTab">
+                    <div class="panel panel-default">
+                      <div class="panel-heading">
+                        <h3 class="panel-title">Graphics</h3>
+                      </div> <!-- .panel-heading -->
+                      <div class="panel-body">  
+                        
+                        <div class="form-group">
+                          <label for="vga" class="col-md-2 control-label">Graphics</label>
+                          <div class="col-md-8">
+                            <select data-bind="options: graphics, value: graphic" class="form-control" id="vga"></select>
+                            <span class="help-block">vga cards are none, standard (std) and paravirtual qxl</span>
+                          </div>
+                        </div> <!-- .form-group -->
+                        
+                        <div class="alert alert-info">If you want to use openGL, select 'qxl'. For standard usage use 'std'. If you want no graphic output, then use 'none'.</div>
+                      </div> <!-- .panel-body -->
+                    </div> <!-- .panel .panel-default -->
+                  </div> <!-- .tab-pane #graphicsTab -->
                   
-                  <div class="form-group" data-bind="visible: enableVGACard()">
-                    <label for="vga" class="col-md-2 control-label">vga card</label>
-                    <div class="col-md-8">
-                      <select data-bind="options: vgaCards, value: vgaCard" class="form-control" id="vga"></select> 
-                      <span class="help-block">vga cards are none, standard (std) and paravirtual qxl</span>
-                    </div>
-                  </div>
+                  <!--
                   
-                  <div class="form-group">
-                    <label for="bootDevice"  class="col-md-2 control-label">select boot device</label>
-                    <div class="col-md-8">
-                      <select data-bind="options: bootDevices, value: bootDevice" class="form-control" id="bootDevice"></select> 
-                      <span class="help-block">Select your boot device. boot from iso or disk.</span>
-                    </div>
-                  </div>
+                  DISK SETTINGS
                   
-                  <div class="form-group">
-                    <div class="col-md-offset-2 col-md-8">
-                      <label>
-                        <input type="checkbox" data-bind="checked: bootVM">
-                        boot VM after creation
-                      </label>
-                      <span class="help-block">instantly boot VM after creation</span>
-                    </div>
-                  </div>
+                  -->
+                  <div class="tab-pane" id="diskTab">
+                    <div class="panel panel-default">
+                      <div class="panel-heading">
+                        <h3 class="panel-title">Disk</h3>
+                      </div> <!-- .panel-heading -->
+                      <div class="panel-body">  
+                        
+                        <div class="form-group">
+                          <label for="netCard"  class="col-md-2 control-label">Disk or Partition</label>
+                          <div class="col-md-8">
+                            <div class="radio">
+                              <label>
+                                <input type="radio" name="diskOrPartition" value="disk" data-bind="checked: diskOrPartition" />
+                                Disk
+                              </label>
+                            </div>
+                            
+                            <div class="radio">
+                              <label>
+                                <input type="radio" name="diskOrPartition" value="partition" data-bind="checked: diskOrPartition" />
+                                Partition
+                              </label>
+                            </div>
+                          </div>
+                        </div> <!-- .form-group -->
+                        
+                        <div class="form-group" data-bind="visible: diskOrPartition() == 'disk'">
+                          <label for="diskName" class="col-md-2 control-label">Disk</label>
+                          <div class="col-md-8">
+                            <select data-bind="options: disks, value: disk" class="form-control" id="diskName"></select> 
+                            <span class="help-block">Select a Disk</span>
+                          </div>
+                        </div> <!-- .form-group -->
+                        
+                        <div class="form-group" data-bind="visible: diskOrPartition() == 'partition'">
+                          <label for="partition" class="col-md-2 control-label">Partition</label>
+                          <div class="col-md-8">
+                            <input data-bind="value: partition" type="text" id="partition" class="form-control">
+                            <span class="help-block">Write the complete Partition Path.</span>
+                          </div>
+                        </div> <!-- .form-group -->
+                        
+                        <div class="alert alert-danger">Warning! If you select Partition, be sure to know what you do. Otherwise massive dataloss is imminent.</div>
+                      </div> <!-- .panel-body -->
+                    </div> <!-- .panel .panel-default -->
+                  </div> <!-- .tab-pane #cpuTab -->
                   
-                  <div class="form-group">
-                    <div class="col-md-offset-2 col-md-8">
-                      <button data-bind="click: create, enable: checkCreate()" class="btn btn-primary">create</button>
-                      <span class="help-block">Create the VM with selected settings.</span>
-                    </div>
-                  </div>
-
-                </div> <!-- col-md-6 -->
-                <div class="col-md-6">
+                  <!--
                   
-                  <div class="form-group">
-                    <label for="vmCpus" class="col-md-2 control-label">CPU count</label>
-                    <div class="col-md-8">
-                      <select data-bind="options: cpus, optionsText:'cpu', value: cpuCount" class="form-control" id="vmCpus"></select> 
-                      <span class="help-block">number of cpus</span>
-                    </div>
-                  </div>
+                  ISO SETTINGS
                   
-                  <div class="form-group">
-                    <div class="col-md-offset-2 col-md-8">
-                      <label>
-                        <input type="checkbox" data-bind="checked: enableCpuModel">
-                        CPU model
-                      </label>
-                      <span class="help-block">enable cpu model selection</span>
-                    </div>
-                  </div>
+                  -->
+                  <div class="tab-pane" id="isoTab">
+                    <div class="panel panel-default">
+                      <div class="panel-heading">
+                        <h3 class="panel-title">ISO</h3>
+                      </div> <!-- .panel-heading -->
+                      <div class="panel-body">  
+                        
+                        <div class="form-group">
+                          <label for="vmIso" class="col-md-2 control-label">iso image</label>
+                          <div class="col-md-8">
+                            <select data-bind="options: isos, value: selectedIso" class="form-control" id="vmIso"></select> 
+                            <span class="help-block">Select an iso image</span>
+                          </div>
+                        </div> <!-- .form-group -->
+                        
+                      </div> <!-- .panel-body -->
+                    </div> <!-- .panel .panel-default -->
+                  </div> <!-- .tab-pane #cpuTab -->
                   
-                  <div class="form-group" data-bind="visible: enableCpuModel()">
-                    <label for="vmName" class="col-md-2 control-label">CPU model</label>
-                    <div class="col-md-8">
-                      <input id="cpuModelName" type="text" id="vmName" class="form-control">
-                      <span class="help-block">type your cpu model.</span>
-                    </div>
-                  </div>
-
-                  <div class="form-group">
-                    <label for="vmRam" class="col-md-2 control-label">RAM size</label>
-                    <div class="col-md-8">
-                      <select data-bind="options: memory, optionsText:'mem', value: selectedMemory" class="form-control" id="vmRam"></select> 
-                      <span class="help-block">maximal size of RAM</span>
-                    </div>
-                  </div>
-                
-                  <div class="form-group">
-                    <label for="keybLayout" class="col-md-2 control-label">Keyboard layout</label>
-                    <div class="col-md-8">
-                      <select data-bind="options: keyboards, value: keyboard" class="form-control" id="keybLayout"></select> 
-                      <span class="help-block">Select your keyboard layout</span>
-                    </div>
-                  </div>
+                  <!--
                   
-                  <div class="form-group">
-                    <div class="col-md-offset-2 col-md-8">
-                      <label>
-                        <input type="checkbox" data-bind="checked: enableVNC">
-                        enable VNC
-                      </label>
-                      <span class="help-block">Connect to the VM via VNC</span>
-                    </div>
-                  </div>
+                  NIC SETTINGS ['e1000', 'i82551', 'i82557b', 'i82559er', 'ne2k_pci', 'pcnet', 'rtl8139', 'virtio']
                   
-                  <div class="form-group">
-                    <div class="col-md-offset-2 col-md-8">
-                      <label>
-                        <input type="checkbox" data-bind="checked: enableSpice">
-                        enable SPICE
-                      </label>
-                      <span class="help-block">Connect to the VM via SPICE</span>
-                    </div>
-                  </div>
+                  -->
+                  <div class="tab-pane" id="networkingTab">
+                    <div class="panel panel-default">
+                      <div class="panel-heading">
+                        <h3 class="panel-title">NIC (network interface controller)</h3>
+                      </div> <!-- .panel-heading -->
+                      <div class="panel-body">  
+                        
+                        <div class="form-group">
+                          <div class="col-md-offset-2 col-md-8">
+                            <label>
+                              <input type="checkbox" data-bind="checked: enableNet">
+                              enable networking
+                            </label>
+                            <span class="help-block">Enable networking</span>
+                          </div>
+                        </div> <!-- form-group -->
+                        
+                        <div class="form-group" data-bind="visible: enableNet()">
+                          <label for="macAddress" class="col-md-2 control-label">mac address</label>
+                          <div class="col-md-8">
+                            <div class="input-group">
+                              <input data-bind="value: macAddr" type="text" id="macAddress" class="form-control">
+                              <span class="input-group-btn">
+                                <button data-bind="click: generateMacAddr" class="btn btn-primary">generate</button> 
+                              </span>
+                            </div>
+                            <span class="help-block">type or generate a mac address for your NIC, example 01:23:45:67:89:01</span>
+                          </div>
+                        </div> <!-- .form-group -->
+                    
+                        <div class="form-group" data-bind="visible: enableNet()">
+                          <label for="netCard"  class="col-md-2 control-label">Networkcard controller</label>
+                          <div class="col-md-8">
+                            <select data-bind="options: netCards, value: netCard, enable: macAddr().length == 17 && enableNet()" class="form-control" id="netCard"></select> 
+                            <span class="help-block">Select the NIC controller. For Windows without spice guest tools installed use the 'rtl8139' controller. After installed guest tools you can switch to the faster 'virtio' controller.</span>
+                          </div>
+                        </div> <!-- .form-group -->
+                        
+                        <div class="alert alert-info">
+                          <dl class="dl-horizontal">
+                            <dt>e1000</dt>
+                            <dd>Intel e1000 NIC. It is an virtualized gigabit ethernet adapter.</dd>
+                            <dt>i82551</dt>
+                            <dd>Intel i82551 NIC. It is an virtualized fast ethernet adapter.</dd>
+                            <dt>i82557b</dt>
+                            <dd>Intel i82557b NIC. It is an virtualized fast ethernet adapter.</dd>
+                            <dt>i82559er</dt>
+                            <dd>Intel i82559er NIC. It is an virtualized fast ethernet adapter.</dd>
+                            <dt>ne2k_pci</dt>
+                            <dd>Novell NE2000 16-bit ISA NIC. 10Mbit/s.</dd>
+                            <dt>pcnet</dt>
+                            <dd>AMD PC-Net II (Am79C970A) 10Mbit/s.</dd>
+                            <dt>rtl8139</dt>
+                            <dd>Realtek rtl8139 NIC. It is an virtaulized fast ethernet adapter.</dd>
+                            <dt>virtio</dt>
+                            <dd>Paravirtualized gigabit ethernet adapter. If your Guest is Windows then you need to install driver.</dd>
+                          </dl>
+                        </div>
+                      </div> <!-- .panel-body -->
+                    </div> <!-- .panel .panel-default -->
+                  </div> <!-- .tab-pane #networkingTab -->
                   
-                  <div class="form-group">
-                    <div class="col-md-offset-2 col-md-8">
-                      <label>
-                        <input type="checkbox" data-bind="checked: enableNet">
-                        enable networking
-                      </label>
-                      <span class="help-block">Enable Network Card</span>
-                    </div>
-                  </div>
+                  <!--
                   
-                  <div class="form-group" data-bind="visible: enableNet()">
-                    <label for="macAddress" class="col-md-2 control-label">mac address</label>
-                    <div class="col-md-8">
-                      <div class="input-group">
-                        <input data-bind="value: macAddr" type="text" id="macAddress" class="form-control">
-                        <span class="input-group-btn">
-                          <button data-bind="click: generateMacAddr" class="btn btn-primary">generate</button> 
-                        </span>
-                      </div>
-                      <span class="help-block">mac address, example 01:23:45:67:89:01</span>
-                    </div>
-                  </div>
-              
-                  <div class="form-group" data-bind="visible: enableNet()">
-                    <label for="netCard"  class="col-md-2 control-label">Networkcard controller</label>
-                    <div class="col-md-8">
-                      <select data-bind="options: netCards, value: netCard, enable: macAddr().length == 17 && enableNet()" class="form-control" id="netCard"></select> 
-                      <span class="help-block">Select the network card controller. For Windows without spice guest tools installed use the rtl8139 controller. After installed guest tools you can switch to the faster virtio controller.</span>
-                    </div>
-                  </div>
+                  VNC SETTINGS
                   
-
- 
+                  -->
+                  <div class="tab-pane" id="vncTab">
+                    <div class="panel panel-default">
+                      <div class="panel-heading">
+                        <h3 class="panel-title">VNC</h3>
+                      </div> <!-- .panel-heading -->
+                      <div class="panel-body">  
+                        
+                        <div class="form-group">
+                          <div class="col-md-offset-2 col-md-8">
+                            <label>
+                              <input type="checkbox" data-bind="checked: enableVNC">
+                              enable VNC
+                            </label>
+                            <span class="help-block">Connect to the Guest via VNC</span>
+                          </div>
+                        </div> <!-- form-group -->
+                        
+                        <div class="alert alert-info">Use VNC to connect to your guests virtual desktop environment.</div>
+                      </div> <!-- .panel-body -->
+                    </div> <!-- .panel .panel-default -->
+                  </div> <!-- .tab-pane #vncTab -->
                   
+                  <!--
                   
-  
-                </div>
-              </form>
-              </div>
-
-            </div>
-          </div>
-        </div>
-
-      </div>
-      
+                  SPICE SETTINGS
+                  
+                  -->
+                  <div class="tab-pane" id="spiceTab">
+                    <div class="panel panel-default">
+                      <div class="panel-heading">
+                        <h3 class="panel-title">SPICE</h3>
+                      </div> <!-- .panel-heading -->
+                      <div class="panel-body">  
+                        
+                        <div class="form-group">
+                          <div class="col-md-offset-2 col-md-8">
+                            <label>
+                              <input type="checkbox" data-bind="checked: enableSpice">
+                              enable SPICE
+                            </label>
+                            <span class="help-block">Connect to the Guest via SPICE</span>
+                          </div>
+                        </div> <!-- .form-group -->
+                        
+                        <div class="alert alert-info">Use SPICE (protocol) to connect to your guests virtual desktop environment.</div>
+                      </div> <!-- .panel-body -->
+                    </div> <!-- .panel .panel-default -->
+                  </div> <!-- .tab-pane #spiceTab -->
+                                    
+                  <!--
+                  
+                  KEYBOARD SETTINGS
+                  
+                  -->
+                  <div class="tab-pane" id="keyboardTab">
+                    <div class="panel panel-default">
+                      <div class="panel-heading">
+                        <h3 class="panel-title">Keyboard</h3>
+                      </div> <!-- .panel-heading -->
+                      <div class="panel-body">  
+                        
+                        <div class="form-group">
+                          <label for="keybLayout" class="col-md-2 control-label">Keyboard layout</label>
+                          <div class="col-md-8">
+                            <select data-bind="options: keyboards, value: keyboard" class="form-control" id="keybLayout"></select> 
+                            <span class="help-block">Select your keyboard layout</span>
+                          </div>
+                        </div> <!-- form-group -->
+                        
+                        <div class="alert alert-info">Select your keyboard layout that you have. If you select the wrong format, you maybe can not type adequate.</div>
+                      </div> <!-- .panel-body -->
+                    </div> <!-- .panel .panel-default -->
+                  </div> <!-- .tab-pane #keyboardTab -->
+                  
+                  <!--
+                  
+                  BOOT SETTINGS
+                  
+                  -->
+                  <div class="tab-pane" id="bootTab">
+                    <div class="panel panel-default">
+                      <div class="panel-heading">
+                        <h3 class="panel-title">Boot options</h3>
+                      </div> <!-- .panel-heading -->
+                      <div class="panel-body">  
+                        
+                        <div class="form-group">
+                          <label for="bootDevice"  class="col-md-2 control-label">select boot device</label>
+                          <div class="col-md-8">
+                            <select data-bind="options: bootDevices, value: bootDevice" class="form-control" id="bootDevice"></select> 
+                            <span class="help-block">Select your boot device. boot from iso or disk.</span>
+                          </div>
+                        </div> <!-- .form-group -->
+                        
+                        <div class="form-group">
+                          <div class="col-md-offset-2 col-md-8">
+                            <label>
+                              <input type="checkbox" data-bind="checked: bootGuest">
+                              Boot Guest after creation
+                            </label>
+                            <span class="help-block">instantly boot Guest after creation</span>
+                          </div>
+                        </div> <!-- .form-group -->
+                        
+                      </div> <!-- .panel-body -->
+                    </div> <!-- .panel .panel-default -->
+                  </div> <!-- .tab-pane #bootTab -->
+                </div> <!-- .tab-content -->
+              </form> <!--  -->
+            </div> <!-- .col-md-10 -->
+          </div> <!-- .row -->
+        </div> <!-- .tab-pane#createVMTab -->
+      </div> <!-- .tab-content -->
     </div> <!-- .tabbable -->
     
     <a href="http://glyphicons.com" target="_blank">This uses glyphicons.</a>
