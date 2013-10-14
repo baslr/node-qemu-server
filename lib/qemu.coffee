@@ -11,4 +11,3 @@ createVm = (cfg) ->
   return vm
 
 exports.createVm    = createVm
-

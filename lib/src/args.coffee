@@ -3,10 +3,10 @@ crypto = require 'crypto'
 
 class Args
   constructor: ->
-    @args    = [ '-nographic']
+    @args    = [ 'qemu-system-x86_64', '-nographic']
     @qmpPort = 0
     @macAddr = crypto.randomBytes(6).toString('hex').match(/.{2}/g).join ':'
-
+  
   ###
   #   QEMU START OPTIONS  
   ###      
@@ -72,6 +72,14 @@ class Args
     @pushArg '-enable-kvm'
     return this
   
+  usbOn: ->
+    @pushArg '-usb'
+    return this
+    
+  usbDevice: (vendorId, productId) ->
+    @pushArg "-usbdevice host:#{vendorId}:#{productId}"
+    return this
+  
   vnc: (port) ->
     @pushArg '-vnc', ":#{port}"
     return this
@@ -94,7 +102,7 @@ class Args
       @pushArg '-net', "nic,model=#{card},macaddr=#{macAddr}", '-net', 'user'
     else
       @pushArg '-net', "nic,model=#{card},macaddr=#{macAddr}", '-net', 'tap'
-
+    
     return this
   
   vga: (vga = 'none') ->

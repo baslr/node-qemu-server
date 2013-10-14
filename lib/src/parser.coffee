@@ -5,21 +5,23 @@ Args   = require('./args').Args
 osType = os.type().toLowerCase()
 
 #
-# @call   cfg, cb
+# @call   conf, cb
 #
 # @return cb ret, new args Obj
 #
-module.exports.vmCfgToArgs = (cfg, cb = ->) ->
-  if      typeof cfg  isnt 'object'
-    throw 'cfg must be an object'
-  else if typeof cfg.name     isnt 'string'
-    throw 'cfg.name must be an string'  
-  else if typeof cfg.hardware isnt 'object'
-    throw 'cfg.hardware must be an object'
-  else if typeof cfg.settings isnt 'object'
-    throw 'cfg.settings must be an object'
+module.exports.vmCfgToArgs = (conf, cb = ->) ->
+  if      typeof conf  isnt 'object'
+    throw 'conf must be an object'
+  else if typeof conf.name     isnt 'string'
+    throw 'conf.name must be an string'
+  else if typeof conf.hardware isnt 'object'
+    throw 'conf.hardware must be an object'
+  else if typeof conf.settings isnt 'object'
+    throw 'conf.settings must be an object'
+  
+  hw   = conf.hardware # h-w
+  st   = conf.settings # s-t
 
-  conf = cfg
   args = new Args()
 
   args.nodefconfig()
@@ -29,10 +31,10 @@ module.exports.vmCfgToArgs = (cfg, cb = ->) ->
 
   args.accel('kvm').kvm() if osType is 'linux'
   
-  args.ram( cfg.hardware.ram)
-      .vga( cfg.hardware.vgaCard)
-      .qmp( cfg.settings.qmpPort)
-      .keyboard(cfg.settings.keyboard)
+  args.ram(     hw.ram)
+      .vga(     hw.vgaCard)
+      .qmp(     st.qmpPort)
+      .keyboard(st.keyboard)
   
   
   # CPU CONF
@@ -41,7 +43,7 @@ module.exports.vmCfgToArgs = (cfg, cb = ->) ->
   #   model: "Haswell"
   #   sockets: 4
   #   threads: 8
-  cpu = conf.hardware.cpu
+  cpu = hw.cpu
   
   # MODEL // -cpu model
   args.cpuModel cpu.model
@@ -50,10 +52,9 @@ module.exports.vmCfgToArgs = (cfg, cb = ->) ->
   args.cpus "cores=#{cpu.cores},threads=#{cpu.threads},sockets=#{cpu.sockets}"
 
   # NET CONF
-  if conf.hardware.net?
-    net = conf.hardware.net
+  if hw.net?
+    net = hw.net
     args.net net.mac, net.nic
-
   
   ipAddr = []
   for interfaceName,intfce of os.networkInterfaces()
@@ -62,27 +63,24 @@ module.exports.vmCfgToArgs = (cfg, cb = ->) ->
         ipAddr.push m.address
   console.log ipAddr
   
-  if cfg.settings.spice
-    if osType is 'linux'
-      args.spice cfg.settings.spice, ipAddr[0] #    -spice port=5900,addr=192.168.178.63,disable-ticketing
-    else
-      console.log "SPICE only supported with linux"
-  
-  if      cfg.hardware.disk
-    args.hd cfg.hardware.disk
-  else if cfg.hardware.partition
-    args.partition cfg.hardware.partition
-
-  if cfg.hardware.iso
-    args.cd cfg.hardware.iso
-  
-  if cfg.settings.vnc
-    args.vnc cfg.settings.vnc
+  if osType is 'linux'
+    args.spice st.spice, ipAddr[0] if st.spice #    -spice port=5900,addr=192.168.178.63,disable-ticketing
     
-  if cfg.settings.boot then switch cfg.settings.bootDevice
+    args.usbOn()
+    args.usbDevice u.vendorId, u.productId for u in (if hw.usb? then hw.usb else [])
+      
+  
+  if      hw.disk
+    args.hd        hw.disk
+  else if hw.partition
+    args.partition hw.partition
+
+  args.cd  hw.iso if hw.iso
+  args.vnc st.vnc if st.vnc
+
+    
+  if st.boot then switch st.bootDevice
       when 'disk' then args.boot 'hd', false
       when 'iso'  then args.boot 'cd', false
-      
+  
   return args
-
-# os         : windows_x86,windows_x86_64 linux_x86_64 fürs disk interface

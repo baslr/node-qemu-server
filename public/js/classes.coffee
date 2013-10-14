@@ -220,6 +220,10 @@ class FormCreateVMViewModel
     @enableNet = ko.observable()
     @macAddr   = ko.observable()
     @netCard   = ko.observable()
+    
+    @usbList     = ko.observableArray()
+    @selectedUsb = ko.observableArray()
+    @usbs        = ko.observableArray()
 
     @reset()
 
@@ -257,6 +261,9 @@ class FormCreateVMViewModel
     @enableNet false
     @generateMacAddr()
     @netCard   @netCards[6]
+    
+    @selectedUsb undefined
+    @usbs.removeAll()
   
   getCpuModels: ->
     return @cpuModels
@@ -280,6 +287,19 @@ class FormCreateVMViewModel
   deleteDisk: (diskName) ->
     @disks.remove (disk) ->
       return disk is diskName
+      
+  relistUsb: -> app.socket.emit 'relist-usb'
+    
+  setUsbs: (usbs) ->
+    @usbList.removeAll()
+    @usbs.removeAll()
+    @usbList.push u for u in usbs
+    
+  addUsb: =>
+    if typeof @selectedUsb() is 'object'
+      @usbs.push @selectedUsb()
+      @usbList.remove @selectedUsb()
+      @selectedUsb ''
   
   create: ->
     console.log "create VM"
@@ -294,6 +314,7 @@ class FormCreateVMViewModel
     hardware.iso       = if @selectedIso() isnt 'none' then @selectedIso() else false
 
     hardware.net = {mac: @macAddr(), nic:@netCard()} if @enableNet()
+    hardware.usb = @usbs()[..]                       if @usbs().length
     
     hardware.vgaCard = @graphic()
 

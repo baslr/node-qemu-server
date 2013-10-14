@@ -2,6 +2,7 @@
 vmHandler = require './vmHandler'
 ioServer  = undefined
 Disk      = require './src/disk'
+usb       = require './src/usb'
 
 socks  = {}
 
@@ -11,7 +12,7 @@ module.exports.start = (httpServer) ->
   
   ioServer.sockets.on 'connection', (sock) ->
     socks[sock.id] = sock
-    console.log "SOCK -> CON #{sock.handshake.address.address}"
+    console.log "SOCK -> CON #{sock.handshake.address.address} #{sock.id}"
     console.log "SOCK -> count: #{Object.keys(socks).length}"
   
     sock.emit('set-iso', iso) for iso in vmHandler.getIsos()                    # emit iso  names, client drops duplicates
@@ -31,6 +32,10 @@ module.exports.start = (httpServer) ->
     sock.on 'qmp-command', (qmpCmd, vmName) ->
       console.log "QMP-Command #{qmpCmd}"
       vmHandler.qmpCommand qmpCmd, vmName
+      
+    sock.on 'relist-usb', ->
+      console.log 'socket: relist-usb'
+      usb.scan (usbs) -> sock.emit 'set-usbs', usbs
 
     sock.on 'create-disk', (disk) ->
       vmHandler.createDisk disk, (ret) ->
@@ -58,8 +63,7 @@ module.exports.start = (httpServer) ->
       vmHandler.createVm vmCfg, (ret) ->
         sock.emit 'msg', ret
         
-        if ret.status is 'success'
-          sock.emit 'reset-create-vm-form'
+        sock.emit 'reset-create-vm-form' if ret.status is 'success'
 
 module.exports.toAll = (msg, args...) ->
   ioServer.sockets.emit msg, args...

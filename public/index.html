@@ -196,7 +196,7 @@
                 </div> <!-- .panel-heading -->
                 <div class="panel-body">
                   <ul class="nav nav-pills nav-stacked">
-                    <li><a data-toggle="tab" data-target="#summaryTab"   >Summary</a></li>
+                    <li class="active"><a data-toggle="tab" data-target="#summaryTab"   >Summary</a></li>
                     <li><a data-toggle="tab" data-target="#nameTab"      >Name</a></li>
                     <li><a data-toggle="tab" data-target="#cpuTab"       >CPU</a></li>
                     <li><a data-toggle="tab" data-target="#memoryTab"    >Memory</a></li>
@@ -207,6 +207,7 @@
                     <li><a data-toggle="tab" data-target="#vncTab"       >VNC</a></li>
                     <li><a data-toggle="tab" data-target="#spiceTab"     >SPICE</a></li>
                     <li><a data-toggle="tab" data-target="#keyboardTab"  >Keyboard</a></li>
+                    <li><a data-toggle="tab" data-target="#usbTab"       >USB</a></li>
                     <li><a data-toggle="tab" data-target="#bootTab"      >Boot</a></li>
                   </ul>
                 </div> <!-- .panel-body -->
@@ -220,7 +221,7 @@
                   SUMMARY
                   
                   -->
-                  <div class="tab-pane" id="summaryTab">
+                  <div class="tab-pane active" id="summaryTab">
                     <div class="panel panel-default">
                       <div class="panel-heading">
                         <h3 class="panel-title">Summary</h3>
@@ -303,7 +304,7 @@
                         <div class="form-group">
                           <div class="col-md-offset-2 col-md-8">
                             <button data-bind="click: create, enable: checkCreate()" class="btn btn-primary">create</button>
-                            <span class="help-block">Create the VM with selected settings.</span>
+                            <span class="help-block">Create the Guest</span>
                           </div>
                         </div> <!-- form-group -->
                         
@@ -653,6 +654,42 @@
                       </div> <!-- .panel-body -->
                     </div> <!-- .panel .panel-default -->
                   </div> <!-- .tab-pane #keyboardTab -->
+
+                  <!--
+                  
+                  USB SETTING
+                  
+                  -->
+                  <div class="tab-pane" id="usbTab">
+                    <div class="panel panel-default">
+                      <div class="panel-heading">
+                        <h3 class="panel-title">USB</h3>
+                      </div> <!-- .panel-heading -->
+                      <div class="panel-body">
+                        
+                        <div class="form-group">
+                          <label for="guestName" class="col-md-2 control-label">USB devices</label>
+                          <div class="col-md-8">
+                            <div class="input-group">
+                              <span class="input-group-btn">
+                                <button class="btn btn-default" type="button" title="relist usb devices" data-bind="click: relistUsb"><span class="glyphicon glyphicon-repeat"></span></button>
+                              </span>
+                              <select data-bind="options: usbList, optionsText:'text', value: selectedUsb" class="form-control" id="usbList"></select>
+                              <span class="input-group-btn">
+                                <button class="btn btn-default" type="button" title="add usb device to the list" data-bind="click: addUsb, enable: typeof selectedUsb() == 'object'"><span class="glyphicon glyphicon-plus"></span></button>
+                              </span>
+                            </div>
+                            <span class="help-block">select your usb devices</span>
+                            
+                            <ul class="list-group" data-bind="foreach: usbs()">
+                              <li class="list-group-item" data-bind="text: text"></li>
+                            </ul>
+                          </div>
+                        </div> <!-- form-group -->
+                        
+                      </div> <!-- .panel-body -->
+                    </div> <!-- .panel .panel-default -->
+                  </div> <!-- .tab-pane #usbTab -->
                   
                   <!--
                   

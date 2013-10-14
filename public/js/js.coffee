@@ -21,8 +21,10 @@ app.hostVM         = hostVM
     
   app.socket.on 'set-host', (host) ->
     hostVM.set host
-
-
+  
+  app.socket.on 'set-usbs', (usbs) ->
+    formCreateVMVM.setUsbs usbs
+  
   app.socket.on 'set-vm', (vm) ->
     console.dir vm
     vmsVM.add vm
