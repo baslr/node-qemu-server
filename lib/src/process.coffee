@@ -11,7 +11,7 @@ class Process
     try
       args     = parser.vmCfgToArgs vmConf
       console.log "QEMU-Process: Start-Parameters: #{args.args.join(' ')}"
-      @process = proc.spawn args.shift(), args.args, {stdio: 'inherit', detached: true}
+      @process = proc.spawn args.args.shift(), args.args, {stdio: 'inherit', detached: true}
       
 #      console.log "pinnig QEMU-Process"
 #      pin @process.pid, vmConf.hardware.cpus
