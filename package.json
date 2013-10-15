@@ -2,6 +2,7 @@
   "dependencies": {
     "coffee-script": "~1.6.3",
     "node-static": "~0.6.9",
-    "socket.io": "~0.9.16"
+    "socket.io": "~0.9.16",
+    "mocha": "~1.13.0"
   }
 }

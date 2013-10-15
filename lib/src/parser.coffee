@@ -2,7 +2,6 @@ os     = require 'os'
 qemu   = require '../qemu'
 Args   = require('./args').Args
 
-osType = os.type().toLowerCase()
 
 #
 # @call   conf, cb
@@ -10,6 +9,7 @@ osType = os.type().toLowerCase()
 # @return cb ret, new args Obj
 #
 module.exports.guestConfToArgs = (conf) ->
+  osType = os.type().toLowerCase()
   if      typeof conf  isnt 'object'
     throw 'conf must be an object'
   else if typeof conf.name     isnt 'string'

@@ -1,45 +1,31 @@
 
 os = require 'os'
 
-os.type = -> 'linux'
+osTypeBackup = os.type
 
-parser = require '../lib/src/parser'
-assert = require 'assert'
 
-conf =
-  name: 'foo'
-  hardware:
-    ram: 128
-    vgaCard: 'none'
-    disk: 'Platte.img'
-    iso:  'Platte.iso'
-    cpu:
-      model: 'host'
-      cores:2
-      threads:4
-      sockets:1
-    net:
-      mac: 'ab:cd:ef'
-      nic: 'virtio'
-    usb:
-      [
-        vendorId:  101
-        productId: 911
-      ]
+resArgs = require './args.json'
+parser  = require '../lib/src/parser'
+assert  = require 'assert'
 
-  settings:
-    vnc: 5900
-    qmpPort: 24
-    spice: 42
-    keyboard: 'de'
-    boot: true
-    bootDevice: 'iso'
-    numa:
-      cpuNode: 1
-      memNode: 1
 
-args = parser.guestConfToArgs conf
+test = (conf, i) ->
+  describe 'config check', ->
+    it conf.name, ->
+      
+      if 0 is conf.name.search /^linux/
+        os.type = -> 'linux'
+      else
+        os.type = osTypeBackup
 
-console.dir args.args
+      args = parser.guestConfToArgs(conf).args
+      console.dir args
+      assert.deepEqual args, resArgs[i]
 
-process.exit()
+
+for conf,i in require './confs'
+  test conf,i
+
+  
+
+#process.exit()
