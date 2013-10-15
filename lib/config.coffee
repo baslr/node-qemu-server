@@ -37,8 +37,7 @@ module.exports.getIsoFiles = ->
   isoFiles = fs.readdirSync "#{process.cwd()}/isos/"
   isos     = []
   for isoName in isoFiles
-    if 0 < isoName.search /\.iso$/
-      isos.push isoName
+    isos.push isoName if 0 < isoName.search /\.iso$/
   return isos
 
 
@@ -46,29 +45,26 @@ module.exports.getDiskFiles = ->
   diskFiles = fs.readdirSync "#{process.cwd()}/disks/"
   disks     = []
   for diskName in diskFiles
-    if 0 < diskName.search /\.img$/
-      disks.push diskName
+    disks.push diskName if 0 < diskName.search /\.img$/
   return disks
 
 
 module.exports.getVmConfigs = ->
-  vmFiles = fs.readdirSync "#{process.cwd()}/vmConfigs"
-  vms     = []
-  for vmName in vmFiles
-    if 0 < vmName.search /\.json$/
-      vms.push vmName
-  return vms
+  guestConfs = fs.readdirSync "#{process.cwd()}/vmConfigs"
+  guests     = []
+  for name in guestConfs
+    guests.push name if 0 < name.search /\.json$/
+  return guests
 
 
 module.exports.getVmHandlerExtensions = ->
   filesIn = fs.readdirSync "#{process.cwd()}/lib/src/vmHandlerExtensions"
-  files = {}
-  for file in filesIn
-    files[file.split('.')[0]] = true
-  out = []
+  files   = {}
+  out     = []
   
-  for i of files
-    out.push i
+  files[file.split('.')[0]] = true for file in filesIn
+  
+  out.push i for i of files
   
   return out
 
