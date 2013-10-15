@@ -9,7 +9,7 @@ osType = os.type().toLowerCase()
 #
 # @return cb ret, new args Obj
 #
-module.exports.vmCfgToArgs = (conf, cb = ->) ->
+module.exports.guestConfToArgs = (conf) ->
   if      typeof conf  isnt 'object'
     throw 'conf must be an object'
   else if typeof conf.name     isnt 'string'
@@ -36,21 +36,20 @@ module.exports.vmCfgToArgs = (conf, cb = ->) ->
       .qmp(     st.qmpPort)
       .keyboard(st.keyboard)
   
-  
   # CPU CONF
   # cpu: Object
-  #   cores: 8
-  #   model: "Haswell"
-  #   sockets: 4
-  #   threads: 8
+  #   cores: n
+  #   model: s
+  #   sockets: n
+  #   threads: n
   cpu = hw.cpu
   
-  # MODEL // -cpu model
+  # MODEL
   args.cpuModel cpu.model
   
-  # SMP // -smp [cpus=]n[,cores=cores][,threads=threads][,sockets=sockets][,maxcpus=maxcpus]
-  args.cpus "cores=#{cpu.cores},threads=#{cpu.threads},sockets=#{cpu.sockets}"
-
+  # CPU architecture
+  args.cpus cpu.cores, cpu.threads, cpu.sockets 
+                
   # NET CONF
   if hw.net?
     net = hw.net
@@ -68,6 +67,13 @@ module.exports.vmCfgToArgs = (conf, cb = ->) ->
     
     args.usbOn()
     args.usbDevice u.vendorId, u.productId for u in (if hw.usb? then hw.usb else [])
+    
+    # NUMA CONF
+    # numa: Object
+    #   cpuNode: n
+    #   memNode: n
+    numa = st.numa
+    args.hostNuma numa.cpuNode, numa.memNode
       
   
   if      hw.disk

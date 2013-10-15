@@ -141,16 +141,18 @@ class FormCreateVMViewModel
     @netCards    = ['e1000', 'i82551', 'i82557b', 'i82559er', 'ne2k_pci', 'pcnet', 'rtl8139', 'virtio']
     @graphics    = ['none', 'std', 'qxl']
 
-    @cpuModels = [  {value:'QEMU 32-bit Virtual CPU version 1.6.1', qValue:'qemu32', tokens:['32bit', 'qemu']}
-                  , {value:'QEMU 64-bit Virtual CPU version 1.6.1', qValue:'qemu64', tokens:['64bit', 'qemu']}
-                  , {value:'Common 32-bit KVM processor',           qValue:'kvm32',  tokens:['32bit', 'kvm']}
-                  , {value:'Common 64-bit KVM processor',           qValue:'kvm64',  tokens:['64bit', 'kvm']}
-                  , {value:'Intel® Pentium I',   qValue:'pentium',  tokens:['intel', 'pentium']}
-                  , {value:'Intel® Pentium II',  qValue:'pentium2', tokens:['intel', 'pentium']}
-                  , {value:'Intel® Pentium III', qValue:'pentium3', tokens:['intel', 'pentium']}
-                  , {value:'Intel® Core(TM)2 Duo CPU T7700  @ 2.40GHz', qValue:'core2duo',    tokens:['intel', 'core2duo']}
-                  , {value:'Intel® Xeon E312xx (Sandy Bridge)',         qValue:'SandyBridge', tokens:['intel', 'sandy', 'bridge']}
-                  , {value:'Intel® Core Processor (Haswell)',           qValue:'Haswell',     tokens:['intel', 'haswell']}
+    @cpuModels = [  {value:'QEMU 32-bit Virtual CPU version 1.6.1',     qValue:'qemu32',      tokens:['32bit', 'qemu']}
+                  , {value:'QEMU 64-bit Virtual CPU version 1.6.1',     qValue:'qemu64',      tokens:['64bit', 'qemu']}
+                  , {value:'Common 32-bit KVM processor',               qValue:'kvm32',       tokens:['32bit', 'kvm']}
+                  , {value:'Common 64-bit KVM processor',               qValue:'kvm64',       tokens:['64bit', 'kvm']}
+                  , {value:'Intel® Pentium I',                          qValue:'pentium',     tokens:['32bit', 'intel', 'pentium']}
+                  , {value:'Intel® Pentium II',                         qValue:'pentium2',    tokens:['32bit', 'intel', 'pentium']}
+                  , {value:'Intel® Pentium III',                        qValue:'pentium3',    tokens:['32bit', 'intel', 'pentium']}
+                  , {value:'Intel® Core(TM) Duo CPU T2600 @ 2.16GHz',   qValue:'coreduo',     tokens:['32bit', 'intel', 'core', 'duo']}
+                  , {value:'Intel® Core(TM)2 Duo CPU T7700 @ 2.40GHz',  qValue:'core2duo',    tokens:['64bit', 'intel', 'core', '2', 'duo', 'Merom']}
+                  , {value:'Intel® Core(TM)2 Duo CPU P9xxx',            qValue:'Penryn',      tokens:['64bit', 'intel', 'core', '2', 'duo', 'Penryn']}
+                  , {value:'Intel® Xeon E312xx (Sandy Bridge)',         qValue:'SandyBridge', tokens:['64bit', 'intel', 'sandy', 'bridge']}
+                  , {value:'Intel® Core Processor (Haswell)',           qValue:'Haswell',     tokens:['64bit', 'intel', 'haswell']}
                   , {value:'KVM processor with all supported host features (only available in KVM mode)', qValue:'host', tokens:['host', '64bit']} ]
 
 # x86           qemu64  QEMU Virtual CPU version 1.6.1
@@ -161,7 +163,9 @@ class FormCreateVMViewModel
 # x86          pentium
 # x86         pentium2
 # x86         pentium3
+# x86          coreduo  Genuine Intel(R) CPU           T2600  @ 2.16GHz
 # x86         core2duo  Intel(R) Core(TM)2 Duo CPU     T7700  @ 2.40GHz
+# x86           Penryn  Intel(R) Core(TM)2 Duo CPU     P9xxx
 # x86      SandyBridge  Intel Xeon E312xx (Sandy Bridge)
 # x86          Haswell  Intel Core Processor (Haswell)
 # x86             host
@@ -169,11 +173,10 @@ class FormCreateVMViewModel
 
 
 
-# x86          coreduo  Genuine Intel(R) CPU           T2600  @ 2.16GHz
+
 # x86              486
 # x86             n270  Intel(R) Atom(TM) CPU N270   @ 1.60GHz
 # x86           Conroe  Intel Celeron_4x0 (Conroe/Merom Class Core 2)
-# x86           Penryn  Intel Core 2 Duo P9xxx (Penryn Class Core 2)
 # x86          Nehalem  Intel Core i7 9xx (Nehalem Class Core i7)
 # x86         Westmere  Westmere E56xx/L56xx/X56xx (Nehalem-C)
 # x86           athlon  QEMU Virtual CPU version 1.6.0
@@ -224,6 +227,15 @@ class FormCreateVMViewModel
     @usbList     = ko.observableArray()
     @selectedUsb = ko.observableArray()
     @usbs        = ko.observableArray()
+    
+    # NUMA START
+    @hostNodes   = [0,1,2,3]
+    
+    @hostCpuNode = ko.observable()
+    @hostMemNode = ko.observable()
+    
+    @guestNumaNodes = ko.observableArray()
+    # NUMA END
 
     @reset()
 
@@ -264,6 +276,13 @@ class FormCreateVMViewModel
     
     @selectedUsb undefined
     @usbs.removeAll()
+    
+    # NUMA START
+    @hostCpuNode 0
+    @hostMemNode 0
+    
+    @guestNumaNodes.removeAll()
+    # NUMA END
   
   getCpuModels: ->
     return @cpuModels
@@ -303,9 +322,9 @@ class FormCreateVMViewModel
   
   create: ->
     console.log "create VM"
-    vm = { name : @guestName() }
-    vm.hardware = {}
-    hardware = vm.hardware
+    guest = { name : @guestName() }
+    guest.hardware = {}
+    hardware = guest.hardware
     hardware.cpu = {model:@cpuModel().qValue, sockets:@socketCount(), cores:@coreCount(), threads:@threadCount()}
     hardware.ram = @selectedMemory().num
     
@@ -314,19 +333,20 @@ class FormCreateVMViewModel
     hardware.iso       = if @selectedIso() isnt 'none' then @selectedIso() else false
 
     hardware.net = {mac: @macAddr(), nic:@netCard()} if @enableNet()
-    hardware.usb = @usbs()[..]                       if @usbs().length
+    hardware.usb = @usbs()[..]                       if @usbs().length # copy !ref
     
     hardware.vgaCard = @graphic()
 
-    vm.settings = {
+    guest.settings = {
              boot       : @bootGuest()
              bootDevice : @bootDevice()
              vnc        : @enableVNC()
              spice      : @enableSpice()
              keyboard   : @keyboard() }
+    guest.settings.numa = { cpuNode:@hostCpuNode(), memNode:@hostMemNode() }
     
-    console.dir vm
-    app.socket.emit 'create-VM', vm
+    console.dir guest
+#    app.socket.emit 'create-VM', guest
 #    @images.remove @disk()
 
   generateMacAddr: ->    

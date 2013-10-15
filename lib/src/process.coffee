@@ -9,7 +9,7 @@ class Process
   
   start: (vmConf) ->
     try
-      args     = parser.vmCfgToArgs vmConf
+      args     = parser.guestConfToArgs vmConf
       console.log "QEMU-Process: Start-Parameters: #{args.args.join(' ')}"
       @process = proc.spawn args.args.shift(), args.args, {stdio: 'inherit', detached: true}
       

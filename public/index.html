@@ -198,8 +198,10 @@
                   <ul class="nav nav-pills nav-stacked">
                     <li class="active"><a data-toggle="tab" data-target="#summaryTab"   >Summary</a></li>
                     <li><a data-toggle="tab" data-target="#nameTab"      >Name</a></li>
+                    <li><a data-toggle="tab" data-target="#hostNumaTab"  >Host-NUMA</a></li>
                     <li><a data-toggle="tab" data-target="#cpuTab"       >CPU</a></li>
                     <li><a data-toggle="tab" data-target="#memoryTab"    >Memory</a></li>
+                    <li><a data-toggle="tab" data-target="#guestNumaTab" >Guest-NUMA</a></li>
                     <li><a data-toggle="tab" data-target="#graphicsTab"  >Graphics</a></li>
                     <li><a data-toggle="tab" data-target="#diskTab"      >Disk</a></li>
                     <li><a data-toggle="tab" data-target="#isoTab"       >ISO</a></li>
@@ -236,6 +238,14 @@
                           <!-- ko if: guestName().length > 2 -->
                             <dd data-bind="text: guestName"></dd>
                           <!-- /ko -->
+                          <dt>&nbsp;</dt>
+                          <dd>&nbsp;</dd>
+                          <dt>Host-NUMA</dt>
+                          <dd>&nbsp;</dd>
+                          <dt>CPU-Node</dt>
+                          <dd data-bind="text: hostCpuNode"></dd>
+                          <dt>Memory-Node</dt>
+                          <dd data-bind="text: hostMemNode"></dd>
                           <dt>&nbsp;</dt>
                           <dd>&nbsp;</dd>
                           <dt>CPU</dt>
@@ -408,6 +418,71 @@
                     </div> <!-- .panel .panel-default -->
                   </div> <!-- .tab-pane #memoryTab -->
                   
+                  <!--
+                  
+                  HOST-NUMA SETTINGS
+                  
+                  -->
+                  <div class="tab-pane" id="hostNumaTab">
+                    <div class="panel panel-default">
+                      <div class="panel-heading">
+                        <h3 class="panel-title">Host-NUMA</h3>
+                      </div> <!-- .panel-heading -->
+                      <div class="panel-body">  
+
+                        <div class="form-group">
+                          <label for="hostCpuNode" class="col-md-2 control-label">CPU-Node</label>
+                          <div class="col-md-8">
+                            <select data-bind="options: hostNodes, value: hostCpuNode" class="form-control" id="hostCpuNode"></select> 
+                            <span class="help-block">Select your preferred CPU-Node</span>
+                          </div>
+                        </div> <!-- .form-group -->
+                        
+                        <div class="form-group">
+                          <label for="hostMemoryNode" class="col-md-2 control-label">Memory-Node</label>
+                          <div class="col-md-8">
+                            <select data-bind="options: hostNodes, value: hostMemNode" class="form-control" id="hostMemoryNode"></select>
+                            <span class="help-block">Select your preferred Memory-Node</span>
+                          </div>
+                        </div> <!-- .form-group -->
+                        
+                        <div class="alert alert-info">The ram of an host system with more than one cpu socket are divided in local and foreign regions. Each cpu socked addresses a piece of ram. This is reffered as Local addressed ram. This porting is directly attached to the cpu socket and can accessed directly. Foreign ram has to be accessed via QPI (Intel QuickPath Interconnect) or HyperTransport (AMD). The cpu socket connects to the forreign memory controller in an other cpu socket and asks for the ram the cpu wants to accesss. This is much slower than local accessed ram. As a consequence Guests memory should be placed in local ram for better performance. For more informatinos about NUMA please reffere to the great RedHat <a href="https://access.redhat.com/site/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Performance_Tuning_Guide/main-cpu.html" target="_blank" class="alert-link">documentation.</a></div>
+                      </div> <!-- .panel-body -->
+                    </div> <!-- .panel .panel-default -->
+                  </div> <!-- .tab-pane #memoryTab -->
+
+                  <!--
+                  
+                  GUEST-NUMA SETTINGS
+                  
+                  -->
+                  <div class="tab-pane" id="guestNumaTab">
+                    <div class="panel panel-default">
+                      <div class="panel-heading">
+                        <h3 class="panel-title">Guest-NUMA</h3>
+                      </div> <!-- .panel-heading -->
+                      <div class="panel-body">  
+
+                        <div class="form-group">
+                          <label for="guestCpuList" class="col-md-2 control-label">CPUs</label>
+                          <div class="col-md-8">
+                            <input type="text" class="form-control" id="guestCpuList" />
+                            <span class="help-block">CPU list, e.g. 0,1,2-4</span>
+                          </div>
+                        </div> <!-- .form-group -->
+                        
+                        <div class="form-group">
+                          <label for="guestMem" class="col-md-2 control-label">Memory</label>
+                          <div class="col-md-8">
+                            <input type="text" class="form-control" id="guestMem" />
+                            <span class="help-block">Memory in MByte. e.g. 1024M</span>
+                          </div>
+                        </div> <!-- .form-group -->
+                      
+                      </div> <!-- .panel-body -->
+                    </div> <!-- .panel .panel-default -->
+                  </div> <!-- .tab-pane #memoryTab -->
+
                   <!--
                   
                   GRAPHICS SETTINGS

@@ -66,4 +66,4 @@ module.exports.start = (httpServer) ->
         sock.emit 'reset-create-vm-form' if ret.status is 'success'
 
 module.exports.toAll = (msg, args...) ->
-  ioServer.sockets.emit msg, args...
+  ioServer.sockets.emit msg, args... if ioServer?.sockets?

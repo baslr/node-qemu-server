@@ -53,16 +53,27 @@ class Args
     return this
   
   ram: (ram) ->
-    @pushArg '-m', ram
+    @pushArg '-m', "#{ram}M"
     return this
   
-  cpus: (n) ->
-    @pushArg '-smp', n
+  # CPU // -smp [cpus=]n[,cores=cores][,threads=threads][,sockets=sockets][,maxcpus=maxcpus]
+  cpus: (cores=1, threads=1, sockets=1) ->
+    @pushArg '-smp', "cpus=#{cores*threads*sockets},cores=#{cores},threads=#{threads},sockets=#{sockets}"
     return this
   
+  # // -cpu model
   cpuModel: (model) ->
     @pushArg '-cpu', model
     return this
+  
+  # NUMA // numactl --cpunodebind={} --membind={}
+  hostNuma: (cpuNode, memNode) ->
+    @args.unshift '--'
+    @args.unshift "--membind=#{memNode}"
+    @args.unshift "--cpunodebind=#{cpuNode}"
+    @args.unshift 'numactl'
+    return this
+  # NUMA
   
   accel: (accels) ->
     @pushArg '-machine', "accel=#{accels}"
