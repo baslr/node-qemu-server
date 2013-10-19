@@ -58,7 +58,7 @@ class Args
   
   # CPU // -smp [cpus=]n[,cores=cores][,threads=threads][,sockets=sockets][,maxcpus=maxcpus]
   cpus: (cores=1, threads=1, sockets=1) ->
-    @pushArg '-smp', "cpus=#{cores*threads*sockets},cores=#{cores},threads=#{threads},sockets=#{sockets}"
+    @pushArg '-smp', "cpus=#{threads*sockets},cores=#{cores},threads=#{threads},sockets=#{sockets}"
     return this
   
   # // -cpu model
