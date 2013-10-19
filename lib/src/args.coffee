@@ -88,7 +88,7 @@ class Args
     return this
     
   usbDevice: (vendorId, productId) ->
-    @pushArg "-usbdevice host:#{vendorId}:#{productId}"
+    @pushArg '-usbdevice', "host:#{vendorId}:#{productId}"
     return this
   
   vnc: (port) ->
@@ -97,9 +97,9 @@ class Args
   
   spice: (port, addr, password = false) ->
     if password is false
-      @pushArg "-spice port=#{port},addr=#{addr},disable-ticketing"
+      @pushArg '-spice', "port=#{port},addr=#{addr},disable-ticketing"
     else
-      @pushArg "-spice port=#{port},addr=#{addr},password='#{password}'"
+      @pushArg '-spice', "port=#{port},addr=#{addr},password='#{password}'"
     return this  
   
   mac: (addr) ->

@@ -347,7 +347,7 @@ class FormCreateVMViewModel
     
     console.dir guest
 #    app.socket.emit 'create-VM', guest
-#    @images.remove @disk()
+#    @disks.remove @disk()
 
   generateMacAddr: ->    
     array = new Uint8Array 24
