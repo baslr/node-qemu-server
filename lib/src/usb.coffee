@@ -20,6 +20,8 @@ module.exports.scan = (cb) ->
     cb usbs if cb?
     return
   
+  usbs = []
+  
   exec 'lsusb', (e, stdout, sterr) ->
     for u in stdout.split('\n')[0...-1]
       continue if -1 < u.search /root hub$/
