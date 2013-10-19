@@ -3,7 +3,7 @@ crypto = require 'crypto'
 
 class Args
   constructor: ->
-    @args    = [ 'qemu-system-x86_64', '-nographic']
+    @args    = [ 'qemu-system-x86_64', '-nographic', '-parallel', 'none', '-serial', 'none']
     @qmpPort = 0
     @macAddr = crypto.randomBytes(6).toString('hex').match(/.{2}/g).join ':'
   
