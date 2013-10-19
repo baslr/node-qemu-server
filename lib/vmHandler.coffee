@@ -63,6 +63,7 @@ module.exports.newIso = (isoName) ->
 
     
 setInterval ->
+  # @ToDo if clients connected
   for vm in vms
     if vm.cfg.status is 'running' and vm.cfg.hardware.disk isnt false
       Disk.info vm.cfg.hardware.disk, (ret) ->
@@ -70,6 +71,7 @@ setInterval ->
 , 60 * 1000
 
 setInterval ->
+  # @ToDo if clients connected
   socketServer.toAll 'set-host', host()
 , 15 * 1000
   
@@ -85,9 +87,9 @@ module.exports.qmpCommand = (qmpCmd, vmName, cb) ->
   cb {type:'error', msg:'VM not available'}
   
 
-module.exports.stopQMP = (vmName) ->
+module.exports.stopQmp = (guestName) ->
   for vm in vms
-    if vm.name is vmName
+    if vm.name is guestName
       vm.stopQMP()
 
 
@@ -143,9 +145,9 @@ module.exports.loadFiles = ->
     vmCfg = JSON.parse fs.readFileSync "#{process.cwd()}/vmConfigs/#{vmCfgFile}"
 
     if vmCfg.settings.qmpPort
-      config.setToUsed 'qmp',     vmCfg.settings.qmpPort
+      config.setToUsed 'qmp',   vmCfg.settings.qmpPort
     if vmCfg.settings.vnc
-      config.setToUsed 'vnc',     vmCfg.settings.vnc
+      config.setToUsed 'vnc',   vmCfg.settings.vnc
     if vmCfg.settings.spice
       config.setToUsed 'spice', vmCfg.settings.spice
 
@@ -169,7 +171,7 @@ module.exports.loadExtensions = ->
     @setExtensionCallback file
 
 module.exports.setExtensionCallback = (extension) ->
-  module.exports[extension] = (vmName) ->
-    for vm in vms
-      if vm.name is vmName
-        (require "#{process.cwd()}/lib/src/vmHandlerExtensions/#{extension}") vm
+  module.exports[extension] = (guestName) ->
+    for guest in vms
+      if guest.name is guestName
+        (require "#{process.cwd()}/lib/src/vmHandlerExtensions/#{extension}") guest
