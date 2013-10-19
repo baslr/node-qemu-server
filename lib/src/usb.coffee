@@ -57,7 +57,7 @@
 exec = require('child_process').exec
 os   = require 'os'
 
-usbs = [{text:'Test Device.', vendorId:'ffff', productId:'ffff'}]
+usbs = [{text:'Test Device. Dont use it!', vendorId:'ffff', productId:'ffff'}]
 
 module.exports.scan = (cb) ->
   if os.type().toLowerCase() isnt 'linux'

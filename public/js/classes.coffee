@@ -307,7 +307,10 @@ class FormCreateVMViewModel
     @disks.remove (disk) ->
       return disk is diskName
       
-  relistUsb: -> app.socket.emit 'relist-usb'
+  relistUsb: =>
+    @usbList.removeAll()
+    @usbList.push {text: 'Updating USB-Device...'}
+    app.socket.emit 'relist-usb'
     
   setUsbs: (usbs) ->
     @usbList.removeAll()
