@@ -281,6 +281,20 @@
                             <dt>ISO</dt>
                             <dd data-bind="text: selectedIso"></dd>
                           <!-- /ko -->
+                          <!-- ko if: usbs().length -->
+                            <dt>&nbsp;</dt>
+                            <dd>&nbsp;</dd>
+                            <dt>USB</dt>
+                            <dd></dd>
+                            <!-- ko foreach: usbs -->
+                              <dt>Device</dt>
+                              <dd data-bind="text: text"></dd>
+                            <!-- /ko -->
+                            <!-- ko if: !enableNet() -->
+                              <dt>&nbsp;</dt>
+                              <dd>&nbsp;</dd>
+                            <!-- /ko -->
+                          <!-- /ko -->                          
                           <!-- ko if: enableNet() -->
                             <dt>&nbsp;</dt>
                             <dd>&nbsp;</dd>
@@ -748,7 +762,7 @@
                           <div class="col-md-8">
                             <div class="input-group">
                               <span class="input-group-btn">
-                                <button class="btn btn-default" type="button" title="relist usb devices" data-bind="click: relistUsb"><span class="glyphicon glyphicon-repeat"></span></button>
+                                <button class="btn btn-default" type="button" title="relist usb devices" data-bind="click: relistUsb"><span class="glyphicon glyphicon-refresh"></span></button>
                               </span>
                               <select data-bind="options: usbList, optionsText:'text', value: selectedUsb" class="form-control" id="usbList"></select>
                               <span class="input-group-btn">
@@ -757,9 +771,13 @@
                             </div>
                             <span class="help-block">select your usb devices</span>
                             
-                            <ul class="list-group" data-bind="foreach: usbs()">
-                              <li class="list-group-item" data-bind="text: text"></li>
-                            </ul>
+                            <div class="panel panel-default" data-bind="visible: usbs().length">
+                              <!-- Default panel contents -->
+                              <div class="panel-heading">Selected USB-Devices</div>
+                              <ul class="list-group" data-bind="foreach: usbs()">
+                                <li class="list-group-item" data-bind="text: text"></li>
+                              </ul>                            
+                            </div> <!-- .panel.panel-default -->
                           </div>
                         </div> <!-- form-group -->
                         
