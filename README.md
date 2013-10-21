@@ -25,7 +25,11 @@ install on Debian GNU/Linux and OS X (assume you have installed qemu, node, npm 
     
 Now open your HTML5 Webbrowser and open http://127.0.0.1:4224
 
-
+![gui_host](https://raw.github.com/baslr/node-qemu-server/feature/new-guest-creation/doc/host.png)
+![gui_guests](https://raw.github.com/baslr/node-qemu-server/feature/new-guest-creation/doc/guests.png)
+![gui_disks](https://raw.github.com/baslr/node-qemu-server/feature/new-guest-creation/doc/disks.png)
+![gui_isos](https://raw.github.com/baslr/node-qemu-server/feature/new-guest-creation/doc/isos.png)
+![guest_creation](https://raw.github.com/baslr/node-qemu-server/feature/new-guest-creation/doc/guest_creation.png)
 
 ---
 setup and control qemu instances with Node.js
