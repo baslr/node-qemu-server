@@ -229,8 +229,6 @@ class FormCreateVMViewModel
     @usbs        = ko.observableArray()
     
     # NUMA START
-    @hostNodes   = [0,1,2,3]
-    
     @hostCpuNode = ko.observable()
     @hostMemNode = ko.observable()
     
@@ -278,8 +276,8 @@ class FormCreateVMViewModel
     @usbs.removeAll()
     
     # NUMA START
-    @hostCpuNode 0
-    @hostMemNode 0
+    @hostCpuNode '0'
+    @hostMemNode '0'
     
     @guestNumaNodes.removeAll()
     # NUMA END

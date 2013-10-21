@@ -448,16 +448,16 @@
                         <div class="form-group">
                           <label for="hostCpuNode" class="col-md-2 control-label">CPU-Node</label>
                           <div class="col-md-8">
-                            <select data-bind="options: hostNodes, value: hostCpuNode" class="form-control" id="hostCpuNode"></select> 
-                            <span class="help-block">Select your preferred CPU-Node</span>
+                            <input data-bind="value: hostCpuNode" type="text" id="hostCpuNode" class="form-control">
+                            <span class="help-block">Type in your Host-NUMA node config for the CPU. E.g. 0,1 or 1-3</span>
                           </div>
                         </div> <!-- .form-group -->
                         
                         <div class="form-group">
                           <label for="hostMemoryNode" class="col-md-2 control-label">Memory-Node</label>
                           <div class="col-md-8">
-                            <select data-bind="options: hostNodes, value: hostMemNode" class="form-control" id="hostMemoryNode"></select>
-                            <span class="help-block">Select your preferred Memory-Node</span>
+                            <input data-bind="value: hostMemNode" type="text" id="hostMemoryNode" class="form-control">
+                            <span class="help-block">type in your Host-NUMA node config for the Memory. E.g. 0,1 or 1-3</span>
                           </div>
                         </div> <!-- .form-group -->
                         
