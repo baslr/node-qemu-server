@@ -5,17 +5,17 @@ node-qemu-server lets you control virtual machines in your webbrowser.
 ### Requirements
 
 #### Linux
-* LSB Linux x86_64 (tested with GNU / Linux Debian essie / Sid)
+* LSB Linux x86_64 (tested with Debian (Sid) GNU/Linux)
 * qemu-system-x86 v1.6.1
 * nodejs v0.10.21
 * npm
-* packages: {numactl, lsusb}
+* packages: {numactl, lsusb} (usb and numa are only available on Linux)
 
 #### OS X
 * v10.8 / v10.9 x86_64 
 * macports qemu v1.6.1
 
-install
+install on Debian GNU/Linux and OS X (assume you have installed qemu, node, npm and numactl)
 
     $ git clone https://github.com/baslr/node-qemu-server
     $ cd node-qemu-server
