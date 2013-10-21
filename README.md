@@ -9,7 +9,7 @@ node-qemu-server lets you control virtual machines in your webbrowser.
 * qemu-system-x86 v1.6.1
 * nodejs v0.10.21
 * npm
-* packages: {numactl, lsusb} (usb and numa are only available on Linux)
+* packages: {numactl, usbutils} (usb and numa are only available on Linux)
 
 #### OS X
 * v10.8 / v10.9 x86_64 
