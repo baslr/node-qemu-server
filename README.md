@@ -1,6 +1,33 @@
 node-qemu-server
 ================
+node-qemu-server lets you control virtual machines in your webbrowser.
 
+### Requirements
+
+#### Linux
+* LSB Linux x86_64 (tested with GNU / Linux Debian essie / Sid)
+* qemu-system-x86 v1.6.1
+* nodejs v0.10.21
+* npm
+* packages: {numactl, lsusb}
+
+#### OS X
+* v10.8 / v10.9 x86_64 
+* macports qemu v1.6.1
+
+install
+
+    $ git clone https://github.com/baslr/node-qemu-server
+    $ cd node-qemu-server
+    $ npm install
+    $ ./cc
+    $ node server
+    
+Now open your HTML5 Webbrowser and open http://127.0.0.1:4224
+
+
+
+---
 setup and control qemu instances with Node.js
 
 more to come in the future
@@ -19,9 +46,9 @@ node-qemu command | qmp command
 qVm.pause()    | {"name": "stop"}
 qVm.reset()    | {"name": "system_reset"}
 qVm.resume()   | {"name": "cont"}
-qVm.shutdown() | {"name": "system_powerdown"} 
-qVm.stop()     | {"name": "quit"}     
-        
+qVm.shutdown() | {"name": "system_powerdown"}
+qVm.stop()     | {"name": "quit"}
+qVm.status()   | {"name": "query-status"}
 
 
 	# in work
@@ -38,7 +65,6 @@ qVm.stop()     | {"name": "quit"}
           {"name": "query-spice"}
           {"name": "query-vnc"}
           {"name": "query-mice"}
-          {"name": "query-status"}
           {"name": "query-kvm"}
           {"name": "query-pci"}
           {"name": "query-cpus"}
@@ -83,32 +109,3 @@ qVm.stop()     | {"name": "quit"}
           {"name": "screendump"}
           {"name": "change"}
           {"name": "eject"}
-
-### example
-    qVm = new new QemuVm 'my-name'
-
-    qVm.gfx()             # no gfx
-    qVm.ram(2048)	      # 2 GiByte ram
-    qVm.cpus(4)		      # 4 cpus
-    qVm.hd('myImage.img') # img file
-    qVm.vnc(2)			  # vnc on port 5902
-    qVm.qmp(4442)		  # qmp port
-    
-    qVm.start ->
-      # do something
-      
-### vm config
-    name: string                                         # string
-      hardware:
-        ram  : uint
-        cpus : uint
-        hds  : []{name:strings,size:uint},string         # if hd not existence create, with size
-        isos : []strings
-        mac  : '11:22:33:44:55:66'
-  
-      settings:
-        qmpPort  : uint                                  # not exposed to user
-        keyboard : string
-        vnc      : unit                                  # vnc port, port = vncPort + 5900
-        bootOnce : true xor false
-        boot     : true xor false
