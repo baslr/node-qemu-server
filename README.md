@@ -1,7 +1,7 @@
 node-qemu-server
 ================
 
-# Check out the working branch.
+## Check out the working branch feature/new-guest-creation
 
 setup and control qemu instances with Node.js
 
