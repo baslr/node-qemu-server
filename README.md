@@ -1,6 +1,8 @@
 node-qemu-server
 ================
 
+# Check out the working branch.
+
 setup and control qemu instances with Node.js
 
 more to come in the future
