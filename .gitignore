@@ -3,4 +3,3 @@
 test.*
 /node_modules
 /test_old
-/public/vendor
