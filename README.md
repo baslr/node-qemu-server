@@ -15,7 +15,8 @@ node-qemu-server lets you control virtual machines in your webbrowser.
 * v10.8 / v10.9 x86_64 
 * macports qemu v1.6.1
 
-install on Debian GNU/Linux and OS X (assume you have installed qemu, node, npm and numactl)
+### Installation
+Install node-qemu-server on Debian GNU/Linux and OS X (assume you have installed qemu, node, npm and numactl)
 
     $ git clone https://github.com/baslr/node-qemu-server
     $ cd node-qemu-server

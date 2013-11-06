@@ -1,11 +1,11 @@
 fs         = require 'fs'
 
-qmpPorts   = {}
 vncPorts   = {}
+qmpPorts   = {}
 spicePorts = {}
 
-qmpPorts[Number port+15000]  = false for port in [1..255]
 vncPorts[Number port]        = false for port in [1..255]
+qmpPorts[Number port+15000]  = false for port in [1..255]
 spicePorts[Number port+15300]= false for port in [1..255]
 
 module.exports.setToUsed = (proto, port) ->

@@ -102,7 +102,7 @@ module.exports.getVms   = -> return vms
 
 
 ###
-  DELETE DISK, ISO
+  DELETE DISK, ISO, GUEST
 ###
 module.exports.deleteIso = (isoName) ->
   try
@@ -122,8 +122,14 @@ module.exports.deleteDisk = (diskName) ->
       if Disk.delete disk
         disks.splice i, 1
         return true
-      else
-        return false
+      return false
+  return false
+
+module.exports.deleteGuest = (guestName) ->
+  for guest,i in vms
+    if guest.name is guestName
+      vms.splice i, 1
+      return true
   return false
 
 
@@ -143,14 +149,11 @@ module.exports.loadFiles = ->
   
   for vmCfgFile in config.getVmConfigs()                                        # vm config files
     vmCfg = JSON.parse fs.readFileSync "#{process.cwd()}/vmConfigs/#{vmCfgFile}"
-
-    if vmCfg.settings.qmpPort
-      config.setToUsed 'qmp',   vmCfg.settings.qmpPort
-    if vmCfg.settings.vnc
-      config.setToUsed 'vnc',   vmCfg.settings.vnc
-    if vmCfg.settings.spice
-      config.setToUsed 'spice', vmCfg.settings.spice
-
+    
+    config.setToUsed 'qmp',   vmCfg.settings.qmpPort if vmCfg.settings.qmpPort
+    config.setToUsed 'vnc',   vmCfg.settings.vnc     if vmCfg.settings.vnc
+    config.setToUsed 'spice', vmCfg.settings.spice   if vmCfg.settings.spice
+    
     vms.push qemu.createVm vmCfg
     
   console.log "vms found in vmConfigs/"

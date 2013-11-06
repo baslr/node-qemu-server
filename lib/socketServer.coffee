@@ -43,8 +43,14 @@ module.exports.start = (httpServer) ->
         if ret.status is 'success'
           sock.emit 'reset-create-disk-form'
           ioServer.sockets.emit 'set-disk', ret.data.data
-
-
+    
+    sock.on 'create-VM', (vmCfg) ->
+      vmHandler.createVm vmCfg, (ret) ->
+        sock.emit 'msg', ret
+        sock.emit 'reset-create-vm-form' if ret.status is 'success'
+    
+    
+    
     sock.on 'delete-disk', (diskName) ->
       if vmHandler.deleteDisk diskName
         sock.emit 'msg', {type:'success', msg:'image deleted'}
@@ -58,12 +64,14 @@ module.exports.start = (httpServer) ->
         ioServer.sockets.emit 'delete-iso', isoName
       else
         sock.emit 'msg', {type:'error', msg:"Can't delete iso #{isoName}."}
-          
-    sock.on 'create-VM', (vmCfg) ->
-      vmHandler.createVm vmCfg, (ret) ->
-        sock.emit 'msg', ret
-        
-        sock.emit 'reset-create-vm-form' if ret.status is 'success'
+    
+    sock.on 'delete-guest', (guestName) ->
+      if vmHandler.deleteGuest guestName
+        sock.emit 'msg', {type:'success', msg:"Deleted guest #{guestName}."}
+        ioServer.sockets.emit 'delete-guest', guestName
+      else
+        sock.emit 'msg', {type:'error', msg:"Can't delete iso #{guestName}."}
+
 
 module.exports.toAll = (msg, args...) ->
   ioServer.sockets.emit msg, args... if ioServer?.sockets?
