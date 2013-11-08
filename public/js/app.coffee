@@ -19,6 +19,9 @@ define (require, exports, module) ->
     isosVM         = new (require 'IsosViewModel')()
     imagesVM       = new (require 'ImageViewModel')()
     vmsVM          = new (require 'VmsViewModel')()
+    hostVM         = new (require 'HostViewModel')()
+    
+    console.dir hostVM
     
     socket = socket.getSocket()
     
@@ -77,7 +80,22 @@ define (require, exports, module) ->
     ko.applyBindings imagesVM,       ($ 'TBODY#imagesList').get  0  
     ko.applyBindings isosVM,         ($ 'TBODY#isosList').get    0
     ko.applyBindings vmsVM,          ($ 'TBODY#vmList').get      0
+    console.dir hostVM.host()
     ko.applyBindings hostVM,         ($ 'TBODY#hostTable').get   0
+    
+    ($ 'FORM#formDiskCreate BUTTON#createDisk').click ->
+      disk = { name:($ 'FORM#formDiskCreate INPUT#diskName').val(), size:($ 'FORM#formDiskCreate INPUT#diskSize').val() }
+      console.dir disk
+      socket.emit 'create-disk', disk
+      
+    uploadCB = (res) ->
+      console.log res.data.status
+  
+    ($ 'DIV#uploadArea').uploader {progressBar:'DIV#isoUploadProgressBar', post:'iso-upload', callback: uploadCB}
+    
+    typeahead = ($ 'INPUT#cpuModel').typeahead local:formCreateVMVM.getCpuModels(), limit:10 
+    typeahead.on 'typeahead:selected', (evt, data) ->
+      formCreateVMVM.cpuModel data
 
 
   undefined
