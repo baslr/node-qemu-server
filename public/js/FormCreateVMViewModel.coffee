@@ -95,9 +95,10 @@ define (require, exports, module) ->
       @enableSpice   = ko.observable()
       
       
-      @enableNet = ko.observable()
-      @macAddr   = ko.observable()
-      @netCard   = ko.observable()
+      @enableNet    = ko.observable()
+      @macAddr      = ko.observable()
+      @netCard      = ko.observable()
+      @bridgeOrHost = ko.observable()
       
       @usbList     = ko.observableArray()
       @selectedUsb = ko.observableArray()
@@ -143,9 +144,10 @@ define (require, exports, module) ->
       @enableVNC     true
       @enableSpice   true
       
-      @enableNet false
+      @enableNet     false
       @generateMacAddr()
-      @netCard   @netCards[6]
+      @netCard       @netCards[6]
+      @bridgeOrHost 'host'
       
       @selectedUsb undefined
       @usbs.removeAll()
@@ -208,8 +210,8 @@ define (require, exports, module) ->
       hardware.partition = if @diskOrPartition() is 'partition' then @partition() else false
       hardware.iso       = if @selectedIso() isnt 'none' then @selectedIso() else false
   
-      hardware.net = {mac: @macAddr(), nic:@netCard()} if @enableNet()
-      hardware.usb = @usbs()[..]                       if @usbs().length # copy !ref
+      hardware.net = {mac: @macAddr(), nic:@netCard(), mode:@bridgeOrHost()} if @enableNet()
+      hardware.usb = @usbs()[..]                                             if @usbs().length # copy !ref
       
       hardware.vgaCard = @graphic()
   

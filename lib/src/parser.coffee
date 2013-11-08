@@ -53,7 +53,7 @@ module.exports.guestConfToArgs = (conf) ->
   # NET CONF
   if hw.net?
     net = hw.net
-    args.net net.mac, net.nic
+    args.net net.mac, net.nic, net.mode
   
   ipAddr = []
   for interfaceName,intfce of os.networkInterfaces()

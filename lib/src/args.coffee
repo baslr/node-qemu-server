@@ -106,12 +106,12 @@ class Args
     @macAddr = addr
     return this
   
-  net: (macAddr, card = 'rtl8139')->
+  net: (macAddr, card = 'rtl8139', mode = 'host')->
     @mac macAddr
     
-    if os.type().toLowerCase() is 'darwin'
+    if      mode is 'host'
       @pushArg '-net', "nic,model=#{card},macaddr=#{macAddr}", '-net', 'user'
-    else
+    else if mode is 'bridge'
       @pushArg '-net', "nic,model=#{card},macaddr=#{macAddr}", '-net', 'tap'
     
     return this

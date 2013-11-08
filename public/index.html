@@ -292,6 +292,8 @@
                             <dd>&nbsp;</dd>
                             <dt>Networking</dt>
                             <dd></dd>
+                            <dt>Networking Mode</dt>
+                            <dd data-bind="text: bridgeOrHost"></dd>
                             <dt>MAC Address</dt>
                             <dd data-bind="text: macAddr"></dd>
                             <dt>NIC</dt>
@@ -607,11 +609,30 @@
                           <div class="col-md-offset-2 col-md-8">
                             <label>
                               <input type="checkbox" data-bind="checked: enableNet">
-                              enable networking
+                              Enable Networking
                             </label>
-                            <span class="help-block">Enable networking</span>
+                            <span class="help-block">Enable Networking</span>
                           </div>
                         </div> <!-- form-group -->
+                        
+                        <div class="form-group" data-bind="visible: enableNet()">
+                          <label for="netCard"  class="col-md-2 control-label">Networking Mode</label>
+                          <div class="col-md-8">
+                            <div class="radio">
+                              <label>
+                                <input type="radio" name="bridgeOrHost" value="bridge" data-bind="checked: bridgeOrHost" />
+                                Bridge
+                              </label>
+                            </div>
+                            
+                            <div class="radio">
+                              <label>
+                                <input type="radio" name="bridgeOrHost" value="host" data-bind="checked: bridgeOrHost" />
+                                Host
+                              </label>
+                            </div>
+                          </div>
+                        </div> <!-- .form-group -->
                         
                         <div class="form-group" data-bind="visible: enableNet()">
                           <label for="macAddress" class="col-md-2 control-label">mac address</label>
