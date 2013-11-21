@@ -106,11 +106,16 @@ class Args
     @macAddr = addr
     return this
   
-  net: (macAddr, card = 'rtl8139', mode = 'host')->
+  net: (macAddr, card = 'rtl8139', mode = 'host', opts)->
     @mac macAddr
     
     if      mode is 'host'
-      @pushArg '-net', "nic,model=#{card},macaddr=#{macAddr}", '-net', 'user'
+      ext = 'user'
+      if opts?
+        ext += ",dhcpstart=#{opts.guestIp}"
+        ext += ",hostfwd=tcp:#{fwd.hostIp}:#{fwd.hostPort}-#{opts.guestIp}:#{fwd.guestPort}" for fwd in opts.fwds
+        
+      @pushArg '-net', "nic,model=#{card},macaddr=#{macAddr}", '-net', ext
     else if mode is 'bridge'
       @pushArg '-net', "nic,model=#{card},macaddr=#{macAddr}", '-net', 'tap'
     
