@@ -2,7 +2,10 @@ exec    = require('child_process').exec
 version = require '../version'
 
 module.exports = (name, cb) ->
-  if version.getVersion() is '1.6.1'
+  ver = version.getVersion()
+
+  if (1 is ver[0] and 6 <= ver[1]) or
+     (1 <  ver[0])
     exec "qemu-img info --output=json #{process.cwd()}/disks/#{name}.img", (err, stdout, stderr) =>    
       if err? or stderr isnt ''
         cb {status:'error', data:[err,stderr]}
