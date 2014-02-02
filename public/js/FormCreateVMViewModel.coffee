@@ -224,7 +224,7 @@ define (require, exports, module) ->
       guest.settings.numa = { cpuNode:@hostCpuNode(), memNode:@hostMemNode() }
       
       console.dir guest
-  #    app.socket.emit 'create-VM', guest
+  #    @socket.emit 'create-VM', guest
   #    @disks.remove @disk()
   
     generateMacAddr: ->    

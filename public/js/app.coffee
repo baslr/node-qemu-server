@@ -6,11 +6,11 @@ requirejs.config
 define (require, exports, module) ->
 
   require 'typeahead'
+  require 'notification'
   require 'uploader'
   socket = require 'socket'
   ko     = require 'ko'
   $      = require 'jquery'
-  
   
   module.exports = ->
     console.log 'app() called'
@@ -94,8 +94,7 @@ define (require, exports, module) ->
     ($ 'DIV#uploadArea').uploader {progressBar:'DIV#isoUploadProgressBar', post:'iso-upload', callback: uploadCB}
     
     typeahead = ($ 'INPUT#cpuModel').typeahead local:formCreateVMVM.getCpuModels(), limit:10 
-    typeahead.on 'typeahead:selected', (evt, data) ->
-      formCreateVMVM.cpuModel data
+    typeahead.on 'typeahead:selected', (evt, data) -> formCreateVMVM.cpuModel data
 
 
   undefined
