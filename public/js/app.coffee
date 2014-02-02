@@ -8,6 +8,8 @@ define (require, exports, module) ->
   require 'typeahead'
   require 'notification'
   require 'uploader'
+  require 'notification'
+  
   socket = require 'socket'
   ko     = require 'ko'
   $      = require 'jquery'

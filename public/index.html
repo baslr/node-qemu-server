@@ -634,6 +634,44 @@
                           </div>
                         </div> <!-- .form-group -->
                         
+                        <div class="form-group" data-bind="visible: enableNet() && bridgeOrHost() == 'host'">
+                          <label for="netOptsGuestIp" class="col-md-2 control-label">Guest IP</label>
+                          <div class="col-md-8">
+                            <input data-bind="value: netOptsGuestIp" type="text" id="netOptsGuestIp" class="form-control">
+                            <span class="help-block">Provide a Guest IP Address (10.0.2.x)</span>
+                          </div>
+                        </div> <!-- form-group GUEST IP -->
+                        
+                        <div class="form-group" data-bind="visible: enableNet() && bridgeOrHost() == 'host'">
+                          <div class="col-md-offset-2 col-md-8">
+                            <label>
+                              <input type="checkbox" data-bind="checked: netOptsEnableFwd">
+                              enable Port-Forwarding
+                            </label>
+                            <span class="help-block">Enable Port-Forwarding</span>
+                          </div>
+                        </div> <!-- form-group ENABLE PORT-FORWARDING -->
+                        
+                        <div class="form-group" data-bind="visible: enableNet() && bridgeOrHost() == 'host' && netOptsEnableFwd()">
+                          <label for="netOptsFwdInput" class="col-md-2 control-label">Port-Forwarding rule</label>
+                          <div class="col-md-8">
+                            <div class="input-group">
+                              <input data-bind="value: netOptsFwdInput" type="text" id="netOptsFwdInput" class="form-control">
+                              <span class="input-group-btn">
+                                <button data-bind="click: addNetFwd" class="btn btn-primary">Add</button>
+                              </span>
+                            </div>
+                            <span class="help-block">Provide your Host IP Address to forward your IP traffic to a specific interface. Format: HostIP,HostPort,GuestPort. Then click Add.</span>
+                            <div class="panel panel-default" data-bind="visible: netOptsFwd().length">
+                              <!-- Default panel contents -->
+                              <div class="panel-heading">Port-Forwarding rules</div>
+                              <ul class="list-group" data-bind="foreach: netOptsFwd()">
+                                <li class="list-group-item" data-bind="text: hostIp + ':'+ hostPort+ '->'+ $root.netOptsGuestIp()+ ':'+ guestPort"></li>
+                              </ul>
+                            </div> <!-- .panel.panel-default -->
+                          </div>
+                        </div> <!-- .form-group PORT-FORWARDING RULES-->
+                        
                         <div class="form-group" data-bind="visible: enableNet()">
                           <label for="macAddress" class="col-md-2 control-label">mac address</label>
                           <div class="col-md-8">
@@ -645,7 +683,7 @@
                             </div>
                             <span class="help-block">type or generate a mac address for your NIC, example 01:23:45:67:89:01</span>
                           </div>
-                        </div> <!-- .form-group -->
+                        </div> <!-- .form-group MAC ADDRESS SELECTION -->
                     
                         <div class="form-group" data-bind="visible: enableNet()">
                           <label for="netCard"  class="col-md-2 control-label">Networkcard controller</label>

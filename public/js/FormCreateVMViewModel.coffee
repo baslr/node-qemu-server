@@ -99,6 +99,10 @@ define (require, exports, module) ->
       @macAddr      = ko.observable()
       @netCard      = ko.observable()
       @bridgeOrHost = ko.observable()
+      @netOptsEnableFwd = ko.observable()
+      @netOptsGuestIp   = ko.observable()
+      @netOptsFwd       = ko.observableArray()
+      @netOptsFwdInput  = ko.observable()
       
       @usbList     = ko.observableArray()
       @selectedUsb = ko.observableArray()
@@ -148,6 +152,10 @@ define (require, exports, module) ->
       @generateMacAddr()
       @netCard       @netCards[6]
       @bridgeOrHost 'host'
+      @netOptsEnableFwd false
+      @netOptsGuestIp   '10.0.2.'
+      @netOptsFwd       []
+      @netOptsFwdInput  ''
       
       @selectedUsb undefined
       @usbs.removeAll()
@@ -198,6 +206,11 @@ define (require, exports, module) ->
         @usbList.remove @selectedUsb()
         @selectedUsb ''
     
+    addNetFwd: =>
+      [hostIp, hostPort, guestPort] = @netOptsFwdInput().split ','
+      @netOptsFwd.push {hostIp:hostIp, hostPort:Number(hostPort), guestPort:Number(guestPort)}
+      @netOptsFwdInput ''
+    
     create: ->
       console.log "create VM"
       guest = { name : @guestName() }
@@ -210,7 +223,13 @@ define (require, exports, module) ->
       hardware.partition = if @diskOrPartition() is 'partition' then @partition() else false
       hardware.iso       = if @selectedIso() isnt 'none' then @selectedIso() else false
   
-      hardware.net = {mac: @macAddr(), nic:@netCard(), mode:@bridgeOrHost()} if @enableNet()
+      if @enableNet()
+        hardware.net = {mac: @macAddr(), nic:@netCard(), mode:@bridgeOrHost()}
+        
+        if @netOptsGuestIp() != '10.0.2.' and @bridgeOrHost() is 'host'
+          hardware.net.opts = { guestIp:@netOptsGuestIp(), fwds:@netOptsFwd()[..] }
+      
+      
       hardware.usb = @usbs()[..]                                             if @usbs().length # copy !ref
       
       hardware.vgaCard = @graphic()
@@ -224,9 +243,10 @@ define (require, exports, module) ->
       guest.settings.numa = { cpuNode:@hostCpuNode(), memNode:@hostMemNode() }
       
       console.dir guest
+      
   #    @socket.emit 'create-VM', guest
   #    @disks.remove @disk()
-  
+    
     generateMacAddr: ->    
 #       array = new Uint8Array 24
 #       window.crypto.getRandomValues array
@@ -242,7 +262,7 @@ define (require, exports, module) ->
 #       console.log mac
       @macAddr macAddr.getUnicast()
       console.log @macAddr()
-      
+  
   
   module.exports = FormCreateVMViewModel
   

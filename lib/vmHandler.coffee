@@ -119,10 +119,13 @@ module.exports.deleteIso = (isoName) ->
 module.exports.deleteDisk = (diskName) ->
   for disk,i in disks
     if disk is diskName
-      if Disk.delete disk
-        disks.splice i, 1
-        return true
-      return false
+      for vm in vms
+        if vm.hardware.disk is diskName
+          if vm.status is 'stopped'
+            if Disk.delete disk
+              disks.splice i, 1
+              return true
+  
   return false
 
 module.exports.deleteGuest = (guestName) ->
