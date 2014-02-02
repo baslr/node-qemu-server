@@ -84,11 +84,11 @@ class Args
     return this
   
   usbOn: ->
-    @pushArg '-usb'
+    @pushArg '-device', 'usb-ehci,id=usb,bus=pci.0,addr=0x4' # pass usb 2.0
     return this
     
   usbDevice: (vendorId, productId) ->
-    @pushArg '-usbdevice', "host:#{vendorId}:#{productId}"
+    @pushArg '-device', "usb-host,vendorid=0x#{vendorId},productid=0x#{productId},id=hostdev0,bus=usb.0"
     return this
   
   vnc: (port) ->
@@ -109,7 +109,7 @@ class Args
   net: (macAddr, card = 'rtl8139', mode = 'host', opts)->
     @mac macAddr
     
-    if      mode is 'host'
+    if      mode is 'host' or os.type().toLowerCase() is 'darwin'
       ext = 'user'
       if opts?
         ext += ",dhcpstart=#{opts.guestIp}"
