@@ -1,11 +1,16 @@
 proc      = require 'child_process'
 pin       = require './pin'
 parser    = require './parser'
+config    = require '../config'
 vmHandler = require '../vmHandler'
 
 class Process
   constructor: ->
     @process = undefined
+  
+  getPid: () ->
+    return @process.pid if @process
+    0
   
   start: (vmConf) ->
     try
@@ -15,10 +20,8 @@ class Process
       # shift first array element, its qemu-system-x86_64 xor numactl
       @process = proc.spawn args.args.shift(), args.args, {stdio: 'inherit', detached: true}
       
-#      console.log "pinnig QEMU-Process"
-#      pin @process.pid, vmConf.hardware.cpus
-      
       @process.on 'exit', (code, signal) ->
+        config.removePid @pid
         if code is 0 then console.log   'QEMU-Process: exit clean.'
         else              console.error "QEMU-Process: exit with error: #{code}, signal: #{signal}"
         vmHandler.SHUTDOWN vmConf.name

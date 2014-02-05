@@ -1,8 +1,17 @@
-fs         = require 'fs'
+
+# TODO implement ps for linux
+
+fs   = require 'fs'
+os   = require 'os'
+exec = require('child_process').exec
 
 vncPorts   = {}
 qmpPorts   = {}
 spicePorts = {}
+try
+  pids = require '../pids.json'
+catch
+  pids = {}
 
 vncPorts[Number port]        = false for port in [1..255]
 qmpPorts[Number port+15000]  = false for port in [1..255]
@@ -60,13 +69,45 @@ module.exports.getVmConfigs = ->
 module.exports.getVmHandlerExtensions = ->
   filesIn = fs.readdirSync "#{process.cwd()}/lib/src/vmHandlerExtensions"
   files   = {}
-  out     = []
   
   files[file.split('.')[0]] = true for file in filesIn
   
-  out.push i for i of files
+  return (i for i of files)
+
+
+savePids = () -> fs.writeFileSync "#{process.cwd()}/pids.json", JSON.stringify pids
+
+module.exports.setPid = (pid, guestName) ->
+  console.log "CONFIG: set pid:#{pid} for #{guestName}"
+  pids[pid] = guestName
   
-  return out
+  savePids()
+
+module.exports.removePid = (pid) ->
+  return if ! pids[pid]?
+  
+  delete pids[pid]
+  console.log "CONFIG: removed pid:#{pid}"
+  savePids()
+
+module.exports.getGuestNameByPid = (pid) -> pids[pid] if pids[pid]?
+
+module.exports.getRunningPids = (cb) ->
+  if 'darwin' is os.type().toLowerCase()
+    exec 'ps ax -o pid,etime,start,lstart,time,comm|grep qemu-system-x86_64', (err, stdout, stderr) ->
+      return cb [] if err
+      
+      tmpPids = stdout.split '\n'
+      tmpPids.pop()
+      
+      retPids = (Number pid.split(' ')[0] for pid in tmpPids)
+      cb retPids
+      
+      console.log 'running pids found:'
+      console.dir retPids
 
 
 # ls #{process.cwd()}/isos/*.iso|sort -f
+
+
+# ps ax -o pid,etime,start,lstart,time,comm|grep qemu-system-x86_64

@@ -116,6 +116,7 @@ module.exports.deleteIso = (isoName) ->
     return false
   return false
 
+# TODO also delete from guest
 module.exports.deleteDisk = (diskName) ->
   for disk,i in disks
     if disk is diskName
@@ -163,10 +164,12 @@ module.exports.loadFiles = ->
   console.log  vms.length
 
 module.exports.reconnectVms = ->
-  for vm in vms
-    if vm.cfg.status isnt 'stopped'
-      console.log "VM #{vm.name} isnt stopped"
-      vm.connectQmp ->
+  config.getRunningPids (pids) ->
+    for pid in pids
+      if guestName = config.getGuestNameByPid pid
+        console.log "#{guestName} for #{pid}"
+        for vm in vms
+          vm.connectQmp ( ->) if vm.name is guestName
 
 module.exports.loadExtensions = ->
   files = config.getVmHandlerExtensions()

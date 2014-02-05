@@ -1,3 +1,4 @@
+config = require '../config'
 proc   = require './process'
 qmp    = require './qmp'
 vmConf = require('./vmCfg')
@@ -16,6 +17,8 @@ class Vm
 
   start: (cb) ->
     @process.start @cfg
+    config.setPid @process.getPid(), @name
+    
     @qmp.connect   @cfg.settings.qmpPort, (ret) =>
       cb ret
       @status()
