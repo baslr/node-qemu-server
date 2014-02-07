@@ -9,7 +9,7 @@ vncPorts   = {}
 qmpPorts   = {}
 spicePorts = {}
 try
-  pids = require '../pids.json'
+  pids = require "#{process.cwd()}/pids.json"
 catch
   pids = {}
 
