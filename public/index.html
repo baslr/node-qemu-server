@@ -638,7 +638,7 @@
                           <label for="netOptsGuestIp" class="col-md-2 control-label">Guest IP</label>
                           <div class="col-md-8">
                             <input data-bind="value: netOptsGuestIp" type="text" id="netOptsGuestIp" class="form-control">
-                            <span class="help-block">Provide a Guest IP Address (10.0.2.x)</span>
+                            <span class="help-block">Provide a Guest IP Address (10.0.2.x), never use x=2</span>
                           </div>
                         </div> <!-- form-group GUEST IP -->
                         
@@ -646,7 +646,7 @@
                           <div class="col-md-offset-2 col-md-8">
                             <label>
                               <input type="checkbox" data-bind="checked: netOptsEnableFwd">
-                              enable Port-Forwarding
+                              Enable Port-Forwarding
                             </label>
                             <span class="help-block">Enable Port-Forwarding</span>
                           </div>
@@ -673,7 +673,7 @@
                         </div> <!-- .form-group PORT-FORWARDING RULES-->
                         
                         <div class="form-group" data-bind="visible: enableNet()">
-                          <label for="macAddress" class="col-md-2 control-label">mac address</label>
+                          <label for="macAddress" class="col-md-2 control-label">Mac Address</label>
                           <div class="col-md-8">
                             <div class="input-group">
                               <input data-bind="value: macAddr" type="text" id="macAddress" class="form-control">
@@ -686,14 +686,18 @@
                         </div> <!-- .form-group MAC ADDRESS SELECTION -->
                     
                         <div class="form-group" data-bind="visible: enableNet()">
-                          <label for="netCard"  class="col-md-2 control-label">Networkcard controller</label>
+                          <label for="netCard"  class="col-md-2 control-label">Networkcard Controller</label>
                           <div class="col-md-8">
                             <select data-bind="options: netCards, value: netCard, enable: macAddr().length == 17 && enableNet()" class="form-control" id="netCard"></select> 
                             <span class="help-block">Select the NIC controller. For Windows without spice guest tools installed use the 'rtl8139' controller. After installed guest tools you can switch to the faster 'virtio' controller.</span>
                           </div>
-                        </div> <!-- .form-group -->
+                        </div> <!-- .form-group NIC SELECTION -->
                         
                         <div class="alert alert-info">
+                          <dl class="dl-horizontal">
+                            <dt>Drivers</dt>
+                            <dd>Use the spice tools for windows from here: <a href="http://spice-place.org" target="_blank">spice-place.org</a>.</dd>
+                          </dl>
                           <dl class="dl-horizontal">
                             <dt>e1000</dt>
                             <dd>Intel e1000 NIC. It is an virtualized gigabit ethernet adapter.</dd>
@@ -712,7 +716,7 @@
                             <dt>virtio</dt>
                             <dd>Paravirtualized gigabit ethernet adapter. If your Guest is Windows then you need to install driver.</dd>
                           </dl>
-                        </div>
+                        </div> <!-- .alert.alert-info -->
                       </div> <!-- .panel-body -->
                     </div> <!-- .panel .panel-default -->
                   </div> <!-- .tab-pane #networkingTab -->
@@ -830,8 +834,14 @@
                               </ul>                            
                             </div> <!-- .panel.panel-default -->
                           </div>
-                        </div> <!-- form-group -->
+                        </div> <!-- form-group SELECT USB DEVICE-->
                         
+                        <div class="alert alert-info">
+                          <dl class="dl-horizontal">
+                            <dt>Drivers</dt>
+                            <dd>For USB-3.0 support use the asflf (formal NEC) frivers from DELL: <a href="http://dell.com" target="_blank">dell.com</a>.</dd>
+                          </dl>
+                        </div> <!-- .alert.alert-info -->
                       </div> <!-- .panel-body -->
                     </div> <!-- .panel .panel-default -->
                   </div> <!-- .tab-pane #usbTab -->

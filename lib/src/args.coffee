@@ -23,7 +23,7 @@ class Args
   nodefaults: ->
     @pushArg '-nodefaults'
     return this
-
+  
   ###
   #   set harddrive, set cdromdrive
   ###  
@@ -83,10 +83,13 @@ class Args
     @pushArg '-enable-kvm'
     return this
   
-  usbOn: ->
-    @pushArg '-device', 'usb-ehci,id=usb,bus=pci.0,addr=0x4' # pass usb 2.0
+  usbOn: (usbVersion = 2) ->
+    if      2 is Number usbVersion
+      @pushArg '-device', 'usb-ehci,id=usb,bus=pci.0,addr=0x4' # pass usb 2.0
+    else if 3 is Number usbVersion
+      @pushArg '-device', 'nec-usb-xhci,id=usb,bus=pci.0,addr=0x4' #p pass usb 3.0
     return this
-    
+  
   usbDevice: (vendorId, productId) ->
     @pushArg '-device', "usb-host,vendorid=0x#{vendorId},productid=0x#{productId},id=hostdev0,bus=usb.0"
     return this
