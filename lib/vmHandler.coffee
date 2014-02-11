@@ -152,7 +152,7 @@ module.exports.loadFiles = ->
   console.dir  disks    
   
   for vmCfgFile in config.getVmConfigs()                                        # vm config files
-    vmCfg = JSON.parse fs.readFileSync "#{process.cwd()}/vmConfigs/#{vmCfgFile}"
+    vmCfg = JSON.parse fs.readFileSync "#{process.cwd()}/vmConfigs/#{vmCfgFile}" # TODO: vmConf get or so
     
     config.setToUsed 'qmp',   vmCfg.settings.qmpPort if vmCfg.settings.qmpPort
     config.setToUsed 'vnc',   vmCfg.settings.vnc     if vmCfg.settings.vnc

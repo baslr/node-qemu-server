@@ -44,8 +44,8 @@ module.exports.start = (httpServer) ->
           sock.emit 'reset-create-disk-form'
           ioServer.sockets.emit 'set-disk', ret.data.data
     
-    sock.on 'create-VM', (vmCfg) ->
-      vmHandler.createVm vmCfg, (ret) ->
+    sock.on 'create-VM', (vmConf) ->
+      vmHandler.createVm vmConf, (ret) ->
         sock.emit 'msg', ret
         sock.emit 'reset-create-vm-form' if ret.status is 'success'
     
