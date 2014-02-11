@@ -21,6 +21,11 @@ Install node-qemu-server on Debian GNU/Linux and OS X (assume you have installed
     $ git clone https://github.com/baslr/node-qemu-server
     $ cd node-qemu-server
     $ npm install
+    $ git submodule init
+    $ git submodule update
+    $ cd public/vendor/
+    $ bower install
+    $ cd ../../
     $ ./cc
     $ node server
     
