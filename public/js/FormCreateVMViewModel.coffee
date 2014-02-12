@@ -240,7 +240,7 @@ define (require, exports, module) ->
                vnc        : @enableVNC()
                spice      : @enableSpice()
                keyboard   : @keyboard() }
-      guest.settings.numa = { cpuNode:Number(@hostCpuNode()), Number(memNode:@hostMemNode()) }
+      guest.settings.numa = { cpuNode:Number(@hostCpuNode()), memNode:Number(@hostMemNode()) }
       
       console.dir guest
       
