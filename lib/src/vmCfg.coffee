@@ -1,21 +1,25 @@
 
-fs = require 'fs'
+fs   = require 'fs'
+yaml = require 'js-yaml'
 
 save = (vmCfg) ->
-  try fs.writeFileSync "vmConfigs/#{vmCfg.name}.json", JSON.stringify vmCfg
+  try
+    ymlObj  = yaml.safeDump vmCfg
+    fs.writeFileSync "#{process.cwd()}/vmConfigs/#{vmCfg.name}.yml", ymlObj
   catch e
-    console.error "save error"
+    console.error 'save error'
     console.dir    e
     return false
   return true
 
-open = (vmName, cb) ->
+open = (confName, cb) ->
   try
-    cfg = fs.readFileSync "vmConfigs/#{vmName}.json"
-    cb {status:'success', data:JSON.parse(cfg)}
+    conf = yaml.safeLoad fs.readFileSync "#{process.cwd()}/vmConfigs/#{confName}", 'utf8'
   catch e
-    console.dir e
-    cb {status:'error', data:undefined}
+    console.log 'open error'
+    console.dir  e
+    return false
+  return conf
 
 exports.save = save
 exports.open = open

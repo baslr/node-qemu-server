@@ -64,8 +64,8 @@ class Qmp
                 else
                   @dataCb 'data':parsedData.return
               else
-                console.error "cant process Data"
-                console.error parsedData
+                console.error 'Cant process Data:'
+                console.dir    parsedData
               @dataCb = undefined
             else
 #               console.log "no callback defined:"

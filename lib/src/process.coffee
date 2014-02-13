@@ -1,11 +1,10 @@
 proc      = require 'child_process'
-pin       = require './pin'
 parser    = require './parser'
 config    = require '../config'
 vmHandler = require '../vmHandler'
 
 class Process
-  constructor: ->
+  constructor: () ->
     @process = undefined
   
   getPid: () ->

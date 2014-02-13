@@ -62,7 +62,7 @@ module.exports.getVmConfigs = ->
   guestConfs = fs.readdirSync "#{process.cwd()}/vmConfigs"
   guests     = []
   for name in guestConfs
-    guests.push name if 0 < name.search /\.json$/
+    guests.push name if 0 < name.search /\.yml$/
   return guests
 
 
@@ -97,8 +97,8 @@ module.exports.getRunningPids = (cb) ->
     exec 'ps ax -o pid,etime,start,lstart,time,comm|grep qemu-system-x86_64', (err, stdout, stderr) ->
       return cb [] if err
       
-      tmpPids = stdout.split '\n'
-      tmpPids.pop()
+      tmpPids = stdout.trim().split '\n'
+      tmpPids.pop() if tmpPids.length > 1
       
       retPids = (Number pid.split(' ')[0] for pid in tmpPids)
       cb retPids
