@@ -8,12 +8,13 @@ class Vm
     @name    = @cfg.name
     @process = new proc.Process()
     @qmp     = new qmp.Qmp @name
-
-    vmConf.save @cfg
+    @saveConf()
+  
+  saveConf: () -> vmConf.save @cfg
   
   setStatus: (status) ->
     @cfg.status = status
-    vmConf.save @cfg
+    @saveConf()
 
   start: (cb) ->
     @process.start @cfg
