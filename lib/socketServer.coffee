@@ -50,6 +50,10 @@ module.exports.start = (httpServer) ->
         sock.emit 'reset-create-vm-form' if ret.status is 'success'
     
     
+    sock.on 'change-guest-conf-entry', (guestName, conf) ->
+      vmHandler.changeGuestConfEntry guestName, conf
+    
+    
     
     sock.on 'delete-disk', (diskName) ->
       if vmHandler.deleteDisk diskName
