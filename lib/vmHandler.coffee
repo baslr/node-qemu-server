@@ -12,6 +12,13 @@ isos  = []
 disks = []
 vms   = []
 
+
+getGuestByName = (guestName) ->
+  for guest in vms
+    return guest if guestName is guest.name
+  throw new Error "Guest: #{guestName} not Found"
+
+
 module.exports.createDisk = (disk, cb) ->
   Disk.create disk, (ret) ->
     if      ret.status is 'error'
@@ -53,6 +60,15 @@ module.exports.createVm = (vmCfg, cb) ->
   cb {status:'success', msg:'created vm'}
 
 
+module.exports.changeGuestConfEntry =(guestName, conf) ->
+  try
+    guest = getGuestByName guestName
+    data  = conf.access.split '.'
+    b     = guest.cfg
+    b     = b[data.shift()] while data.length > 1
+    b[data.shift()] = conf.val
+    guest.saveConf()
+
 ###
   NEW ISO
 ###  
@@ -79,18 +95,18 @@ setInterval ->
 ###
 
 ###
-module.exports.qmpCommand = (qmpCmd, vmName, cb) ->
-  for vm in vms
-    if vm.name is vmName
-      vm[qmpCmd](->)
-      return
-  cb {type:'error', msg:'VM not available'}
-  
+module.exports.qmpCommand = (qmpCmd, guestName, cb = () ->) ->
+  try
+    guest = getGuestByName guestName
+    guest[qmpCmd](->)
+  catch e
+    cb {type:'error', msg:'VM not available'}
+
 
 module.exports.stopQmp = (guestName) ->
-  for vm in vms
-    if vm.name is guestName
-      vm.stopQMP()
+  try
+    guest = getGuestByName guestName
+    guest.stopQMP()
 
 
 ###
