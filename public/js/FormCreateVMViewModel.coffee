@@ -1,6 +1,7 @@
 
 define (require, exports, module) ->
 
+  guestDef= require 'GuestDefaults'
   macAddr = require 'mac-addr'
   socket  = require 'socket'
   ko      = require 'ko'
@@ -12,9 +13,9 @@ define (require, exports, module) ->
       @isos  = ko.observableArray ['none']
       
       @bootDevices = ['disk',        'iso']
-      @keyboards   = ['ar', 'da', 'de',  'de-ch', 'en-gb', 'en-us', 'es', 'et', 'fi', 'fo', 'fr', 'fr-be', 'fr-ca', 'fr-ch', 'hr', 'hu', 'is', 'it', 'ja', 'lt', 'lv', 'mk', 'nl', 'nl-be', 'no', 'pl', 'pt', 'pt-br', 'ru', 'sl', 'sv', 'th', 'tr']
-      @netCards    = ['e1000', 'i82551', 'i82557b', 'i82559er', 'ne2k_pci', 'pcnet', 'rtl8139', 'virtio']
-      @graphics    = ['none', 'std', 'qxl']
+      @keyboards   = guestDef.getKeyboardConf()
+      @netCards    = guestDef.getNicConf()
+      @graphics    = guestDef.getGraphicsConf()
   
       @cpuModels = [  {value:'QEMU 32-bit Virtual CPU version 1.7.0',     qValue:'qemu32',      tokens:['32bit', 'qemu']}
                     , {value:'QEMU 64-bit Virtual CPU version 1.7.0',     qValue:'qemu64',      tokens:['64bit', 'qemu']}
@@ -64,17 +65,17 @@ define (require, exports, module) ->
       
       
       @memory = []
-      @memory.push    {num:i, mem:"#{i} MiByte"} for i in [128,256,512,1024,2048,4096,6144,8192,16384]
+      @memory.push    {num:i, mem:"#{i} MiByte"} for i in guestDef.getRamConf()
       
       @cpuModel       = ko.observable()
       
-      @sockets        = (i for i in [1..4])
+      @sockets        = guestDef.getSocketsConf()
       @socketCount    = ko.observable()
       
-      @cores          = (i for i in [1..20])
+      @cores          = guestDef.getCoresConf()
       @coreCount      = ko.observable()
       
-      @threads        = (i for i in [1..20])
+      @threads        = guestDef.getThreadsConf()
       @threadCount    = ko.observable()
       
       @selectedMemory = ko.observable()
