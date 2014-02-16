@@ -16,8 +16,8 @@ define (require, exports, module) ->
       @netCards    = ['e1000', 'i82551', 'i82557b', 'i82559er', 'ne2k_pci', 'pcnet', 'rtl8139', 'virtio']
       @graphics    = ['none', 'std', 'qxl']
   
-      @cpuModels = [  {value:'QEMU 32-bit Virtual CPU version 1.6.1',     qValue:'qemu32',      tokens:['32bit', 'qemu']}
-                    , {value:'QEMU 64-bit Virtual CPU version 1.6.1',     qValue:'qemu64',      tokens:['64bit', 'qemu']}
+      @cpuModels = [  {value:'QEMU 32-bit Virtual CPU version 1.7.0',     qValue:'qemu32',      tokens:['32bit', 'qemu']}
+                    , {value:'QEMU 64-bit Virtual CPU version 1.7.0',     qValue:'qemu64',      tokens:['64bit', 'qemu']}
                     , {value:'Common 32-bit KVM processor',               qValue:'kvm32',       tokens:['32bit', 'kvm']}
                     , {value:'Common 64-bit KVM processor',               qValue:'kvm64',       tokens:['64bit', 'kvm']}
                     , {value:'Intel® Pentium I',                          qValue:'pentium',     tokens:['32bit', 'intel', 'pentium']}
