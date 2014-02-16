@@ -53,6 +53,142 @@
 
         <!-- LIST GUESTS TAB -->
         <div class="tab-pane active" id="listVMsTab">
+          <div class="row" style="margin:20px;" id="guestDetails">
+            <div class="col-md-2">
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Guests</h3>
+                </div> <!-- .panel-heading -->
+                <div class="panel-body">
+                  <ul class="nav nav-pills nav-stacked" data-bind="foreach: names">
+                    <li data-bind="click: $parent.selectGuest"><a data-toggle="tab" data-bind="text: $data"></a></li>
+                  </ul>
+                </div> <!-- .panel-body -->
+              </div> <!-- .panel panel-default -->
+            </div> <!-- col-md-2 -->
+            <div class="col-md-10">
+
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Details for Guest: <span data-bind="text: guest().name"></span></h3>
+                </div> <!-- .panel-heading -->
+                <div class="panel-body">
+                  <div style="width:500px;height:40px;float:left;"><div style="margin-bottom:0px; margin-right:5px; padding:0px; text-align:center; width:100px; height:30px; line-height:2.0;float:left;" class="alert" data-bind="text: guest().status, css: { 'alert-danger': guest().status() == 'stopped', 'alert-success' : guest().status() == 'running', 'alert-warning' : guest().status() == 'paused'}"></div>
+                  
+                  <button data-bind="click: $root.qmp('start'),  visible: guest().status() == 'stopped'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-off" /></button>
+                  <button data-bind="click: $root.qmp('pause'),  visible: guest().status() != 'stopped' && guest().status() != 'paused'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pause" /></button>
+                  <button data-bind="click: $root.qmp('resume'), visible: guest().status() != 'stopped' && guest().status() != 'running'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-play" /></button>
+                  <button data-bind="click: $root.qmp('stop'),   visible: guest().status() != 'stopped'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-stop" /></button>
+                  <button data-bind="click: $root.qmp('reset'),  visible: guest().status() != 'stopped'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-repeat" /></button></div>
+                  
+                  <div class="panel panel-default" style="float:left;clear:both;">
+                    <div class="panel-heading">
+                      <h3 class="panel-title">Computing</h3>
+                    </div>
+                    <div class="panel-body">
+                      <dl class="dl-horizontal">
+                        <dt>Model</dt>
+                        <dd data-bind="text: guest().hardware.cpu.model"></dd>
+                        <dt>Sockets</dt>
+                        <dd data-bind="text: guest().hardware.cpu.sockets"></dd>
+                        <dt>Cores</dt>
+                        <dd data-bind="text: guest().hardware.cpu.cores"></dd>
+                        <dt>Threads</dt>
+                        <dd data-bind="text: guest().hardware.cpu.threads"></dd>
+                        <dt>&nbsp;</dt>
+                        <dd>&nbsp;</dd>
+                        <dt>RAM</dt>
+                        <dd><span data-bind="text: guest().hardware.ram"></span> MB</dd>
+                      </dl>
+                    </div>
+                  </div> <!-- .panel.panel-default -->
+                  
+                  <div class="panel panel-default" style="float:left; margin-left:5px;">
+                    <div class="panel-heading">
+                      <h3 class="panel-title">Visual</h3>
+                    </div>
+                    <div class="panel-body">
+                      <dl class="dl-horizontal">
+                        <dt>GPU</dt>
+                        <dd data-bind="text: guest().hardware.vgaCard"></dd>
+                        <dt>VNC-Port</dt>
+                        <dd data-bind="text: guest().settings.vnc"></dd>
+                        <dt>SPICE-Port</dt>
+                        <dd data-bind="text: guest().settings.spice"></dd>
+                      </dl>
+                    </div>
+                  </div> <!-- .panel.panel-default -->
+                  
+                  <div class="panel panel-default" style="float:left; margin-left:5px;">
+                    <div class="panel-heading">
+                      <h3 class="panel-title">Storage</h3>
+                    </div>
+                    <div class="panel-body">
+                      <dl class="dl-horizontal">
+                        <dt>Use Snapshot</dt>
+                        <dd><input type="checkbox" data-bind="enable: guest().status() == 'stopped', checked: guest().settings.snapshot, event: {change: changed('settings.snapshot')}" /></dd>
+                        <!-- ko if: guest().hardware.disk -->
+                        <dt>Disk</dt>
+                        <dd data-bind="text: guest().hardware.disk"></dd>
+                        <!-- /ko -->
+                        <!-- ko if: guest().hardware.partition -->
+                        <dt>Partition</dt>
+                        <dd data-bind="text: guest().hardware.partition"></dd>
+                        <!-- /ko -->
+                        <!-- ko if: guest().hardware.iso -->
+                        <dt>Iso</dt>
+                        <dd data-bind="text: guest().hardware.iso"></dd>
+                        <!-- /ko -->
+                      </dl>
+                    </div>
+                  </div> <!-- .panel.panel-default -->
+                  
+                  <div class="panel panel-default" style="float:left; margin-left:5px;">
+                    <div class="panel-heading">
+                      <h3 class="panel-title">Networking</h3>
+                    </div>
+                    <div class="panel-body">
+                      <dl class="dl-horizontal">
+                        <dt>Mode</dt>
+                        <dd data-bind="text: guest().hardware.net.mode"></dd>
+                        <dt>NIC</dt>
+                        <dd data-bind="text: guest().hardware.net.nic"></dd>
+                        <dt>MAC</dt>
+                        <dd data-bind="text: guest().hardware.net.mac"></dd>
+                      </dl>
+                    </div>
+                  </div> <!-- .panel.panel-default -->
+                  
+                  <div class="panel panel-default" style="float:left; margin-left:5px;">
+                    <div class="panel-heading">
+                      <h3 class="panel-title">Settings</h3>
+                    </div>
+                    <div class="panel-body">
+                      <dl class="dl-horizontal">
+                        <dt>Keyboard</dt>
+                        <dd data-bind="text: guest().settings.keyboard"></dd>
+                        <dt>Boot Device</dt>
+                        <dd data-bind="text: guest().settings.bootDevice"></dd>
+                        <dt>Boot on Startup</dt>
+                        <dd data-bind="text: guest().settings.boot"></dd>
+                      </dl>
+                    </div>
+                  </div> <!-- .panel.panel-default -->
+
+                  
+                </div> <!-- .panel-body -->
+              </div> <!-- .panel .panel-default -->
+
+            
+            </div> <!-- .col-md-10 -->
+          </div> <!-- .row -->
+          
+          
+          
+          
+          
+          
+          
           <table class="table table-striped">
             <thead>
               <tr>
@@ -91,6 +227,7 @@
                 </td>
                 <td colspan="9">
                   <button data-bind="click: $root.start, visible: status() == 'stopped' "  class="btn btn-default btn-sm"><span class="glyphicon glyphicon-off" /></button>
+                  <input type="checkbox" class="form-control" style="width:20px;" />
                   <button data-bind="click: $root.pause, visible: status() != 'stopped' && status() != 'paused'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pause" /></button>
                   <button data-bind="click: $root.resume, visible: status() != 'stopped' && status() != 'running'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-play" /></button>
                   <button data-bind="click: $root.stop, visible: status() != 'stopped'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-stop" /></button>

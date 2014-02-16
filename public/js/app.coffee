@@ -22,6 +22,7 @@ define (require, exports, module) ->
     imagesVM       = new (require 'ImageViewModel')()
     vmsVM          = new (require 'VmsViewModel')()
     hostVM         = new (require 'HostViewModel')()
+    detailsVM      = new (require 'GuestDetailsViewModel')()
     
     console.dir hostVM
     
@@ -37,14 +38,17 @@ define (require, exports, module) ->
       formCreateVMVM.setUsbs usbs
     
     socket.on 'set-vm', (vm) ->
+      console.log 'set-vm'
       console.dir vm
+      detailsVM.add vm
       vmsVM.add vm
     
       formCreateVMVM.deleteDisk vm.hardware.disk if vm.hardware.disk
     
-    socket.on 'set-vm-status', (vmName, status) ->
-      console.log "VM status #{vmName} #{status}"
-      vmsVM.setStatus vmName, status
+    socket.on 'set-vm-status', (guestName, status) ->
+      console.log "VM status #{guestName} #{status}"
+      vmsVM.setStatus guestName, status
+      detailsVM.setStatus guestName, status
       
     socket.on 'set-disk', (disk) ->
       console.log 'set-disk'
@@ -82,8 +86,8 @@ define (require, exports, module) ->
     ko.applyBindings imagesVM,       ($ 'TBODY#imagesList').get  0  
     ko.applyBindings isosVM,         ($ 'TBODY#isosList').get    0
     ko.applyBindings vmsVM,          ($ 'TBODY#vmList').get      0
-    console.dir hostVM.host()
     ko.applyBindings hostVM,         ($ 'TBODY#hostTable').get   0
+    ko.applyBindings detailsVM,      ($ 'DIV#guestDetails').get  0
     
     ($ 'FORM#formDiskCreate BUTTON#createDisk').click ->
       disk = { name:($ 'FORM#formDiskCreate INPUT#diskName').val(), size:($ 'FORM#formDiskCreate INPUT#diskSize').val() }
