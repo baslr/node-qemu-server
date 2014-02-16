@@ -37,6 +37,10 @@ class Args
     @pushArg '-drive', "file=isos/#{img},media=cdrom,if=#{intf}"
     return this
   
+  snapshot: () ->
+    @pushArg '-snapshot'
+    return this
+  
   boot: (type, once = true) ->
     args = ''
     if once is true
@@ -74,6 +78,10 @@ class Args
     @args.unshift 'numactl'
     return this
   # NUMA
+  
+  machine: (machine) ->
+    @pushArg '-machine', "type=#{machine}"
+    return this
   
   accel: (accels) ->
     @pushArg '-machine', "accel=#{accels}"
