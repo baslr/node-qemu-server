@@ -248,19 +248,7 @@ define (require, exports, module) ->
   #    @socket.emit 'create-VM', guest
   #    @disks.remove @disk()
     
-    generateMacAddr: ->    
-#       array = new Uint8Array 24
-#       window.crypto.getRandomValues array
-#       hex = ''
-#       hex += n.toString 16 for n in array
-#       
-#       mac = hex.slice(0,12).match(/.{2}/g).join(':')
-#       bin = "0000#{parseInt(mac.charAt(1), 16).toString 2}".slice -4 # at position, from 0, 1 convert from base 16 to base 2
-#       bin = "#{bin.slice 0,3}0"
-#   
-#       @macAddr "#{mac.charAt 0}#{parseInt(bin, 2).toString 16}:#{mac.slice 3}"
-#       
-#       console.log mac
+    generateMacAddr: ->
       @macAddr macAddr.getUnicast()
       console.log @macAddr()
   
