@@ -87,6 +87,9 @@ module.exports.guestConfToArgs = (conf) ->
 
   args.cd  hw.iso if hw.iso
   args.vnc st.vnc if st.vnc
+  
+  # SNAPSHOT
+  args.snapshot() if st.snapshot
 
     
   if st.boot then switch st.bootDevice
