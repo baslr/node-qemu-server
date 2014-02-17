@@ -102,7 +102,7 @@ module.exports.getRunningPids = (cb) ->
     return cb [] if err
     
     tmpPids = stdout.trim().split '\n'
-    tmpPids.pop() if tmpPids.length > 1
+    tmpPids.pop() if '' is tmpPids[tmpPids.length-1]
     
     retPids = (Number pid.split(' ')[0] for pid in tmpPids)
     cb retPids
