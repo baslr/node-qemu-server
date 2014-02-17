@@ -93,21 +93,21 @@ module.exports.removePid = (pid) ->
 module.exports.getGuestNameByPid = (pid) -> pids[pid] if pids[pid]?
 
 module.exports.getRunningPids = (cb) ->
-  if 'darwin' is os.type().toLowerCase()
-    exec 'ps ax -o pid,etime,start,lstart,time,comm|grep qemu-system-x86_64', (err, stdout, stderr) ->
-      return cb [] if err
-      
-      tmpPids = stdout.trim().split '\n'
-      tmpPids.pop() if tmpPids.length > 1
-      
-      retPids = (Number pid.split(' ')[0] for pid in tmpPids)
-      cb retPids
-      
-      console.log 'running pids found:'
-      console.dir retPids
-
+  if      'darwin' is os.type().toLowerCase()
+    cmd = 'ps ax -o pid,etime,start,lstart,time,comm|grep qemu-system-x86_64'
+  else if 'linux' is os.type().toLowerCase()
+    cmd = 'ps --no-headers -o pid,etime,start,lstart,time,comm -C qemu-system-x86_64'
+  
+  exec cmd, (err, stdout, stderr) ->
+    return cb [] if err
+    
+    tmpPids = stdout.trim().split '\n'
+    tmpPids.pop() if tmpPids.length > 1
+    
+    retPids = (Number pid.split(' ')[0] for pid in tmpPids)
+    cb retPids
+    
+    console.log 'running pids found:'
+    console.dir retPids
 
 # ls #{process.cwd()}/isos/*.iso|sort -f
-
-
-# ps ax -o pid,etime,start,lstart,time,comm|grep qemu-system-x86_64
