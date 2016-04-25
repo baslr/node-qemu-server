@@ -1,5 +1,4 @@
 .DS_Store
-*.js
 test.*
 /node_modules
 /test_old

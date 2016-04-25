@@ -1,10 +1,6 @@
 {
   "dependencies": {
-    "coffee-script": "~1.6.3",
-    "node-static": "~0.6.9",
-    "socket.io": "~0.9.16",
-    "mocha": "~1.13.0",
-    "js-yaml": "~3.0.1",
-    "ppm-bin": "~1.0.1"
+    "express": "4.13.4",
+    "serve-static": "1.10.2"
   }
 }
