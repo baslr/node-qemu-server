@@ -43,6 +43,13 @@ const tests = [
 // net
 ,['net', ['myMacAddr', 'myCard', 'user'], ['-net', 'nic,model=myCard,macaddr=myMacAddr', '-net', 'user']]
 ,['net', ['myMacAddr', 'myCard', 'user', {guestIp:'gIp',fwds:[{hostIp:'hIp',hostPort:'hPort', guestPort:'gPort'}]}], ['-net', 'nic,model=myCard,macaddr=myMacAddr', '-net', 'user,dhcpstart=gIp,hostfwd=tcp:hIp:hPort-gIp:gPort']]
+
+
+// drives
+,['drive', ['disk',      '/myPath.img', 'virtio'], ['-drive', 'file=/myPath.img,media=disk,if=virtio']]
+,['drive', ['partition', '/dev/sdb1',   'virtio'], ['-drive', 'file=/dev/sdb1,media=disk,if=virtio,cache=none']]
+,['drive', ['cdrom',     '/myCd.iso',   'virtio'], ['-drive', 'file=/myCd.iso,media=cdrom,if=virtio']]
+
 ]
 
 
