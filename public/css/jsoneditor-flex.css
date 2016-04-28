@@ -1,0 +1,33 @@
+/*DIV.jsoneditor {*/
+  /*width: inherit;
+  height: inherit;*/
+/*  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}*/
+
+/*DIV.jsoneditor-menu {
+  width: inherit;
+  flex-grow: 1;
+}*/
+
+/*DIV.jsoneditor-outer {
+  width: inherit;
+  height: inherit;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 99;
+}*/
+
+/*DIV.jsoneditor-tree {*/
+/*  width: inherit;
+  height: inherit;*/
+  /*position: inherit;*/
+/*  display: flex;
+  flex-direction: column;
+  flex-grow:99;
+}*/
+
+div.jsoneditor-contextmenu ul li button.jsoneditor-default {
+    width: 90px;
+}

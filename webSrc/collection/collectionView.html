@@ -1,0 +1,48 @@
+<form class="form-inline">
+  <div class="form-group">
+    <i class="fa fa-file-text-o" title="collection id"></i>&nbsp;{{collectionInfo.id}}&nbsp;&nbsp;&nbsp;<i class="fa fa-files-o" title="{{collectionInfo.count}} documents"></i>&nbsp;{{format(collectionInfo.count, 2, 'math')}}&nbsp;&nbsp;&nbsp;
+  </div>
+  <div class="input-group input-group-sm" style="">
+    <span class="input-group-btn">
+      <button class="btn btn-sm btn-primary btn-primary-outline" title="show / hide filter input field" data-ng-click="toggleFastFilterTexterea()"><i class="fa fa-fighter-jet"></i><i class="fa fa-filter"></i><i class="fa fa-sort"></i></button>
+    </span>
+    <select title="click to select a rule" class="form-control" data-ng-model="fastFilter.selectedRule" data-ng-options="key as value.name for (key, value) in rules" data-ng-change="fastFilterRuleChanged()" style="height:32px;"></select>
+  </div>
+</form>
+
+  <!-- angluar 1.5 orderBy with object :S -->
+<textarea data-ng-if="fastFilter.active" id="filterRuleText" rows="{{fastFilter.editableRule.split('\n').length+1}}" data-ng-model-options="{ debounce: { 'default': 1000}}" class="form-control" style="font-family:monospace; white-space: pre; margin-top:5px;" title="describe your filter here. Eg. filter doc._key == 'abcd'" data-ng-change="applyFastFilter()" data-ng-blur="applyFastFilter(true)" data-ng-model="fastFilter.editableRule"></textarea>
+
+<nav>
+  <ul class="pagination pagination-sm">
+    <li class="page-item">
+      <a class="page-link" href="#" aria-label="Previous">
+        <span aria-hidden="true">&laquo;</span>
+        <span class="sr-only">Previous</span>
+      </a>
+    </li>
+    <li data-ng-repeat="idx in pages" class="page-item" data-ng-class="{active:((idx-1)*batchSize == from)}">
+      <a class="page-link" href="database/{{params.currentDatabase}}/collection/{{params.currentCollection}}/{{(idx-1)*batchSize}}/{{(idx-1)*batchSize+batchSize-1}}">{{idx}}</a>
+    </li>
+
+    <li class="page-item">
+      <a class="page-link" href="#" aria-label="Next">
+        <span aria-hidden="true">&raquo;</span>
+        <span class="sr-only">Next</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+
+<table class="table table-sm" data-ng-if="docs.length" style="table-layout: fixed;">
+  <thead style="text-algin:left;">
+    <td style="width:80%;"><b>content</b></td>
+    <td style="width:200px;"><b>_key</b></td>
+  </thead>
+  <tbody>
+    <tr data-ng-repeat="doc in docs">
+      <td><a href="database/{{params.currentDatabase}}/collection/{{params.currentCollection}}/{{params.from}}/{{params.to}}/{{$index}}/document/{{doc._key}}"><pre style="padding-right:30px;overflow:hidden;text-overflow:ellipsis;margin:0px;">{{doc}}</pre></a></td>
+      <td style="text-overflow:hidden;overflow:hidden;">{{doc._key}}</td>
+    </tr>
+  </tbody>
+</table>

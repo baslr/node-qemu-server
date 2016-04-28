@@ -1,0 +1,31 @@
+
+
+<i class="fa fa-file-text-o" title="document id"></i>&nbsp;{{_doc._id}}&nbsp;&nbsp;&nbsp;<i class="fa fa-code-fork" title="revision"></i>&nbsp;{{_doc._rev}}&nbsp;&nbsp;&nbsp;<i class="fa fa-key" title="key"></i>&nbsp;{{_doc._key}}
+
+<!-- <pre style="flex-grow:1;">{{doc}}</pre>
+
+<pre style="flex-grow:1;">{{params}}</pre> -->
+
+<div style="position: relative;top: 33px;left: 200px;z-index: 100;width:500px;">
+  <a class="btn btn-sm btn-primary" href="{{docsLink}}" title="overview"><i class="fa fa-arrow-circle-up"></i></a>
+
+  <a data-ng-class="{disabled:from <= 0 && index <= 0}" class="btn btn-sm btn-primary" href="{{prevDocLink}}" title="previouse document"><i class="fa fa-arrow-circle-left"></i></a>
+
+  <a data-ng-class="{disabled:1==_keys.length || (2==_keys.length && (from!=0 || index != 0))}" class="btn btn-sm btn-primary" href="{{nextDocLink}}" title="next document"><i class="fa fa-arrow-circle-right"></i></a>
+
+  <label class="radio-inline">
+    <input type="radio" name="inlineRadioOptions" id="inlineRadio1" data-ng-model="obj.options.mode" value="tree" data-ng-disabled="!obj.canSave"> tree
+  </label>
+  <label class="radio-inline">
+    <input type="radio" name="inlineRadioOptions" id="inlineRadio2" data-ng-model="obj.options.mode" value="code" data-ng-disabled="!obj.canSave"> code
+  </label>
+  <button title="save" class="btn btn-primary btn-sm" data-ng-disabled="!obj.canSave" data-ng-click="saveDoc()"><i class="fa fa-floppy-o"></i></button>
+
+  <button title="delete" class="btn btn-primary btn-sm" data-ng-click="deleteDoc()"><i class="fa fa-trash-o"></i></i></button>
+
+
+  
+</div>
+
+
+<div ng-jsoneditor="editorLoaded" ng-model="obj.data" options="obj.options" style="height:500px;" id="ngeditor"></div>

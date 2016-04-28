@@ -1,0 +1,31 @@
+* { padding: 0; margin: 0; }
+
+html, body {
+  height: 100vh;
+  width: 100vw;
+
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+}
+
+body > * {
+  flex-shrink: 0;
+}
+
+.div1 {
+  flex-grow: 1;
+  max-width: 15vw;
+  overflow: scroll;
+  /*min-width: 1vw;*/
+  /*display: none;*/
+}
+
+.div2 {
+  display: flex;
+  flex-direction:column;
+  flex-grow: 99999;
+  width: 85vw;
+  /*width:100%;*/
+  /*max-width: 100vw;*/
+}

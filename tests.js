@@ -8,9 +8,13 @@ const startArgs   = (new Parser().args);
 const sliceLength = startArgs.length;
 
 
+
 const tests = [
  ['nodefconfig', [], ['-nodefconfig']]
 ,['nodefaults',  [], ['-nodefaults']]
+,['name', ['myName'], ['-name', '"myName"']]
+,['uuid', ['myUuid'], ['-uuid', 'myUuid']]
+,['tablet', [], ['-usbdevice', 'tablet']]
 
 
 // cpus ram gfx

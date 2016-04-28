@@ -1,11 +1,11 @@
 'use strict';
 
-const net    = require('net');
-const events = require('../lib/events');
+const net = require('net');
+const vms = require('../lib/vms');
 
 class Qmp {
-  constructor(vmName) {
-    this.vmName = vmName;
+  constructor(vmUuid) {
+    this.vmUuid = vmUuid;
     this.count  = 0;
     this.lines  = [];
   };
@@ -13,7 +13,7 @@ class Qmp {
   attach(conf) {
     this.conf = conf;
 
-    console.log(`QMP attach to ${this.vmName}`);
+    console.log(`QMP attach to ${this.vmUuid}`);
 
     const socket = this.socket = net.connect(conf.port);
     const onError = (e) => {
@@ -50,7 +50,7 @@ class Qmp {
           console.log(JSON.stringify(msg));
 
           if (msg.return) { msg = msg.return; }
-          msg.vmName = this.vmName;
+          msg.vmUuid = this.vmUuid;
           if (msg.timestamp) {
             msg.timestamp = Number(`${msg.timestamp.seconds}.${msg.timestamp.microseconds}`);
           } else {
@@ -58,9 +58,9 @@ class Qmp {
           } // else 
 
           if (msg.event) {
-            events.emit('event', msg);
+            vms.emit('event', msg);
           } else if (msg.status) { // if
-            events.emit('status', msg);
+            vms.emit('status', msg);
           } // else if
           json = [];
         } // if
@@ -73,6 +73,19 @@ class Qmp {
     socket.on('close',   onClose);
     socket.on('data',    onData);
   } // attach()
+
+
+  cmd(cmd, args) {
+    if (!this.socket) {
+      // TODO: emit not connected
+      return;
+    } // if
+
+    if (typeof args == 'object')
+      this.socket.write(JSON.stringify({execute:cmd, arguments: args}) );
+    else
+      this.socket.write(JSON.stringify({execute:cmd}) );
+  } // cmd()
 }
 
 module.exports = Qmp;

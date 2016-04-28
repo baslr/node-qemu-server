@@ -1,0 +1,11 @@
+
+&nbsp;<a href="database/{{currentDatabase}}/manage/collections" title="manage collections"><i class="fa fa-cog"></i></a>&nbsp;<label style="cursor:pointer;" title="show system collections"><input data-ng-model="cfg.showSysCollections" type="checkbox"> sys collections</label>
+
+<a data-ng-if="cfg.showSysCollections" data-ng-repeat="col in collections | filter:{isSystem:true} | orderBy:'name'" class="btn-sm btn-block" href="database/{{currentDatabase}}/collection/{{col.name}}/0/49" style="text-decoration:none;">
+  <i data-ng-if="col.status==2" class="fa fa-circle-thin" title="unloaded"></i><i data-ng-if="col.status==3" title="loaded" class="fa fa-circle"></i><i data-ng-if="col.status==6" class="fa fa-circle-o-notch"></i>
+  <i data-ng-if="col.type==2" class="fa fa-file-text-o" title="documents"></i><i data-ng-if="col.type==3" class="fa fa-share-alt" title="edges"></i>&nbsp;{{col.name}} <i data-ng-if="col.current" class="fa fa-check-circle" title="current collection"></i>
+</a>
+<a data-ng-repeat="col in collections | filter:{isSystem:false} | orderBy:'name'" class="btn-sm btn-block" href="database/{{currentDatabase}}/collection/{{col.name}}/0/49" style="text-decoration:none;">
+  <i data-ng-if="col.status==2" class="fa fa-circle-thin" title="unloaded"></i><i data-ng-if="col.status==3" title="loaded" class="fa fa-circle"></i><i data-ng-if="col.status==6" class="fa fa-circle-o-notch" title="loading"></i>
+  <i data-ng-if="col.type==2" class="fa fa-file-text-o" title="documents"></i><i data-ng-if="col.type==3" class="fa fa-share-alt" title="edges"></i>&nbsp;{{col.name}} <i data-ng-if="col.current" class="fa fa-check-circle" title="current collection"></i>
+</a>

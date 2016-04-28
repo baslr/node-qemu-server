@@ -1,0 +1,270 @@
+<div class="alert alert-info" role="alert">
+  Changes are instantly applied. Textinputs on blur, select and radio buttons on selection change.
+</div>
+
+<button type="button" class="btn btn-secondary btn-block" style="margin-bottom:10px;" data-ng-click="showNewColForm = !showNewColForm">show / hide Add Collection</button>
+
+<form data-ng-if="showNewColForm" style="margin-left:10px;">
+  <div class="form-group row">
+    <label for="inputEmail3" class="col-sm-2 form-control-label">Collection Name</label>
+    <div class="col-sm-10">
+      <input type="text" data-ng-model="newCol.name" class="form-control" />
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-sm-2">Collection Type</label>
+    <div class="col-sm-10">
+      <div class="radio">
+        <label><input type="radio" data-ng-model="newCol.type" ng-value="2"  /> Document</label>
+        <label><input type="radio" data-ng-model="newCol.type" ng-value="3" /> Edge</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-sm-2">Wait for fsync</label>
+    <div class="col-sm-10">
+      <div class="radio">
+        <label><input type="radio" data-ng-model="newCol.waitForSync" ng-value="true"  /> yes</label>
+        <label><input type="radio" data-ng-model="newCol.waitForSync" ng-value="false" /> no</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-sm-2">Volatile Collection</label>
+    <div class="col-sm-10">
+      <div class="radio">
+        <label><input type="radio" data-ng-model="newCol.isVolatile" ng-value="false" /> no</label>
+        <label><input type="radio" data-ng-model="newCol.isVolatile" ng-value="true"  /> yes</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-sm-2">System Collection</label>
+    <div class="col-sm-10">
+      <div class="radio">
+        <label><input type="radio" data-ng-model="newCol.isSystem" ng-value="false"  /> no</label>
+        <label><input type="radio" data-ng-model="newCol.isSystem" ng-value="true"  /> yes</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-sm-2">Compact Collection</label>
+    <div class="col-sm-10">
+      <div class="radio">
+        <label><input type="radio" data-ng-model="newCol.doCompact" ng-value="true"  /> yes</label>
+        <label><input type="radio" data-ng-model="newCol.doCompact" ng-value="false"  /> no</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label for="inputEmail3" class="col-sm-2 form-control-label">Journal size</label>
+    <div class="col-sm-10">
+        <div class="input-group input-group-sm">
+          <input class="form-control" type="number" step="any" journal-size base="2" data-ng-model="newCol.journalSize" />
+          <div class="input-group-addon input-group-addon-sm">MiB</div>
+        </div>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <div class="col-sm-offset-2 col-sm-10">
+        <div class="input-group input-group-sm">
+          <input class="form-control" type="number" step="any" journal-size base="10" data-ng-model="newCol.journalSize" />
+          <div class="input-group-addon input-group-addon-sm">MB</div>
+        </div>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-sm-2">Index buckets</label>
+    <div class="col-sm-10">
+      <select data-ng-model="newCol.indexBuckets" data-ng-options="Number(key) as key for (key, value) in indexBucketSizes"></select>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit" class="btn btn-secondary" data-ng-click="createNewCollection()">Create Collection</button>
+    </div>
+  </div>
+</form>
+
+<table class="table table-sm table-hover">
+<tbody>
+  <tr data-ng-repeat-start="col in collections | orderBy:orderCollection" data-ng-click="loadColDetails(col, col.expanded = !col.expanded)" style="cursor: pointer;">
+    <td>
+      <i data-ng-if="col.type==3" class="fa fa-share-alt" title="edges"></i>
+      <i data-ng-if="col.type==2" class="fa fa-file-text-o" title="documents"></i>
+    </td>
+    <td>
+      <i data-ng-if="col.status==2" class="fa fa-circle-thin" title="unloaded"></i>
+      <i data-ng-if="col.status==3" title="loaded" class="fa fa-circle"></i>
+      <i data-ng-if="col.status==6" class="fa fa-circle-o-notch"></i>
+    </td>
+<!--     <td>
+      <i data-ng-if="!col.isVolatile" class="fa fa-hdd-o" title="persistent"></i>
+      <i data-ng-if="col.isVolatile" class="fa fa-cloud" title="volatile"></i>
+    </td> -->
+    <td>{{col.name}}</td>
+    <td><button class="btn btn-secondary btn-sm" title="delete collection {{col.name}}" data-ng-click="dropCol(col, $event)"><i class="fa fa-trash"></i></button></td>
+  </tr>
+  <tr data-ng-repeat-end data-ng-if="col.expanded">
+    <td colspan="100%">
+
+<div data-ng-if="col.status == 2" class="alert alert-warning" role="alert" style="text-align: center;">
+  <strong>Collection not loaded! Load it first.</strong>
+</div>
+
+<feedback-msgs data-test="{{col.id}}-feedback"></feedback-msgs>
+
+<table class="table table-sm table-hover">
+  <tbody>
+
+    <tr>
+      <td colspan="4">
+        <div class="input-group input-group-sm" style="width:100%;">
+          <span class="input-group-btn">
+            <button class="btn btn-secondary" type="button" title="reload collection properties and indexes" data-ng-click="loadColDetails(col,true)"><i class="fa fa-refresh"></i></button>
+          </span>
+          <span class="input-group-addon" id="basic-addon1">Name:</span>
+          <input type="text" data-ng-model="col.editName" class="form-control" data-ng-blur="doAction('rename', col)" />
+        </div>
+      </td>
+      <td>Wait for sync</td>
+      <td><label><input type="radio" data-ng-model="col.waitForSync" ng-value="true"  data-ng-change="doAction('waitForSync', col)" /> yes</label>
+          <label><input type="radio" data-ng-model="col.waitForSync" ng-value="false" data-ng-change="doAction('waitForSync', col)" /> no</label> </td>
+    </tr>
+
+    <tr>
+      <td style="width:120px;">ID:</td>
+      <td>{{col.id}}</td>
+      <td>Type:</td>
+      <td><span data-ng-if="col.type==3">Edge collection</span><span data-ng-if="col.type==2">Document collection</span></td>
+      <td>Status:</td>
+      <td>
+        <span data-ng-if="col.status==2">unloaded <button class="btn btn-sm btn-secondary" data-ng-click="doAction('load', col)">load</button></span>
+        <span data-ng-if="col.status==3">loaded <button class="btn btn-sm btn-secondary"   data-ng-click="doAction('unload', col)">unload</button></span>
+      </td>
+    </tr>
+
+    <tr>
+      <td>Alive <i class="fa fa-files-o" title="alive documents"></i></td>
+      <td><a href="database/{{params.currentDatabase}}/collection/{{col.name}}/0/49">{{col.figures.alive.count}} / {{col.count}}</a></td>
+      <td>Size</td>
+      <td>{{format(col.figures.alive.size, 2, 'it')}}</td>
+      <td><button class="btn btn-sm btn-secondary" data-ng-click="doAction('truncate', col)">truncate</button></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Dead <i class="fa fa-files-o" title="dead documents"></i></td>
+      <td>{{col.figures.dead.count}}</td>
+      <td>Size</td>
+      <td>{{format(col.figures.dead.size, 2, 'it')}}</td>
+      <td>Deletion</td>
+      <td>{{col.figures.dead.deletion}}</td>
+    </tr>
+
+    <tr>
+      <td>Journal size</td>
+      <td>
+        <div class="input-group input-group-sm">
+          <input class="form-control" type="number" step="any" journal-size base="2" data-ng-model="col.journalSize2" data-ng-blur="doAction('journalSize2', col)"/>
+          <div class="input-group-addon input-group-addon-sm">MiB</div>
+        </div>
+      </td>
+      <td>volatile</td>
+      <td>{{col.isVolatile}}</td>
+      <td>system collection</td>
+      <td>{{col.isSystem}}</td>
+    </tr>
+
+    <tr>
+      <td>Journal size</td>
+      <td>
+        <div class="input-group input-group-sm">
+          <input class="form-control" type="number" step="any" journal-size base="10" data-ng-model="col.journalSize10" data-ng-blur="doAction('journalSize10', col)"/>
+          <div class="input-group-addon input-group-addon-sm">MB</div>
+        </div>
+      </td>
+
+      <td>Attributes</td>
+      <td>{{col.figures.attributes.count}} / {{format(col.figures.attributes.size, 2, 'it')}}</td>
+
+      <td>Compactor files</td>
+      <td>{{col.figures.compactors.count}} / {{format(col.figures.compactors.fileSize, 2, 'it')}}</td>
+    </tr>
+
+
+    <tr>
+      <td>Journal files</td>
+      <td>{{col.figures.journals.count}} / {{format(col.figures.journals.fileSize, 2, 'it')}} 
+        <button class="btn btn-secondary btn-sm" data-ng-click="doAction('rotate', col)">rotate</button>
+      </td>
+
+
+      <td style="width:120px;">Shapes</td>
+      <td>{{col.figures.shapes.count}} / {{format(col.figures.shapes.size, 2, 'it')}}</td>
+
+      <td>Uncollected</td>
+      <td>{{col.figures.uncollectedLogfileEntries}}</td>
+    </tr>
+
+
+    <tr>
+      <td style="width:120px;">datafiles</td>
+      <td>{{col.figures.datafiles.count}} / {{format(col.figures.datafiles.fileSize, 2, 'it')}}</td>
+
+      <td>Shape files</td>
+      <td>{{col.figures.shapefiles.count}} / {{format(col.figures.shapefiles.fileSize, 2, 'it')}}</td>
+
+      <td>References</td>
+      <td>{{col.figures.documentReferences}}</td>
+    </tr>
+
+
+    <tr>
+      <td colspan="100%">&nbsp;</td>
+    </tr>
+
+
+    <!-- indexes -->
+    <tr>
+      <td>Indexes</td>
+      <td>{{col.figures.indexes.count}} / {{format(col.figures.indexes.size, 2, 'it')}}</td>
+
+      <td>Index buckets</td>
+      <td><select data-ng-model="col.indexBuckets" data-ng-options="Number(key) as key for (key, value) in indexBucketSizes" data-ng-change="doAction('indexBuckets', col)"></select></td>
+
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td><strong>id</strong></td>
+      <td><strong>type</strong></td>
+      <td><strong>unique</strong></td>
+      <td><strong>sparse</strong></td>
+      <td><strong>selec. est</strong></td>
+      <td><strong>fields</strong></td>
+    </tr>
+    <tr data-ng-repeat="idx in indexes[col.id]">
+      <td>{{idx.id}}</td>
+      <td>{{idx.type}}</td>
+      <td><i data-ng-if="idx.unique" class="fa fa-check"></i></td>
+      <td><i data-ng-if="idx.sparse" class="fa fa-check"></i></td>
+      <td>{{idx.selectivityEstimate}}</td>
+      <td>{{idx.fields}}</td>
+    </tr>
+  </tbody>
+</table>
+
+
+    </td>
+  </tr>
+</tbody>
+</table>

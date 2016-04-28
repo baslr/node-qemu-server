@@ -1,0 +1,37 @@
+<table data-ng-if="vms.length" class="table table-striped" style="margin-top:70px;">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Name</th>
+      <th>CPUs</th>
+      <th>RAM</th>
+      <th>VGA</th>
+      <th>VNC-Port</th>
+    </tr>
+  </thead>
+  <tbody data-ng-repeat="vm in vms">
+    <tr data-ng-click="expanded[vm.uuid] = !expanded[vm.uuid];" style="cursor: pointer;">
+      <td>
+        <div style="margin-bottom:0px; padding:0px; text-align:center;" class="alert" data-ng-class="{'alert-danger':stat(vm.uuid).status=='stopped', 'alert-success':stat(vm.uuid).status=='running','alert-warning':stat(vm.uuid).status=='paused', 'alert-info':stat(vm.uuid).status == undefined}">{{stat(vm.uuid).status}} <span data-ng-if="stat(vm.uuid).status == undefined">&nbsp;<i class="fa fa-question-circle-o" aria-hidden="true"></i></span>
+                  <span data-ng-if="stat(vm.uuid).vnc">&nbsp;<i title="vnc client connected" class="fa fa-eye" aria-hidden="true"></i></span></div>
+
+      </td>
+      <td>{{vm.name}}</td>
+      <td>{{vm.hardware.cpu.sockets * vm.hardware.cpu.cores * vm.hardware.cpu.threads}}</td>
+      <td>{{vm.hardware.ram}} MB</td>
+      <td>{{vm.hardware.vga}}</td>
+      <td>{{vm.settings.vnc.port+5900}}</td>
+    </tr>
+    <tr data-ng-if="expanded[vm.uuid]">
+      <td colspan="100%">
+        <button data-ng-if="showButton(vm, 'start')"  data-ng-click="runAction(vm.uuid, 'start')"  type="button" class="btn btn-sm btn-secondary"><i class="fa fa-power-off" aria-hidden="true"></i></button><!-- start (boot) -->
+        <button data-ng-if="showButton(vm, 'pause')"  data-ng-click="runAction(vm.uuid, 'pause')"  type="button" class="btn btn-sm btn-secondary"><i class="fa fa-pause" aria-hidden="true"></i></button><!-- pause (pause) -->
+        <button data-ng-if="showButton(vm, 'resume')" data-ng-click="runAction(vm.uuid, 'resume')" type="button" class="btn btn-sm btn-secondary"><i class="fa fa-play" aria-hidden="true"></i></button><!-- resume (continue) -->
+        <button data-ng-if="showButton(vm, 'stop')"   data-ng-click="runAction(vm.uuid, 'stop')"   type="button" class="btn btn-sm btn-secondary"><i class="fa fa-stop" aria-hidden="true"></i></button><!-- stop (power off) -->
+        <button data-ng-if="showButton(vm, 'reset')"  data-ng-click="runAction(vm.uuid, 'reset')"  type="button" class="btn btn-sm btn-secondary"><i class="fa fa-repeat" aria-hidden="true"></i></button><!-- reset -->
+
+        UUID: {{vm.uuid}}
+      </td>
+    </tr>
+  </tbody>
+</table>

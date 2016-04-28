@@ -1,3 +1,4 @@
+#!./6-node
 'use strict';
 
 const qemuConfig = require('./qemu/config');
@@ -37,20 +38,36 @@ app.start();
 
 /*
 
+read qemu images
+read qemu isos
 
 read qemu machines aka configs
-
   -> check if all requirements are mett
-read qemu images
-read running qemu machines
-
-start machines with always on / autostart
-
-
-
 
 
 start webservice
 
+TODO:
+  webservice:
+    file management
+      -create vm image
+      -upload vm image
+      -weget  vm image
+
+      -wget   iso
+      -upload iso
+
+    mv management
+      // result is emited to all connected clients
+      -create
+      -edit
+      -delete (with image deletion)
+
+      -start
+      -pause / resume
+      -stop
+      -reboot
+
+      -(migrate)
 
 */

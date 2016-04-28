@@ -1,0 +1,103 @@
+<html>
+  <head>
+    <script src="lib/angular-1-4-9.js" type="text/javascript"></script>
+  </head>
+
+  <body data-ng-controller="test">
+
+<div >
+{{test}}
+
+    rx {{format(cfg.stats.client.bytesReceivedPerSecond, 2, 'IT')}} tx {{format(cfg.stats.client.bytesSentPerSecond, 2, 'IT')}} | cons {{format(cfg.stats.client.httpConnections, 0)}} | mem {{format(cfg.stats.system.residentSize,2,'IT')}}/{{format(cfg.stats.system.virtualSize,2,'IT')}}
+</div>
+
+  </body>
+
+
+  <script type="text/javascript">
+
+  let stat = `LET r = (FOR d IN _statistics sort d.time desc limit @time RETURN d)
+let x = MERGE(FOR t IN ['http', 'client', 'system']
+let z = MERGE(FOR a IN ATTRIBUTES(r[0][t])
+filter !CONTAINS(a, 'Percent')
+RETURN {[a]: sum(r[*][t][a]) / @time})
+RETURN {[t]:z}) RETURN x`;
+
+    var app = angular.module('app', []);
+
+
+ let angularModule = [];
+
+
+  angularModule.push(() => {
+    return (str, fix=0, ext=undefined) => {
+      str = Number(str);
+      if(ext) ext = ext.toLowerCase();
+
+      if(str > 1000*1000*1000) {
+        str = (str / 1000 / 1000 / 1000).toFixed(fix);
+        if(ext) ext = 'GB';
+      } else if(str > 1000*1000) {
+        str = (str / 1000 / 1000).toFixed(fix);
+        switch(ext) {
+          case 'it':
+            ext = 'MB';
+            break;
+          case 'math':
+            ext = 'M';
+            break;
+        } // switch
+      } else if(str > 1000) {
+        str = (str / 1000).toFixed(fix);
+        switch(ext) {
+          case 'it':
+            ext = 'KB';
+            break;
+          case 'math':
+            ext = 'K';
+            break;
+        } // switch
+      } else {
+        str = str.toFixed(fix);
+        switch(ext) {
+          case 'it':
+            ext = 'B';
+            break;
+          case 'math':
+            ext = '';
+            break;
+        } // switch
+      }
+      if(ext) str=`${str}${ext}`;
+      return str;
+    }
+  });
+
+  app.service('formatService', angularModule);
+
+
+
+    app.controller('test', ['$scope', '$interval', '$http', 'formatService', (scope, interval, http, formatService) => {
+
+      let i = 0;
+      scope.format = formatService;
+      scope.test = 'hello';
+      scope.cfg = {};
+
+      interval( () => {
+
+        http.post(`/_db/_system/_api/cursor`, {cache:false,query:stat,bindVars:{time:6}}).then(data => scope.cfg.stats = data.data.result[0]);
+
+
+
+      }, 4 * 1000 );
+
+    }]);
+
+
+    angular.bootstrap(document, ['app']);
+
+
+
+  </script>
+</html>
