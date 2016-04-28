@@ -12,6 +12,8 @@ const sliceLength = startArgs.length;
 const tests = [
  ['nodefconfig', [], ['-nodefconfig']]
 ,['nodefaults',  [], ['-nodefaults']]
+,['noShutdown',  [], ['-no-shutdown']]
+,['noStart',     [], ['-S']]
 ,['name', ['myName'], ['-name', '"myName"']]
 ,['uuid', ['myUuid'], ['-uuid', 'myUuid']]
 ,['tablet', [], ['-usbdevice', 'tablet']]
