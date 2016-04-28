@@ -55,5 +55,4 @@ define([], function () {
 
     angular.bootstrap(document, ['app']);
   });
-  // ln rd dr st blvd ave
 });
