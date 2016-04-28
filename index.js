@@ -71,3 +71,13 @@ TODO:
       -(migrate)
 
 */
+
+
+/*
+
+TODO:
+  - display network i/o
+  - display hdd usage x of y GB
+  - autorestart at x o'clock
+
+*/
