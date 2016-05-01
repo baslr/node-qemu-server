@@ -1,7 +1,8 @@
 'use strict';
 
-const net = require('net');
-const vms = require('../lib/vms');
+const net  = require('net');
+const vms  = require('../lib/vms');
+const host = require('../lib/host');
 
 class Qmp {
   constructor(vmUuid) {
@@ -13,10 +14,12 @@ class Qmp {
 
   attach(conf) {
     console.log(`QMP attach to ${this.vmUuid}`);
+    clearTimeout(this.timeout);
     this.conf = conf;
+    this.timeout = undefined;
     this.cmdStack.length = 0;
 
-    const socket = this.socket = net.connect(conf.port);
+    var socket = this.socket = net.connect(conf.port);
     const onError = (e) => {
       console.log('socket error', e);
       if (e.code == 'ECONNREFUSED') {
@@ -25,18 +28,28 @@ class Qmp {
         socket.removeListener('data',    onData);
         socket.removeListener('connect', onConnect);
         socket.removeListener('close',   onClose);
+        socket = this.socket = null;
 
-        setTimeout( () => {
+        this.timeout = setTimeout( () => {
           this.attach(conf);
         }, 1000);
       } // if
     };
     const onConnect = () => {
       console.log('connected to socket');
+      this.count = 0;
       this.cmdStack.push('qmp_capabilities');
       this.cmd('qmp_capabilities', 'query-status', 'query-vnc');
     };
-    const onClose = () => console.log('socket close');
+    const onClose = (hadError) => {
+      console.log('socket close had error', hadError);
+      socket = this.socket = null;
+      vms.emit('status', {status:'N/A', vmUuid:this.vmUuid});
+
+      if (!host.isVmProcRunning(this.vmUuid)) {
+        vms.emit('proc-status', {status:'terminated', vmUuid:this.vmUuid});
+      } // if
+    };
     const onData = (d) => {
       this.lines.push.apply(this.lines, d.toString('utf8').split('\r\n'));
 
@@ -80,11 +93,8 @@ class Qmp {
 
   cmd(cmd, args) {
     if (!this.socket) {
-      // TODO: emit not connected
-      return;
-    } // if
-
-    if (typeof args == 'object') {
+      vms.emit('status', {status:'N/A', vmUuid:this.vmUuid});
+    } else if (typeof args == 'object') {
       this.cmdStack.push(cmd);
       console.log(`QMP:cmd:${cmd}:args:${JSON.stringify}`);
       this.socket.write(JSON.stringify({execute:cmd, arguments: args}) );

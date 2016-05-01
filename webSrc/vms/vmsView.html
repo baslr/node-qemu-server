@@ -1,7 +1,8 @@
 <table data-ng-if="vms.length" class="table table-striped" style="margin-top:70px;">
   <thead>
     <tr>
-      <th></th>
+      <th style="width: 50px;"></th>
+      <th style="width: 160px;"></th>
       <th>Name</th>
       <th>CPUs</th>
       <th>RAM</th>
@@ -11,6 +12,9 @@
   </thead>
   <tbody data-ng-repeat="vm in vms">
     <tr data-ng-click="expanded[vm.uuid] = !expanded[vm.uuid];" style="cursor: pointer;">
+      <td>
+        <div style="margin-bottom:0px; padding:0px; text-align:center;float:left;margin-left:10px;" class="alert">{{stat(vm.uuid).procStatus}}</div>
+      </td>
       <td>
         <div style="margin-bottom:0px; padding:0px; text-align:center;" class="alert" data-ng-class="{'alert-danger':stat(vm.uuid).status=='stopped' || stat(vm.uuid).status=='shutdown', 'alert-success':stat(vm.uuid).status=='running','alert-warning':stat(vm.uuid).status=='paused', 'alert-info':stat(vm.uuid).status == undefined}">{{stat(vm.uuid).status}} <span data-ng-if="stat(vm.uuid).status == undefined">&nbsp;<i class="fa fa-question-circle-o" aria-hidden="true"></i></span>
                   <span data-ng-if="stat(vm.uuid).vnc">&nbsp;<i title="vnc client connected" class="fa fa-eye" aria-hidden="true"></i></span></div>
@@ -24,7 +28,7 @@
     </tr>
     <tr data-ng-if="expanded[vm.uuid]">
       <td colspan="100%">
-        <button data-ng-if="showButton(vm, 'start')"  data-ng-click="runAction(vm.uuid, 'start')"  type="button" class="btn btn-sm btn-secondary"><i class="fa fa-power-off" aria-hidden="true"></i></button><!-- start (boot) -->
+        <button data-ng-if="showButton(vm, 'start')"  data-ng-click="runAction(vm.uuid, 'start')"  type="button" class="btn btn-sm btn-secondary"><i class="fa fa-power-off" aria-hidden="true"></i></button><!-- start process -->
         <button data-ng-if="showButton(vm, 'pause')"  data-ng-click="runAction(vm.uuid, 'pause')"  type="button" class="btn btn-sm btn-secondary"><i class="fa fa-pause" aria-hidden="true"></i></button><!-- pause (pause) -->
         <button data-ng-if="showButton(vm, 'resume')" data-ng-click="runAction(vm.uuid, 'resume')" type="button" class="btn btn-sm btn-secondary"><i class="fa fa-play" aria-hidden="true"></i></button><!-- resume (continue) -->
         <button data-ng-if="showButton(vm, 'stop')"   data-ng-click="runAction(vm.uuid, 'stop')"   type="button" class="btn btn-sm btn-secondary"><i class="fa fa-stop" aria-hidden="true"></i></button><!-- stop (power off) -->

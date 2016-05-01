@@ -20,7 +20,8 @@ define(['app'], function (_app) {
     http.get('/api/vms/confs').then(function (data) {
       scope.vms.length = 0;
       data.data.forEach(function (vm) {
-        stat(vm.uuid).status = 'stopped';
+        stat(vm.uuid).vmStatus = 'N/A';
+        stat(vm.uuid).procStatus = 'N/A';
         scope.vms.push(vm);
       });
     });
@@ -29,17 +30,22 @@ define(['app'], function (_app) {
     scope.stats = {};
 
     scope.showButton = function (vm, type) {
+      var status = stat(vm.uuid).status;
+      var procStatus = stat(vm.uuid).procStatus;
       switch (type) {
         case 'start':
-          return stat(vm.uuid).status == 'stopped';
+          return procStatus == 'terminated';
+
+        // V M  S T A T U S
         case 'pause':
-          return stat(vm.uuid).status != 'stopped' && stat(vm.uuid).status != 'paused' && stat(vm.uuid).status != 'prelaunch';
+          return status == 'running'; // stopped' && stat(vm.uuid).status != 'paused' && stat(vm.uuid).status != 'prelaunch';
         case 'resume':
-          return stat(vm.uuid).status == 'paused' || stat(vm.uuid).status == 'prelaunch';
+          return status == 'paused' || status == 'prelaunch';
         case 'stop':
         case 'reset':
+          return status != 'N/A';
         case 'down':
-          return stat(vm.uuid).status != 'stopped';
+          return status != 'shutdown' && status != 'N/A';
         // return stat(vm.uuid).status != 'stopped';
         // return stat(vm.uuid).status != 'stopped';
       } // switch()
@@ -48,7 +54,7 @@ define(['app'], function (_app) {
     scope.runAction = function (vmUuid, action) {
       switch (action) {
         case 'start':
-          return http.get('/api/vm/' + vmUuid + '/start');
+          return http.get('/api/vm/' + vmUuid + '/proc/start');
         case 'pause':
           return http.get('/api/vm/' + vmUuid + '/stop');
         case 'resume':
@@ -59,7 +65,7 @@ define(['app'], function (_app) {
           return http.get('/api/vm/' + vmUuid + '/quit');
         case 'down':
           return http.get('/api/vm/' + vmUuid + '/system_powerdown');
-      } // siwtch
+      } // switch
       /*
         pause: (cb) -> @sendCmd 'stop', cb
         reset: (cb) -> @sendCmd 'system_reset', cb
@@ -112,8 +118,8 @@ define(['app'], function (_app) {
 
     eSource.onmessage = function (msg) {
       if (msg.data != 'initial response') return;
-      http.get('/api/vms/qmp/query-status');
       http.get('/api/vms/qmp/query-vnc');
+      http.get('/api/vms/proc/status');
     };
 
     eSource.onerror = function (e) {
@@ -125,6 +131,17 @@ define(['app'], function (_app) {
       });
     };
 
+    eSource.addEventListener('proc-status', function (e) {
+      scope.$apply(function () {
+        var msg = JSON.parse(e.data);
+        console.log('proc-status');
+        console.log(msg);
+        stat(msg.vmUuid).procStatus = msg.status; // running xor terminated
+        stat(msg.vmUuid).status = 'N/A';
+        http.get('/api/vm/' + msg.vmUuid + '/query-status');
+      });
+    });
+
     eSource.addEventListener('vm-status', function (e) {
       scope.$apply(function () {
         var msg = JSON.parse(e.data);
@@ -133,13 +150,10 @@ define(['app'], function (_app) {
 
         if (msg.status == 'running' && msg.running) {
           stat(msg.vmUuid).status = 'running';
-        } else if (msg.status == 'paused') {
-          stat(msg.vmUuid).status = 'paused';
-        } else if (msg.status == 'shutdown') {
-          stat(msg.vmUuid).status = 'shutdown';
         } else {
           stat(msg.vmUuid).status = msg.status;
         } // else
+        if (msg.status == 'N/A') delete stat(msg.vmUuid).vnc;
       });
     });
 
@@ -161,7 +175,7 @@ define(['app'], function (_app) {
         console.log('vm-event');
         console.log(msg);
 
-        http.get('http://127.0.0.1:4224/api/vms/qmp/query-status');
+        http.get('/api/vm/' + msg.vmUuid + '/query-status');
 
         switch (msg.event) {
           // use the status instead
