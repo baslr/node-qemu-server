@@ -25,12 +25,12 @@ define(['app'], function (_app) {
         scope.vms.push(vm);
       });
     });
-    scope.settings = ['Summary', 'Name', 'Machine / CPU / VGA / RAM', 'Drives', 'Networking', 'VNC / SPICE', 'Host/Guest-NUMA', 'Boot'];
+    scope.settings = ['Summary', 'Name / UUID', 'Machine / VGA / RAM / CPU', 'Drives', 'Networking', 'VNC / SPICE', 'Host/Guest-NUMA', 'Boot'];
     scope.expanded = {};
     scope.stats = {};
     scope.vms = [];
     scope.curSetting = { idx: 0 };
-    scope.editVm = { hardware: { cpu: {} }, settings: {} };
+    scope.editVm = {};
     scope.selections = { cpus: [], vgas: ['std', 'qxl', 'virtio', 'none'], netModels: [], machines: [] };
 
     scope.showButton = function (vm, type) {

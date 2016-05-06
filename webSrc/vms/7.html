@@ -4,7 +4,7 @@
     <div class="col-sm-10">
       <div class="checkbox">
         <label>
-          <input type="checkbox" data-ng-bind="editVm.settings.noShutdown"> enable no shutdown
+          <input type="checkbox" data-ng-model="editVm.settings.noShutdown"> enable no shutdown
         </label>
       </div>
       <p class="text-muted">keep vm process running while the vm os is shutdown / not running</p>
@@ -15,7 +15,7 @@
     <div class="col-sm-10">
       <div class="checkbox">
         <label>
-          <input type="checkbox" data-ng-bind="editVm.settings.noStartup"> enable no startup
+          <input type="checkbox" data-ng-model="editVm.settings.noStartup"> enable no startup
         </label>
       </div>
       <p class="text-muted">when vm process is started, vm is paused</p>
@@ -26,7 +26,7 @@
     <div class="col-sm-10">
       <div class="checkbox">
         <label>
-          <input type="checkbox" data-ng-bind="editVm.settings.autoBoot"> enable auto boot
+          <input type="checkbox" data-ng-model="editVm.settings.autoBoot"> enable auto boot
         </label>
       </div>
       <p class="text-muted">keep vm process running</p>

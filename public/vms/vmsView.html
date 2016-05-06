@@ -61,7 +61,7 @@
     <h3 class="card-header">Settings</h3>
 
     <div class="list-group">
-      <a class="list-group-item" data-ng-repeat="s in settings" data-ng-class="{active: s == currentSetting.name}" data-ng-click="curSetting.idx = $index;">{{s}}</a>
+      <a class="list-group-item" data-ng-repeat="s in settings" data-ng-class="{active: $index == curSetting.idx}" data-ng-click="curSetting.idx = $index;">{{s}}</a>
     </div>
 
 <!-- Keyboard | USB | Boot -->
@@ -76,3 +76,4 @@
 </div>
 </div>
 
+<pre>{{editVm}}</pre>

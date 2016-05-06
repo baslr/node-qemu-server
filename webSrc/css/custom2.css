@@ -7,3 +7,11 @@ a {
 * {
   cursor: default;
 }
+
+INPUT[type="text"], INPUT[type="number"] {
+  cursor: text;
+}
+
+SELECT {
+  cursor: pointer;
+}

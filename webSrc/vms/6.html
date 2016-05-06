@@ -1,1 +1,55 @@
-from 6
+<form>
+  <div class="form-group row">
+    <label class="col-sm-2">Enable Host-NUMA</label>
+    <div class="col-sm-10">
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" data-ng-model="editVm.settings.hostNuma.enabled"> enable Host-NUMA
+        </label>
+      </div>
+    </div>
+  </div>
+  <div class="form-group row" data-ng-if="editVm.settings.hostNuma.enabled">
+    <label class="col-sm-2">CPU-Node</label>
+    <div class="col-sm-10">
+      <input type="text" data-ng-model="editVm.settings.hostNuma.cpuNodes" class="form-control" />
+      <p class="text-muted">Type in your Host-NUMA node config for the CPU. E.g. 0,1 or 1-3</p>
+    </div>
+  </div>
+  <div class="form-group row" data-ng-if="editVm.settings.hostNuma.enabled">
+    <label class="col-sm-2">RAM-Node</label>
+    <div class="col-sm-10">
+      <input type="text" data-ng-model="editVm.settings.hostNuma.ramNodes" class="form-control" />
+      <p class="text-muted">type in your Host-NUMA node config for the RAM. E.g. 0,1 or 1-3</p>
+    </div>
+  </div>
+
+  <div class="form-group row">
+  </div>
+
+  <div class="form-group row">
+    <label class="col-sm-2">Enable VM-NUMA</label>
+    <div class="col-sm-10">
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" data-ng-model="editVm.hardware.numa.enabled"> enable VM-NUMA
+        </label>
+      </div>
+    </div>
+  </div>
+  <div class="form-group row" data-ng-if="editVm.hardware.numa.enabled">
+    <label class="col-sm-2">CPU-Node</label>
+    <div class="col-sm-10">
+      <input type="text" data-ng-model="editVm.hardware.numa.cpuNodes" class="form-control" />
+      <p class="text-muted">Type in your VM-NUMA node config for the CPU. E.g. 0,1 or 1-3</p>
+    </div>
+  </div>
+  <div class="form-group row" data-ng-if="editVm.hardware.numa.enabled">
+    <label class="col-sm-2">RAM-Node</label>
+    <div class="col-sm-10">
+      <input type="text" data-ng-model="editVm.hardware.numa.ramNodes" class="form-control" />
+      <p class="text-muted">type in your VM-NUMA node config for the RAM. E.g. 0,1 or 1-3</p>
+    </div>
+  </div>
+</form>
+<div class="alert alert-info">The ram of an host system with more than one cpu socket are divided in local and foreign regions. Each cpu socked addresses a piece of ram. This is reffered as Local addressed ram. This porting is directly attached to the cpu socket and can accessed directly. Foreign ram has to be accessed via QPI (Intel QuickPath Interconnect) or HyperTransport (AMD). The cpu socket connects to the forreign memory controller in an other cpu socket and asks for the ram the cpu wants to accesss. This is much slower than local accessed ram. As a consequence Guests memory should be placed in local ram for better performance. For more informatinos about NUMA please reffere to the great RedHat <a href="https://access.redhat.com/site/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Performance_Tuning_Guide/main-cpu.html" target="_blank" class="alert-link">documentation.</a></div>

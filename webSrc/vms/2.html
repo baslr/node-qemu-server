@@ -7,6 +7,24 @@
     </div>
   </div>
   <div class="form-group row">
+    <label class="col-sm-2">VGA</label>
+    <div class="col-sm-10">
+      <select class="form-control-lg" data-ng-model="editVm.hardware.vga" data-ng-options="vga for vga in selections.vgas"></select>
+      <p class="text-muted">vga cards are none, standard (std) and paravirtual qxl or virtio</p>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label class="col-sm-2">RAM</label>
+    <div class="col-sm-10">
+      <input type="number" data-ng-model="editVm.hardware.ram" class="form-control" />
+      <p class="text-muted">maximal size of RAM in MB</p>
+    </div>
+  </div>
+
+  <div class="form-group row">
+  </div>
+
+  <div class="form-group row">
     <label class="col-sm-2">CPU model</label>
     <div class="col-sm-10">
       <select class="form-control-lg" data-ng-model="editVm.hardware.cpu.model" data-ng-options="cpu.name as cpu.name + ' - ' + cpu.description for cpu in selections.cpus"></select>
@@ -27,28 +45,13 @@
       <p class="text-muted">Number of cores per socket</p>
     </div>
   </div>
-    <div class="form-group row">
+  <div class="form-group row">
     <label class="col-sm-2">Threads</label>
     <div class="col-sm-10">
       <input type="number" data-ng-model="editVm.hardware.cpu.threads" class="form-control" />
       <p class="text-muted">Number of threads per core</p>
     </div>
   </div>
-    <div class="form-group row">
-    <label class="col-sm-2">VGA</label>
-    <div class="col-sm-10">
-      <select class="form-control-lg" data-ng-model="editVm.hardware.vga" data-ng-options="vga for vga in selections.vgas"></select>
-      <p class="text-muted">vga cards are none, standard (std) and paravirtual qxl or virtio</p>
-    </div>
-  </div>
-    <div class="form-group row">
-    <label class="col-sm-2">RAM</label>
-    <div class="col-sm-10">
-      <input type="number" data-ng-model="editVm.hardware.ram" class="form-control" />
-      <p class="text-muted">maximal size of RAM in MB</p>
-    </div>
-  </div>
 </form>
-<div class="alert alert-info">Number of all CPUs ares sockets * cores * threads.</div>
 <div class="alert alert-info">If you want to use openGL, select 'qxl' or 'virtio'. For standard usage use 'std'. If you want no graphic output, then use 'none'.</div>
-TODO: add machine
+<div class="alert alert-info">Number of all CPUs ares sockets * cores * threads.</div>

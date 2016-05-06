@@ -4,7 +4,7 @@
     <div class="col-sm-10">
       <div class="checkbox">
         <label>
-          <input type="checkbox" data-ng-bind="editVm.settings.vnc"> enable VNC
+          <input type="checkbox" data-ng-model="editVm.settings.vnc.enabled"> enable VNC
         </label>
       </div>
       <p class="text-muted">Connect to the VM via VNC</p>
@@ -15,7 +15,7 @@
     <div class="col-sm-10">
       <div class="checkbox">
         <label>
-          <input type="checkbox" data-ng-bind="editVm.settings.spice"> enable SPICE
+          <input type="checkbox" data-ng-model="editVm.settings.spice.enabled"> enable SPICE
         </label>
       </div>
       <p class="text-muted">Connect to the VM via SPICE</p>
