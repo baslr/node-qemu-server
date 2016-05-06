@@ -25,9 +25,13 @@ define(['app'], function (_app) {
         scope.vms.push(vm);
       });
     });
-
+    scope.settings = ['Summary', 'Name', 'Machine / CPU / VGA / RAM', 'Drives', 'Networking', 'VNC / SPICE', 'Host/Guest-NUMA', 'Boot'];
     scope.expanded = {};
     scope.stats = {};
+    scope.vms = [];
+    scope.curSetting = { idx: 0 };
+    scope.editVm = { hardware: { cpu: {} }, settings: {} };
+    scope.selections = { cpus: [], vgas: ['std', 'qxl', 'virtio', 'none'], netModels: [], machines: [] };
 
     scope.showButton = function (vm, type) {
       var status = stat(vm.uuid).status;
@@ -79,41 +83,6 @@ define(['app'], function (_app) {
       return scope.stats[uuid] ? scope.stats[uuid] : scope.stats[uuid] = {};
     };
 
-    scope.vms = [{
-      "name": "linux test",
-      "status": "stopped",
-      "uuid": "9666778c-4941-6b05-8279-1db540bd7e72",
-      "hardware": {
-        "ram": 256,
-        "vga": "std",
-        "net": {
-          "macAddr": "8a:30:f7:76:a0:cc",
-          "nic": "rtl8139",
-          "mode": "host"
-        },
-        "cpu": {
-          "model": "qemu64",
-          "sockets": 1,
-          "cores": 1,
-          "threads": 1
-        },
-        "drives": [{ "type": "cdrom", "path": "isos/debian.iso", "interface": "ide" }]
-      },
-      "settings": {
-        "uuid": "9666778c-4941-6b05-8279-1db540bd7e72",
-        "keyboard": "de",
-        "autoBoot": true,
-        "qmp": {
-          "port": 12222
-        },
-        "vnc": {
-          "port": 0
-        },
-        "qmp": {
-          "port": 65000
-        }
-      } }];
-
     var eSource = new EventSource('/a');
 
     eSource.onmessage = function (msg) {
@@ -130,6 +99,15 @@ define(['app'], function (_app) {
         }
       });
     };
+
+    eSource.addEventListener('qemu-config', function (e) {
+      return scope.$apply(function () {
+        var msg = JSON.parse(e.data);
+        console.log('qemu-config');
+        console.log(msg);
+        scope.selections[msg.selection] = msg.data;
+      });
+    });
 
     eSource.addEventListener('proc-status', function (e) {
       scope.$apply(function () {

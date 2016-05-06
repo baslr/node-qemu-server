@@ -53,3 +53,26 @@
     </tr>
   </tbody>
 </table>
+
+<div class="row">
+
+<div class="col-sm-3">
+  <div class="card">
+    <h3 class="card-header">Settings</h3>
+
+    <div class="list-group">
+      <a class="list-group-item" data-ng-repeat="s in settings" data-ng-class="{active: s == currentSetting.name}" data-ng-click="curSetting.idx = $index;">{{s}}</a>
+    </div>
+
+<!-- Keyboard | USB | Boot -->
+  </div>
+</div>
+<div class="col-sm-9">
+  <div class="card">
+    <h3 class="card-header">{{settings[curSetting.idx]}}</h3>
+    <div class="card-block" data-ng-include="'/vms/'+curSetting.idx+'.html'">
+    </div>
+  </div>
+</div>
+</div>
+

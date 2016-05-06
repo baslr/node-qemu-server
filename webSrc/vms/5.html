@@ -1,0 +1,25 @@
+<form>
+  <div class="form-group row">
+    <label class="col-sm-2">VNC</label>
+    <div class="col-sm-10">
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" data-ng-bind="editVm.settings.vnc"> enable VNC
+        </label>
+      </div>
+      <p class="text-muted">Connect to the VM via VNC</p>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label class="col-sm-2">SPICE</label>
+    <div class="col-sm-10">
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" data-ng-bind="editVm.settings.spice"> enable SPICE
+        </label>
+      </div>
+      <p class="text-muted">Connect to the VM via SPICE</p>
+    </div>
+  </div>
+</form>
+<div class="alert alert-info">Use VNC or SPICE to connect to your vms virtual desktop environment or console screen.</div>
