@@ -34,7 +34,7 @@ class QemuConfig {
 
     // M A C H I N E S
     this.machines = execSync('qemu-system-x86_64 -machine help').toString('utf8').split('\n').reduce( (prev, line) => {
-      var match = line.match(/^(\S+)\ +(.*)/);
+      var match = line.match(/^(\S+)\ {2,}(.*)/);
       if (match) {
         prev.push({name:match[1], description:match[2]});
       } // if
