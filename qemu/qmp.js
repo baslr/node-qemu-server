@@ -43,7 +43,7 @@ class Qmp {
     };
     const onClose = (hadError) => {
       console.log('socket close had error', hadError);
-      socket = this.socket = null;
+      socket = null;
       vms.emit('status', {status:'N/A', vmUuid:this.vmUuid});
 
       if (!host.isVmProcRunning(this.vmUuid)) {
