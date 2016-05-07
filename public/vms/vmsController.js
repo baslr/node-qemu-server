@@ -79,11 +79,23 @@ define(['app'], function (_app) {
       */
     };
 
-    scope.addPortFwd = function () {
-      var arr = scope.editVm.hardware.net.guestPortFwd instanceof Array ? scope.editVm.hardware.net.guestPortFwd : scope.editVm.hardware.net.guestPortFwd = [];
-      var split = scope.curSetting.newGuestPortFwd.split(',');
-      arr.push({ hostIp: split[0], hostPort: split[1], vmPort: split[2] });
-      scope.curSetting.newGuestPortFwd = '';
+    scope.addPortFwd = function (type) {
+      var arr, split;
+      switch (type) {
+        case 'hostToVm':
+          arr = scope.editVm.hardware.net.hostToVmPortFwd instanceof Array ? scope.editVm.hardware.net.hostToVmPortFwd : scope.editVm.hardware.net.hostToVmPortFwd = [];
+          split = scope.curSetting.newHostToVmPortFwd.split(',');
+          arr.push({ hostIp: split[0], hostPort: split[1], vmPort: split[2] });
+          scope.curSetting.newHostToVmPortFwd = '';
+          break;
+
+        case 'vmToHost':
+          arr = scope.editVm.hardware.net.vmToHostPortFwd instanceof Array ? scope.editVm.hardware.net.vmToHostPortFwd : scope.editVm.hardware.net.vmToHostPortFwd = [];
+          split = scope.curSetting.newVmToHostPortFwd.split(',');
+          arr.push({ hostIp: split[2], hostPort: split[1], vmPort: split[0] });
+          scope.curSetting.newVmToHostPortFwd = '';
+          break;
+      } // switch
     };
 
     var stat = scope.stat = function (uuid) {

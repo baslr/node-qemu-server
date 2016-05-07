@@ -47,30 +47,60 @@
     </div>
   </div>
   <div class="form-group row" data-ng-if="editVm.hardware.net.enabled && editVm.hardware.net.mode == 'host'">
-    <label class="col-sm-2">Enable Port-Forwarding</label>
+    <label class="col-sm-2">Enable Port forwarding</label>
     <div class="col-sm-10">
       <div class="checkbox">
         <label>
-          <input type="checkbox" data-ng-model="editVm.hardware.net.portFwdEnabled"> Enable Port-Forwarding
+          <input type="checkbox" data-ng-model="editVm.hardware.net.hostToVmPortFwdEnabled"> Enable Port forwarding (Host to VM)
         </label>
       </div>
     </div>
   </div>
-  <div class="form-group row" data-ng-if="editVm.hardware.net.enabled && editVm.hardware.net.mode == 'host' && editVm.hardware.net.portFwdEnabled">
-    <label class="col-sm-2">Port-Forwarding rule</label>
+  <div class="form-group row" data-ng-if="editVm.hardware.net.enabled && editVm.hardware.net.mode == 'host' && editVm.hardware.net.hostToVmPortFwdEnabled">
+    <label class="col-sm-2">Port forwarding rule</label>
     <div class="col-sm-8">
       <div class="input-group">
-        <input data-ng-model="curSetting.newGuestPortFwd" type="text" class="form-control" />
+        <input data-ng-model="curSetting.newHostToVmPortFwd" type="text" class="form-control" />
         <span class="input-group-btn">
-          <button data-ng-click="addPortFwd()" class="btn btn-secondary">Add</button>
+          <button data-ng-click="addPortFwd('hostToVm')" class="btn btn-secondary" data-ng-disabled="curSetting.newHostToVmPortFwd.length < 5">Add</button>
         </span>
       </div>
-      <p class="text-muted">Provide your Host IP Address to forward your IP traffic to the VM. Format: Host IP,Host Port,VM-Port. Then click Add.</p>
-      <ul class="list-unstyled" data-ng-if="editVm.hardware.net.guestPortFwd.length">
-        <li data-ng-repeat="rule in editVm.hardware.net.guestPortFwd">{{rule.hostIp}}:{{rule.hostPort}} -> {{editVm.hardware.net.ip}}:{{rule.vmPort}}</li>
-      </ul>
+      <p class="text-muted">Forward traffic from Host IP / Host port to VM port. Format: Host IP,Host port,VM port. Then click Add.</p>
+      <div class="list-group">
+        <li class="list-group-item" data-ng-repeat="rule in editVm.hardware.net.hostToVmPortFwd">
+          {{rule.hostIp}}:{{rule.hostPort}} -> {{editVm.hardware.net.ip}}:{{rule.vmPort}} <button data-ng-click="editVm.hardware.net.hostToVmPortFwd.splice($index,1)" class="btn btn-sm btn-secondary pull-right"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+        </li>
+      </div>
     </div>
   </div>
+  <div class="form-group row" data-ng-if="editVm.hardware.net.enabled && editVm.hardware.net.mode == 'host'">
+    <label class="col-sm-2">Enable Port forwarding</label>
+    <div class="col-sm-10">
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" data-ng-model="editVm.hardware.net.VmToHostPortFwdEnabled"> Enable Port forwarding (VM to Host)
+        </label>
+      </div>
+    </div>
+  </div>
+  <div class="form-group row" data-ng-if="editVm.hardware.net.enabled && editVm.hardware.net.mode == 'host' && editVm.hardware.net.VmToHostPortFwdEnabled">
+    <label class="col-sm-2">Port forwarding rule</label>
+    <div class="col-sm-8">
+      <div class="input-group">
+        <input data-ng-model="curSetting.newVmToHostPortFwd" type="text" class="form-control" />
+        <span class="input-group-btn">
+          <button data-ng-click="addPortFwd('vmToHost')" class="btn btn-secondary" data-ng-disabled="curSetting.newVmToHostPortFwd.length < 5">Add</button>
+        </span>
+      </div>
+      <p class="text-muted">Forward traffic from VM port to Host IP / Host port. Format: VM port,Host port,Host IP. Then click Add.</p>
+      <div class="list-group">
+        <li class="list-group-item" data-ng-repeat="rule in editVm.hardware.net.vmToHostPortFwd">
+          {{editVm.hardware.net.ip}}:{{rule.vmPort}} -> {{rule.hostIp}}:{{rule.hostPort}} <button data-ng-click="editVm.hardware.net.vmToHostPortFwd.splice($index,1)" class="btn btn-sm btn-secondary pull-right"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+        </li>
+      </div>
+    </div>
+  </div>
+
 </form>
 <div class="alert alert-info">
   <dl class="dl-horizontal">
