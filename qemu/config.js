@@ -43,7 +43,7 @@ class QemuConfig {
 
 
     // N E T  M O D E L S
-    this.netModels = execSync('qemu-system-x86_64 -net nic,model=help 2>&1').toString('utf8').split('\n').reduce( (prev, line) => {
+    this.nics = this.netModels = this.nicModels = execSync('qemu-system-x86_64 -net nic,model=help 2>&1').toString('utf8').split('\n').reduce( (prev, line) => {
       var match = line.match(/models:\ (\S+)/);
 
       if (match) {
