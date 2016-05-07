@@ -15,3 +15,7 @@ INPUT[type="text"], INPUT[type="number"] {
 SELECT {
   cursor: pointer;
 }
+
+DIV.alert > DL.dl-horizontal {
+  padding-left: 10px;
+}

@@ -19,13 +19,13 @@ angularModule.push((scope, http) => {
       scope.vms.push(vm);
     });
   });
-  scope.settings = ['Summary', 'Name / UUID', 'Machine / VGA / RAM / CPU', 'Drives', 'Networking', 'VNC / SPICE', 'Host/Guest-NUMA', 'Boot'];
+  scope.settings = ['Summary', 'Name / keyboard / UUID', 'Machine / VGA / RAM / CPU', 'Drives', 'Networking', 'VNC / SPICE', 'Host/Guest-NUMA', 'Boot'];
   scope.expanded = {};
   scope.stats    = {};
   scope.vms      = [];
   scope.curSetting = {idx:0};
   scope.editVm = {};
-  scope.selections = {cpus:[], vgas:['std', 'qxl', 'virtio', 'none'], netModels:[], machines:[]};
+  scope.selections = {cpus:[], vgas:['std', 'qxl', 'virtio', 'none'], nics:[], machines:[],keyboards:['ar', 'da', 'de',  'de-ch', 'en-gb', 'en-us', 'es', 'et', 'fi', 'fo', 'fr', 'fr-be', 'fr-ca', 'fr-ch', 'hr', 'hu', 'is', 'it', 'ja', 'lt', 'lv', 'mk', 'nl', 'nl-be', 'no', 'pl', 'pt', 'pt-br', 'ru', 'sl', 'sv', 'th', 'tr']};
 
   scope.showButton = (vm, type) => {
     const status     = stat(vm.uuid).status;
@@ -66,6 +66,15 @@ angularModule.push((scope, http) => {
   stop: (cb) -> @sendCmd 'quit', cb
 */
   }
+
+  scope.addPortFwd = () => {
+    const arr   = scope.editVm.hardware.net.guestPortFwd instanceof Array ? scope.editVm.hardware.net.guestPortFwd : scope.editVm.hardware.net.guestPortFwd = [];
+    const split = scope.curSetting.newGuestPortFwd.split(',');
+    arr.push({hostIp:split[0], hostPort:split[1], vmPort:split[2]});
+    scope.curSetting.newGuestPortFwd = '';
+  }
+
+
 
   const stat = scope.stat = (uuid) => { return scope.stats[uuid] ? scope.stats[uuid] : scope.stats[uuid] = {}; }
 

@@ -7,6 +7,13 @@
     </div>
   </div>
   <div class="form-group row">
+    <label class="col-sm-2">Keyboard</label>
+    <div class="col-sm-10">
+      <select class="form-control-lg" data-ng-model="editVm.settings.keyboard" data-ng-options="keyboard as keyboard for keyboard in selections.keyboards"></select>
+      <p class="text-muted">Select your keyboard layout</p>
+    </div>
+  </div>
+  <div class="form-group row">
     <label class="col-sm-2">VM-UUID</label>
     <div class="col-sm-10">
       <input type="text" data-ng-model="editVm.uuid" class="form-control" />
@@ -14,3 +21,4 @@
     </div>
   </div>
 </form>
+<div class="alert alert-info">Select your keyboard layout that you have. If you select the wrong format, you maybe can not type adequate.</div>

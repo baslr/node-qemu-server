@@ -1,1 +1,98 @@
-from 4
+<form>
+  <div class="form-group row">
+    <label class="col-sm-2">Enable Networking</label>
+    <div class="col-sm-10">
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" data-ng-model="editVm.hardware.net.enabled"> enable Networking
+        </label>
+      </div>
+    </div>
+  </div>
+  <div class="form-group row" data-ng-if="editVm.hardware.net.enabled">
+    <label class="col-sm-2">Networkcard Controller</label>
+    <div class="col-sm-10">
+      <select class="form-control-lg" data-ng-model="editVm.hardware.net.nic" data-ng-options="nic.name as nic.name for nic in selections.nics"></select>
+      <p class="text-muted">Select the NIC controller. For Windows without spice guest tools installed use the 'rtl8139' controller. After installed guest tools you can switch to the faster 'virtio' controller.</p>
+    </div>
+  </div>
+  <div class="form-group row" data-ng-if="editVm.hardware.net.enabled">
+    <label class="col-sm-2">MAC Address</label>
+    <div class="col-sm-8">
+      <div class="input-group">
+        <input type="text" data-ng-model="editVm.hardware.net.macAddr" class="form-control" />
+        <span class="input-group-btn">
+          <button data-ng-click="generateMacAddress()" class="btn btn-secondary">generate</button> 
+        </span>
+      </div>
+      <p class="text-muted">type or generate a mac address for your NIC, example 01:23:45:67:89:01</p>
+    </div>
+  </div>
+  <div class="form-group row" data-ng-if="editVm.hardware.net.enabled">
+    <label class="col-sm-2">Networking Mode</label>
+    <div class="col-sm-10">
+    <label class="radio-inline">
+      <input type="radio" name="inlineRadioOptions" data-ng-model="editVm.hardware.net.mode" value="bridged"> Bridged
+    </label>
+    <label class="radio-inline">
+      <input type="radio" name="inlineRadioOptions" data-ng-model="editVm.hardware.net.mode" value="host"> Host
+    </label>
+    </div>
+  </div>
+  <div class="form-group row" data-ng-if="editVm.hardware.net.enabled && editVm.hardware.net.mode == 'host'">
+    <label class="col-sm-2">VM IP</label>
+    <div class="col-sm-8">
+      <input type="text" data-ng-model="editVm.hardware.net.ip" class="form-control" />
+      <p class="text-muted">Provide a VM IP Address (10.0.2.x), never use x=2</p>
+    </div>
+  </div>
+  <div class="form-group row" data-ng-if="editVm.hardware.net.enabled && editVm.hardware.net.mode == 'host'">
+    <label class="col-sm-2">Enable Port-Forwarding</label>
+    <div class="col-sm-10">
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" data-ng-model="editVm.hardware.net.portFwdEnabled"> Enable Port-Forwarding
+        </label>
+      </div>
+    </div>
+  </div>
+  <div class="form-group row" data-ng-if="editVm.hardware.net.enabled && editVm.hardware.net.mode == 'host' && editVm.hardware.net.portFwdEnabled">
+    <label class="col-sm-2">Port-Forwarding rule</label>
+    <div class="col-sm-8">
+      <div class="input-group">
+        <input data-ng-model="curSetting.newGuestPortFwd" type="text" class="form-control" />
+        <span class="input-group-btn">
+          <button data-ng-click="addPortFwd()" class="btn btn-secondary">Add</button>
+        </span>
+      </div>
+      <p class="text-muted">Provide your Host IP Address to forward your IP traffic to the VM. Format: Host IP,Host Port,VM-Port. Then click Add.</p>
+      <ul class="list-unstyled" data-ng-if="editVm.hardware.net.guestPortFwd.length">
+        <li data-ng-repeat="rule in editVm.hardware.net.guestPortFwd">{{rule.hostIp}}:{{rule.hostPort}} -> {{editVm.hardware.net.ip}}:{{rule.vmPort}}</li>
+      </ul>
+    </div>
+  </div>
+</form>
+<div class="alert alert-info">
+  <dl class="dl-horizontal">
+    <dt class="col-sm-3">Drivers</dt>
+    <dd class="col-sm-9">Use the spice tools for windows from here: <a href="http://www.spice-space.org/download/windows/spice-guest-tools/?C=M;O=D" target="_blank">spice-space.org</a>.</dd>
+  </dl>
+  <dl class="dl-horizontal">
+    <dt class="col-sm-3">e1000</dt>
+    <dd class="col-sm-9">Intel e1000 NIC. It is an virtualized gigabit ethernet adapter.</dd>
+    <dt class="col-sm-3">i82551</dt>
+    <dd class="col-sm-9">Intel i82551 NIC. It is an virtualized fast ethernet adapter.</dd>
+    <dt class="col-sm-3">i82557b</dt>
+    <dd class="col-sm-9">Intel i82557b NIC. It is an virtualized fast ethernet adapter.</dd>
+    <dt class="col-sm-3">i82559er</dt>
+    <dd class="col-sm-9">Intel i82559er NIC. It is an virtualized fast ethernet adapter.</dd>
+    <dt class="col-sm-3">ne2k_pci</dt>
+    <dd class="col-sm-9">Novell NE2000 16-bit ISA NIC. 10Mbit/s.</dd>
+    <dt class="col-sm-3">pcnet</dt>
+    <dd class="col-sm-9">AMD PC-Net II (Am79C970A) 10Mbit/s.</dd>
+    <dt class="col-sm-3">rtl8139</dt>
+    <dd class="col-sm-9">Realtek rtl8139 NIC. It is an virtaulized fast ethernet adapter.</dd>
+    <dt class="col-sm-3">virtio</dt>
+    <dd class="col-sm-9">Paravirtualized gigabit ethernet adapter. If your VM is Windows then you need to install a driver.</dd>
+  </dl>
+</div> 
