@@ -17,6 +17,7 @@ const tests = [
 ,['name', ['myName'], ['-name', '"myName"']]
 ,['uuid', ['myUuid'], ['-uuid', 'myUuid']]
 ,['tablet', [], ['-usbdevice', 'tablet']]
+,['mouse', [], ['-usbdevice', 'mouse']]
 
 
 // cpus ram gfx
