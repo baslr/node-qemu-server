@@ -64,10 +64,7 @@ app.config(['$routeProvider', '$locationProvider', '$sceDelegateProvider', (rout
 }]);
 
 app.run(['$rootScope', '$location', 'messageBrokerService', '$routeParams', '$route', (rootScope, location, messageBroker, routeParams, route) => {
-  messageBroker.pub('current.database', '_system');
-  messageBroker.pub('current.fastFilter', 'none');
-  messageBroker.pub('current.query', 'unsaved');
-  messageBroker.pub('show.fastFilter', false);
+
   rootScope.$on('$routeChangeError', (a, b, c, d) => {
     console.log('routeChangeError');
   });
@@ -101,11 +98,6 @@ app.run(['$rootScope', '$location', 'messageBrokerService', '$routeParams', '$ro
     // if(route.current) console.log(JSON.stringify(route.current.params, false, 2));
     // console.log(JSON.stringify(routeParams,false, 2));
 
-    if(route.current) {
-      if(route.current.params.currentDatabase)   messageBroker.pub('current.database',   route.current.params.currentDatabase);
-      if(route.current.params.currentCollection) messageBroker.pub('current.collection', route.current.params.currentCollection);
-      else                                       messageBroker.pub('current.collection', '');
-    } // if
   });
 
   rootScope.$on('$routeChangeSuccess', () => {

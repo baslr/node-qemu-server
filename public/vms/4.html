@@ -22,7 +22,7 @@
       <div class="input-group">
         <input type="text" data-ng-model="editVm.hardware.net.macAddr" class="form-control" />
         <span class="input-group-btn">
-          <button data-ng-click="generateMacAddress()" class="btn btn-secondary">generate</button> 
+          <button data-ng-click="editVm.hardware.net.macAddr = generateMacAddress()" class="btn btn-secondary">generate</button>
         </span>
       </div>
       <p class="text-muted">type or generate a mac address for your NIC, example 01:23:45:67:89:01</p>

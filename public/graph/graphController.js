@@ -95,6 +95,7 @@ define(['app'], function (_app) {
       ctx.fillStyle = 'rgba(0, 0, 0, 1)';
       //ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
+
       ctx.fillStyle = 'rgba(0, 0, 0, 1)';
 
       var _iteratorNormalCompletion2 = true;
@@ -124,7 +125,7 @@ define(['app'], function (_app) {
             result.box.right += m2;
           } // else
 
-          //
+          // 
 
           var rotpart = 2 * Math.PI / result.result.length;
 
@@ -160,6 +161,7 @@ define(['app'], function (_app) {
             //   // break;
 
             // } // for
+
 
             var i = 0;
             var slots = 5;

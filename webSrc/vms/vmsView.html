@@ -63,8 +63,6 @@
     <div class="list-group">
       <a class="list-group-item" data-ng-repeat="s in settings" data-ng-class="{active: $index == curSetting.idx}" data-ng-click="curSetting.idx = $index;">{{s}}</a>
     </div>
-
-<!-- | USB | -->
   </div>
 </div>
 <div class="col-sm-9">
@@ -76,4 +74,6 @@
 </div>
 </div>
 
-<pre>{{editVm}}</pre>
+<pre>{{editVm | json}}</pre>
+
+<pre>{{curSetting | json}}</pre>

@@ -25,11 +25,11 @@ define(['app'], function (_app) {
         scope.vms.push(vm);
       });
     });
-    scope.settings = ['Summary', 'Name / keyboard / UUID', 'Machine / VGA / RAM / CPU', 'Drives', 'Networking', 'VNC / SPICE', 'Host/Guest-NUMA', 'Boot'];
+    scope.settings = ['Summary', 'Name / keyboard / UUID', 'Machine / VGA / RAM / CPU', 'Drives', 'Networking', 'VNC / SPICE', 'Host/Guest-NUMA', 'Boot', 'USB'];
     scope.expanded = {};
     scope.stats = {};
     scope.vms = [];
-    scope.curSetting = { idx: 0 };
+    scope.curSetting = { idx: 0, vmCount: 1 };
     scope.editVm = {};
     scope.selections = { cpus: [], vgas: ['std', 'qxl', 'virtio', 'none'], nics: [], machines: [], keyboards: ['ar', 'da', 'de', 'de-ch', 'en-gb', 'en-us', 'es', 'et', 'fi', 'fo', 'fr', 'fr-be', 'fr-ca', 'fr-ch', 'hr', 'hu', 'is', 'it', 'ja', 'lt', 'lv', 'mk', 'nl', 'nl-be', 'no', 'pl', 'pt', 'pt-br', 'ru', 'sl', 'sv', 'th', 'tr'] };
 
@@ -96,7 +96,22 @@ define(['app'], function (_app) {
           scope.curSetting.newVmToHostPortFwd = '';
           break;
       } // switch
-    };
+    }; // addPortFwd()
+
+    scope.generateMacAddress = function () {
+      var mac = crypto.getRandomValues(new Uint8Array(24)).reduce(function (p, c) {
+        return p + c.toString(16);
+      }, '').slice(0, 12).match(/.{2}/g).join(':');
+      var num = parseInt(mac.slice(1, 2), 16);
+      if (num % 2) num--;
+      return mac.slice(0, 1) + num.toString(16) + mac.slice(2);
+    }; // generateMacAddress()
+
+
+    scope.createVMs = function () {
+      console.log(scope.curSetting.vmCount);
+    }; // createVMs()
+
 
     var stat = scope.stat = function (uuid) {
       return scope.stats[uuid] ? scope.stats[uuid] : scope.stats[uuid] = {};

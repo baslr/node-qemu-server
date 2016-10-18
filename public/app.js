@@ -69,6 +69,7 @@ define(['exports', 'angular', 'angular-route', 'angular-animate', 'angular-sanit
     //   template:''
     // });
 
+
     // V M S
     route.when('/vms', {
       controller: 'vmsController',
@@ -79,10 +80,7 @@ define(['exports', 'angular', 'angular-route', 'angular-animate', 'angular-sanit
   }]);
 
   app.run(['$rootScope', '$location', 'messageBrokerService', '$routeParams', '$route', function (rootScope, location, messageBroker, routeParams, route) {
-    messageBroker.pub('current.database', '_system');
-    messageBroker.pub('current.fastFilter', 'none');
-    messageBroker.pub('current.query', 'unsaved');
-    messageBroker.pub('show.fastFilter', false);
+
     rootScope.$on('$routeChangeError', function (a, b, c, d) {
       console.log('routeChangeError');
     });
@@ -115,11 +113,6 @@ define(['exports', 'angular', 'angular-route', 'angular-animate', 'angular-sanit
       console.log('locationChangeSuccess');
       // if(route.current) console.log(JSON.stringify(route.current.params, false, 2));
       // console.log(JSON.stringify(routeParams,false, 2));
-
-      if (route.current) {
-        if (route.current.params.currentDatabase) messageBroker.pub('current.database', route.current.params.currentDatabase);
-        if (route.current.params.currentCollection) messageBroker.pub('current.collection', route.current.params.currentCollection);else messageBroker.pub('current.collection', '');
-      } // if
     });
 
     rootScope.$on('$routeChangeSuccess', function () {
