@@ -24,8 +24,9 @@ angularModule.push((scope, http) => {
   scope.stats    = {};
   scope.vms      = [];
   scope.curSetting = {idx:0, vmCount:1};
-  scope.editVm = {};
-  scope.selections = {cpus:[], vgas:['std', 'qxl', 'virtio', 'none'], nics:[], machines:[],keyboards:['ar', 'da', 'de',  'de-ch', 'en-gb', 'en-us', 'es', 'et', 'fi', 'fo', 'fr', 'fr-be', 'fr-ca', 'fr-ch', 'hr', 'hu', 'is', 'it', 'ja', 'lt', 'lv', 'mk', 'nl', 'nl-be', 'no', 'pl', 'pt', 'pt-br', 'ru', 'sl', 'sv', 'th', 'tr']};
+  scope.editVm = {hardware:{net:{}}};
+  scope.editDrive = {};
+  scope.selections = {cpus:[], vgas:['std', 'qxl', 'virtio', 'none'], nics:[], machines:[],keyboards:['ar', 'da', 'de',  'de-ch', 'en-gb', 'en-us', 'es', 'et', 'fi', 'fo', 'fr', 'fr-be', 'fr-ca', 'fr-ch', 'hr', 'hu', 'is', 'it', 'ja', 'lt', 'lv', 'mk', 'nl', 'nl-be', 'no', 'pl', 'pt', 'pt-br', 'ru', 'sl', 'sv', 'th', 'tr'], driveFormats:['raw', 'qcow2'], driveTypes:['block/partition/remote', 'file']};
 
   scope.showButton = (vm, type) => {
     const status     = stat(vm.uuid).status;
@@ -97,7 +98,33 @@ angularModule.push((scope, http) => {
   scope.createVMs = () => {
     console.log(scope.curSetting.vmCount);
 
+    let nextMacAddr   = NaN;
 
+    if (scope.editVm.hardware.net.macAddr) {
+      nextMacAddr = parseInt(scope.editVm.hardware.net.macAddr.split(':').join(''), 16);
+    } // if
+
+    for(let i = 0; i < scope.curSetting.vmCount; i++) {
+      const vmConf = JSON.parse(JSON.stringify(scope.editVm));
+
+      if (1 < scope.curSetting.vmCount) vmConf.name += `-${i}`;
+
+      if (!vmConf.hardware.net.macAddr) {
+        vmConf.hardware.net.macAddr = scope.generateMacAddress();
+      } else {
+        vmConf.hardware.net.macAddr = nextMacAddr.toString(16).match(/.{2}/g).join(':');
+      } // else
+
+      nextMacAddr++;
+
+      vmConf.hardware.drives = [{type:'disk'}];
+
+      console.log(vmConf);
+
+      http.post('/api/vms', vmConf).then( (data) => {
+        console.log(data);
+      });
+    } // for
 
   }; // createVMs()
 
