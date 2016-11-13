@@ -131,7 +131,11 @@ define(['app'], function (_app) {
 
         nextMacAddr++;
 
-        vmConf.hardware.drives = [{ type: 'disk' }];
+        vmConf.hardware.drives = [JSON.parse(JSON.stringify(scope.editDrive))];
+
+        if (vmConf.hardware.drives[0].create && 'file' === vmConf.hardware.drives[0].type && 1 < scope.curSetting.vmCount) {
+          vmConf.hardware.drives[0].name = scope.editDrive.name + ('-' + i);
+        } // if
 
         console.log(vmConf);
 
