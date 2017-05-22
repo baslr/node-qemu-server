@@ -10,7 +10,7 @@ define([], function () {
     waitSeconds: 0,
     shim: {
       'angular': {
-        deps: ['jquery'] // ! load angular bevor jquery to get not the jquery.event in the ng-mouse events   
+        deps: ['jquery'] // ! load angular bevor jquery to get not the jquery.event in the ng-mouse events    
       },
       'angular-route': {
         deps: ['angular']

@@ -38,7 +38,7 @@ define(['app'], function (_app) {
     };
 
     scope.applyFastFilter = function () {
-      var fromBlur = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
+      var fromBlur = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
       var lines = scope.fastFilter.editableRule.split('\n');
       var ruleName = undefined;
@@ -47,7 +47,7 @@ define(['app'], function (_app) {
 
       // first line does not match a rule name
       if (fromBlur) {
-        if (! ~lines[0].search(/^\/\/\ *\S+/)) {
+        if (!~lines[0].search(/^\/\/\ *\S+/)) {
           ruleName = 'last unsaved';
           lines.unshift('// ' + ruleName);
         } else {

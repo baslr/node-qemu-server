@@ -53,10 +53,11 @@ const tests = [
 
 
 // drives
-,['drive', ['disk',      '/myPath.img', 'virtio'], ['-drive', 'file=/myPath.img,media=disk,if=virtio']]
-,['drive', ['partition', '/dev/sdb1',   'virtio'], ['-drive', 'file=/dev/sdb1,media=disk,if=virtio,cache=none']]
-,['drive', ['cdrom',     '/myCd.iso',   'virtio'], ['-drive', 'file=/myCd.iso,media=cdrom,if=virtio']]
-
+,['drive', [{type:'disk',      path:'/myPath.img', interface:'virtio'}],                ['-drive', 'snapshot=off,file=/myPath.img,media=disk,if=virtio']]
+,['drive', [{type:'raw',       path:'/dev/sdb',   interface:'virtio'}],                ['-drive', 'snapshot=off,file=/dev/sdb,media=disk,if=virtio,format=raw']]
+,['drive', [{type:'partition', path:'/dev/sdb1',   interface:'virtio'}],                ['-drive', 'snapshot=off,file=/dev/sdb1,media=disk,if=virtio,cache=none']]
+,['drive', [{type:'cdrom',     path:'/myCd.iso',   interface:'virtio'}],                ['-drive', 'snapshot=off,file=/myCd.iso,media=cdrom,if=virtio']]
+,['drive', [{type:'disk',      path:'/myCd.iso',   interface:'virtio', snapshot:'on'}], ['-drive', 'snapshot=on,file=/myCd.iso,media=disk,if=virtio']]
 ]
 
 

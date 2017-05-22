@@ -19,13 +19,14 @@ angularModule.push((scope, http) => {
       scope.vms.push(vm);
     });
   });
-  scope.settings = ['Summary', 'Name / keyboard / UUID', 'Machine / VGA / RAM / CPU', 'Drives', 'Networking', 'VNC / SPICE', 'Host/Guest-NUMA', 'Boot'];
+  scope.settings = ['Summary', 'Name / keyboard / UUID', 'Machine / VGA / RAM / CPU', 'Drives', 'Networking', 'VNC / SPICE', 'Host/Guest-NUMA', 'Boot', 'USB'];
   scope.expanded = {};
   scope.stats    = {};
   scope.vms      = [];
-  scope.curSetting = {idx:0};
-  scope.editVm = {};
-  scope.selections = {cpus:[], vgas:['std', 'qxl', 'virtio', 'none'], nics:[], machines:[],keyboards:['ar', 'da', 'de',  'de-ch', 'en-gb', 'en-us', 'es', 'et', 'fi', 'fo', 'fr', 'fr-be', 'fr-ca', 'fr-ch', 'hr', 'hu', 'is', 'it', 'ja', 'lt', 'lv', 'mk', 'nl', 'nl-be', 'no', 'pl', 'pt', 'pt-br', 'ru', 'sl', 'sv', 'th', 'tr']};
+  scope.curSetting = {idx:0, vmCount:1};
+  scope.editVm = {hardware:{net:{}}};
+  scope.editDrive = {};
+  scope.selections = {cpus:[], vgas:['std', 'qxl', 'virtio', 'none'], nics:[], machines:[],keyboards:['ar', 'da', 'de',  'de-ch', 'en-gb', 'en-us', 'es', 'et', 'fi', 'fo', 'fr', 'fr-be', 'fr-ca', 'fr-ch', 'hr', 'hu', 'is', 'it', 'ja', 'lt', 'lv', 'mk', 'nl', 'nl-be', 'no', 'pl', 'pt', 'pt-br', 'ru', 'sl', 'sv', 'th', 'tr'], driveFormats:['raw', 'qcow2'], driveTypes:['block/partition/remote', 'file']};
 
   scope.showButton = (vm, type) => {
     const status     = stat(vm.uuid).status;
@@ -90,7 +91,52 @@ angularModule.push((scope, http) => {
         scope.curSetting.newVmToHostPortFwd = '';
         break;
     } // switch
-  }
+  }; // addPortFwd()
+
+  scope.generateMacAddress = () => {
+    const mac = crypto.getRandomValues(new Uint8Array(24)).reduce( (p,c) => p+c.toString(16), '').slice(0,12).match(/.{2}/g).join(':');
+    let   num = parseInt(mac.slice(1,2), 16);
+    if (num % 2) num--;
+    return mac.slice(0,1)+num.toString(16)+mac.slice(2);
+  }; // generateMacAddress()
+
+
+  scope.createVMs = () => {
+    console.log(scope.curSetting.vmCount);
+
+    let nextMacAddr   = NaN;
+
+    if (scope.editVm.hardware.net.macAddr) {
+      nextMacAddr = parseInt(scope.editVm.hardware.net.macAddr.split(':').join(''), 16);
+    } // if
+
+    for(let i = 0; i < scope.curSetting.vmCount; i++) {
+      const vmConf = JSON.parse(JSON.stringify(scope.editVm));
+
+      if (1 < scope.curSetting.vmCount) vmConf.name += `-${i}`;
+
+      if (!vmConf.hardware.net.macAddr) {
+        vmConf.hardware.net.macAddr = scope.generateMacAddress();
+      } else {
+        vmConf.hardware.net.macAddr = nextMacAddr.toString(16).match(/.{2}/g).join(':');
+      } // else
+
+      nextMacAddr++;
+
+      vmConf.hardware.drives = [JSON.parse(JSON.stringify(scope.editDrive))];
+
+      if (vmConf.hardware.drives[0].create && 'file' === vmConf.hardware.drives[0].type && 1 < scope.curSetting.vmCount) {
+        vmConf.hardware.drives[0].name = scope.editDrive.name + `-${i}`;
+      } // if
+
+      console.log(vmConf);
+
+      http.post('/api/vms', vmConf).then( (data) => {
+        console.log(data);
+      });
+    } // for
+
+  }; // createVMs()
 
 
   const stat = scope.stat = (uuid) => { return scope.stats[uuid] ? scope.stats[uuid] : scope.stats[uuid] = {}; }

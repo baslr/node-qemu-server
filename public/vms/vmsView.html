@@ -10,7 +10,7 @@
       <th>VNC-Port</th>
     </tr>
   </thead>
-  <tbody data-ng-repeat="vm in vms">
+  <tbody data-ng-repeat="vm in vms | orderBy: 'name'">
     <tr data-ng-click="expanded[vm.uuid] = !expanded[vm.uuid];" style="cursor: pointer;">
       <td>
         <div style="margin-bottom:0px; padding:0px; text-align:center;float:left;margin-left:10px;" class="alert">{{stat(vm.uuid).procStatus}}</div>
@@ -63,8 +63,6 @@
     <div class="list-group">
       <a class="list-group-item" data-ng-repeat="s in settings" data-ng-class="{active: $index == curSetting.idx}" data-ng-click="curSetting.idx = $index;">{{s}}</a>
     </div>
-
-<!-- | USB | -->
   </div>
 </div>
 <div class="col-sm-9">
@@ -76,4 +74,8 @@
 </div>
 </div>
 
-<pre>{{editVm}}</pre>
+<pre>{{editVm | json}}</pre>
+
+<pre>{{editDrive | json}}</pre>
+
+<pre>{{curSetting | json}}</pre>
