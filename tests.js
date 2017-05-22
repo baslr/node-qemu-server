@@ -49,7 +49,11 @@ const tests = [
 
 // net
 ,['net', ['myMacAddr', 'myCard', 'user'], ['-net', 'nic,model=myCard,macaddr=myMacAddr', '-net', 'user']]
-,['net', ['myMacAddr', 'myCard', 'user', {guestIp:'gIp',fwds:[{hostIp:'hIp',hostPort:'hPort', guestPort:'gPort'}]}], ['-net', 'nic,model=myCard,macaddr=myMacAddr', '-net', 'user,dhcpstart=gIp,hostfwd=tcp:hIp:hPort-gIp:gPort']]
+,['net', ['myMacAddr', 'myCard', 'user', {guestIp:'gIp',hostToVmPortFwd:[{hostIp:'hIp',hostPort:'hPort', guestPort:'gPort'}]}], ['-net', 'nic,model=myCard,macaddr=myMacAddr', '-net', 'user,dhcpstart=gIp,hostfwd=tcp:hIp:hPort-gIp:gPort']]
+,['net', ['myMacAddr', 'myCard', 'user', {guestIp:'gIp',vmToHostPortFwd:[{hostIp:'hIp',hostPort:'hPort', guestPort:'gPort'}]}], ['-net', 'nic,model=myCard,macaddr=myMacAddr', '-net', 'user,dhcpstart=gIp,guestfwd=tcp:gIp:gPort-hIp:hPort']]
+
+,['net', ['myMacAddr', 'myCard', 'user', {guestIp:'gIp',hostToVmPortFwd:[{hostIp:'hIp',hostPort:'hPort', guestPort:'gPort'}],
+                                                        vmToHostPortFwd:[{hostIp:'hIp',hostPort:'hPort', guestPort:'gPort'}]}], ['-net', 'nic,model=myCard,macaddr=myMacAddr', '-net', 'user,dhcpstart=gIp,hostfwd=tcp:hIp:hPort-gIp:gPort,guestfwd=tcp:gIp:gPort-hIp:hPort']]
 
 
 // drives
