@@ -49,6 +49,12 @@ angularModule.push((scope, http) => {
     } // switch()
   }
 
+  // check for io-error
+  // QMP:cmd:query-status
+  // qmpTo d28b0dd5-22ad-2a21-9a8a-c2fa345a3202 query-status undefined
+  // QMP:cmd:res:pre: {"return":{"status":"io-error","singlestep":false,"running":false}}
+  // QMP:cmd:res:post:{"status":"io-error","singlestep":false,"running":false,"vmUuid":"d28b0dd5-22ad-2a21-9a8a-c2fa345a3202","wasCmd":"query-status","timestamp":1466867216.861}
+  // VMS:on:status:d28b0dd5-22ad-2a21-9a8a-c2fa345a3202:io-error
   scope.runAction = (vmUuid, action) => {
     switch (action) {
       case 'start':  return http.get(`/api/vm/${vmUuid}/proc/start`);
