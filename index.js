@@ -23,7 +23,17 @@ if (qemuConfig.versions.major < 2 || (qemuConfig.versions.major == 2 && qemuConf
 }
 console.log(`Found qemu version ${qemuConfig.version}, OK`);
 
+if (!qemuConfig.vncSupport) {
+  console.log('qemu has no vnc support');
+  process.exit();
+}
+console.log('Found qemu vnc, OK');
 
+if (!qemuConfig.spiceSupport) {
+  console.log('qemu has no spice support');
+} else {
+  console.log('Found qemu spice, OK');
+}
 
 
 const app = require('./lib/app');
