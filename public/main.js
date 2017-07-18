@@ -10,7 +10,7 @@ define([], function () {
     waitSeconds: 0,
     shim: {
       'angular': {
-        deps: ['jquery'] // ! load angular bevor jquery to get not the jquery.event in the ng-mouse events    
+        deps: ['jquery'] // ! load angular bevor jquery to get not the jquery.event in the ng-mouse events   
       },
       'angular-route': {
         deps: ['angular']
@@ -50,7 +50,7 @@ define([], function () {
 
   requirejs.config(requireJsConfig);
 
-  requirejs(['jquery', 'angular', 'app', 'ngjsoneditor', 'vms/vmsController', 'navBar/navBarController', 'collectionsBar/collectionsBarController', 'collection/collectionController', 'document/documentController', 'document/documentRouteController', 'manage/collectionsController', 'aql/aqlController', 'graph/graphController', 'services/messageBrokerService', 'services/queryService', 'services/formatService', 'services/fastFilterService', 'services/queriesService', 'services/testService', 'directives/feedbackDirective', 'directives/journalSizeDirective', 'directives/aqlResultTable'], function ($) {
+  requirejs(['jquery', 'angular', 'app', 'ngjsoneditor', 'vms/vmsController', 'drives/drivesController', 'navBar/navBarController', 'collectionsBar/collectionsBarController', 'collection/collectionController', 'document/documentController', 'document/documentRouteController', 'manage/collectionsController', 'aql/aqlController', 'graph/graphController', 'services/messageBrokerService', 'services/queryService', 'services/formatService', 'services/fastFilterService', 'services/queriesService', 'services/testService', 'directives/feedbackDirective', 'directives/journalSizeDirective', 'directives/aqlResultTable'], function ($) {
     $.ajaxSetup({ cache: false });
 
     angular.bootstrap(document, ['app']);

@@ -1,0 +1,126 @@
+<form style="margin-top:20px;">
+  <!-- NAME -->
+  <div class="form-group row">
+    <label class="col-sm-2">Name</label>
+    <div class="col-sm-10">
+      <input type="text" data-ng-model="editDrive.name" class="form-control" />
+      <p class="text-muted">Specify a drive name</p>
+    </div>
+  </div>
+
+  <!-- UUID -->
+  <div class="form-group row">
+    <label class="col-sm-2">UUID</label>
+    <div class="col-sm-10">
+      <input type="text" data-ng-model="editDrive.uuid" class="form-control" />
+      <p class="text-muted">Optional specify a UUID</p>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-sm-2"></label>
+    <div class="col-sm-10">
+        <div class="form-check">
+        <label class="form-check-label">
+            <input class="form-check-input" type="radio" name="create-type" data-ng-model="editDrive.type" value="path">
+            Use network path xor partition path
+        </label>
+        </div>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-sm-2"></label>
+    <div class="col-sm-10">
+        <div class="form-check">
+        <label class="form-check-label">
+            <input class="form-check-input" type="radio" name="create-type" data-ng-model="editDrive.type" value="new">
+            Create new drive image
+        </label>
+        </div>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-sm-2"></label>
+    <div class="col-sm-10">
+        <div class="form-check">
+        <label class="form-check-label">
+            <input class="form-check-input" disabled type="radio" name="create-type" data-ng-model="editDrive.type" value="uploaded">
+            Upload drive image
+        </label>
+        </div>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-sm-2"></label>
+    <div class="col-sm-10">
+        <div class="form-check">
+        <label class="form-check-label">
+            <input class="form-check-input" disabled type="radio" name="create-type" data-ng-model="editDrive.type" value="stdDist">
+            Select standard distribution image
+        </label>
+        </div>
+    </div>
+  </div>
+
+
+  <!-- FILE / PATH -->
+  <div class="form-group row" data-ng-if="'path' === editDrive.type">
+    <label class="col-sm-2">File</label>
+    <div class="col-sm-10">
+      <input type="text" data-ng-model="editDrive.file" class="form-control" />
+      <p class="text-muted">Specify the path for your drive</p>
+    </div>
+  </div>
+
+  <!-- new image SIZE -->
+  <div class="form-group row" data-ng-if="'new' === editDrive.type">
+    <label class="col-sm-2">Size</label>
+    <div class="col-sm-10">
+      <input type="text" data-ng-model="editDrive.size" class="form-control" />
+      <p class="text-muted">Specify the size for the image. num[K|M|G|T|P|E]</p>
+    </div>
+  </div>
+
+  <!-- FORMAT -->
+  <div class="form-group row">
+    <label class="col-sm-2">Format</label>
+    <div class="col-sm-10">
+      <select class="form-control-lg" data-ng-model="editDrive.format" data-ng-options="format for format in selections.formats"></select>
+      <p class="text-muted">Select the image format; prefere qcow2 for file based images otherwise raw.</p>
+    </div>
+  </div>
+
+    <!-- MEDIA -->
+    <div class="form-group row">
+    <label class="col-sm-2">Media</label>
+    <div class="col-sm-10">
+      <select class="form-control-lg" data-ng-model="editDrive.media" data-ng-options="media for media in selections.medias"></select>
+      <p class="text-muted">Select the media format.</p>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-sm-2">Backing</label>
+    <div class="col-sm-10">
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" data-ng-model="editDrive.useBacking" /> Use a backing file
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group row" data-ng-if="editDrive.useBacking">
+    <label class="col-sm-2">Path</label>
+    <div class="col-sm-10">
+      <input type="text" data-ng-model="editDrive.backingPath" class="form-control" />
+      <p class="text-muted">Specify the path to the backing file</p>
+    </div>
+  </div>
+</form>
+
+
+<pre>{{editDrive | json}}</pre>

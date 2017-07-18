@@ -59,6 +59,12 @@ app.config(['$routeProvider', '$locationProvider', '$sceDelegateProvider', (rout
       controller:  'vmsController',
       templateUrl: 'vms/vmsView.html'
     });
+
+    // D R I V E S
+    route.when('/drives', {
+      controller:  'drivesController',
+      templateUrl: 'drives/drivesView.html'
+    });
     
     route.otherwise({redirectTo: '/vms'});
 }]);

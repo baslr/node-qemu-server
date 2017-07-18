@@ -49,6 +49,7 @@ requirejs.config(requireJsConfig);
 
 requirejs(['jquery', 'angular',  'app', 'ngjsoneditor',
   'vms/vmsController',
+  'drives/drivesController',
 
   'navBar/navBarController',
   'collectionsBar/collectionsBarController',

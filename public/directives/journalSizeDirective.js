@@ -42,7 +42,6 @@ define(['app'], function (_app) {
 
   // feedbafeedbackDirective
 
-
   // angular.module('customControl', ['ngSanitize']).
   // directive('contenteditable', ['$sce', function($sce) {
   //   return {

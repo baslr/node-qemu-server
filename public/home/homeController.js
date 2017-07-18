@@ -36,7 +36,6 @@ define(['app'], function (_app) {
 
     // scope.test.selected = 'a';
 
-
     // scope.test.options = {
     //   kc: {name:'name c', rule:'rule c'},
     //   ka: {name:'name a', rule:'rule a'},

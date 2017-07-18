@@ -26,7 +26,22 @@ angularModule.push((scope, http) => {
   scope.curSetting = {idx:0, vmCount:1};
   scope.editVm = {hardware:{net:{}}};
   scope.editDrive = {};
-  scope.selections = {cpus:[], vgas:['std', 'qxl', 'virtio', 'none'], nics:[], machines:[],keyboards:['ar', 'da', 'de',  'de-ch', 'en-gb', 'en-us', 'es', 'et', 'fi', 'fo', 'fr', 'fr-be', 'fr-ca', 'fr-ch', 'hr', 'hu', 'is', 'it', 'ja', 'lt', 'lv', 'mk', 'nl', 'nl-be', 'no', 'pl', 'pt', 'pt-br', 'ru', 'sl', 'sv', 'th', 'tr'], driveFormats:['raw', 'qcow2'], driveTypes:['block/partition/remote', 'file']};
+  scope.selections = {
+    cpus:[],
+    vgas:['std', 'qxl', 'virtio', 'none'],
+    nics:[],
+    machines:[],
+    keyboards:['ar', 'da', 'de',  'de-ch', 'en-gb', 'en-us', 'es', 'et', 'fi', 'fo', 'fr', 'fr-be', 'fr-ca', 'fr-ch', 'hr', 'hu', 'is', 'it', 'ja', 'lt', 'lv', 'mk', 'nl', 'nl-be', 'no', 'pl', 'pt', 'pt-br', 'ru', 'sl', 'sv', 'th', 'tr'],
+
+    drive: {
+      formats:['raw', 'qcow2'],
+      medias:['disk', 'cdrom'],
+      ifs:['ide','scsi','sd','mtd','floppy','pflash','virtio'],
+      caches:['none','writeback','unsafe','directsync','writethrough'],
+      aios:['threads','native'],
+      discards:['ignore','off','unmap','on']
+    }
+  };
 
   scope.showButton = (vm, type) => {
     const status     = stat(vm.uuid).status;

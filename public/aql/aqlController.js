@@ -78,10 +78,8 @@ define(['app'], function (_app) {
 
       // check if word expansion
 
-
       // how to?
-      // from selection to right unit \n xor space 
-
+      // from selection to right unit \n xor space
 
       console.log(ev);
       // ev.stopPropagation();
@@ -103,7 +101,6 @@ define(['app'], function (_app) {
 
         // fooo
 
-
         scope.evalOptions(txtArr[0]);
 
         if (scope.options.eval === 'asap') {
@@ -122,7 +119,7 @@ define(['app'], function (_app) {
         console.log('-------------------------------', ev);
 
         console.log('after end is:', [txt[ePos]]);
-        if (txt[ePos] && !~txt[ePos].search(/\s/)) return;
+        if (txt[ePos] && ! ~txt[ePos].search(/\s/)) return;
 
         var before = txt.slice(0, pos),
             after = txt.slice(pos);
@@ -212,7 +209,7 @@ define(['app'], function (_app) {
 
                   break;
                 }
-              } // for   
+              } // for 
             } catch (err) {
               _didIteratorError2 = true;
               _iteratorError2 = err;
@@ -229,7 +226,6 @@ define(['app'], function (_app) {
             }
           }
         } // if
-
 
         console.log(beforeFirst, before, after);
       });
@@ -371,7 +367,7 @@ define(['app'], function (_app) {
       } // if
 
       optionLine = optionLine.trim().toLowerCase();
-      if (!~optionLine.search(/^\/\//)) return; // cancel if its not a starting comment line
+      if (! ~optionLine.search(/^\/\//)) return; // cancel if its not a starting comment line
 
       var options = [{ name: 'eval', q: /eval\:(asap|blur|\d+ms)/, f: function f(m) {
           return 0 === m.search(/^\d+ms$/) ? Number(m.slice(0, -2)) : m;

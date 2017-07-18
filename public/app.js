@@ -69,11 +69,16 @@ define(['exports', 'angular', 'angular-route', 'angular-animate', 'angular-sanit
     //   template:''
     // });
 
-
     // V M S
     route.when('/vms', {
       controller: 'vmsController',
       templateUrl: 'vms/vmsView.html'
+    });
+
+    // D R I V E S
+    route.when('/drives', {
+      controller: 'drivesController',
+      templateUrl: 'drives/drivesView.html'
     });
 
     route.otherwise({ redirectTo: '/vms' });

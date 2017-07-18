@@ -32,7 +32,22 @@ define(['app'], function (_app) {
     scope.curSetting = { idx: 0, vmCount: 1 };
     scope.editVm = { hardware: { net: {} } };
     scope.editDrive = {};
-    scope.selections = { cpus: [], vgas: ['std', 'qxl', 'virtio', 'none'], nics: [], machines: [], keyboards: ['ar', 'da', 'de', 'de-ch', 'en-gb', 'en-us', 'es', 'et', 'fi', 'fo', 'fr', 'fr-be', 'fr-ca', 'fr-ch', 'hr', 'hu', 'is', 'it', 'ja', 'lt', 'lv', 'mk', 'nl', 'nl-be', 'no', 'pl', 'pt', 'pt-br', 'ru', 'sl', 'sv', 'th', 'tr'], driveFormats: ['raw', 'qcow2'], driveTypes: ['block/partition/remote', 'file'] };
+    scope.selections = {
+      cpus: [],
+      vgas: ['std', 'qxl', 'virtio', 'none'],
+      nics: [],
+      machines: [],
+      keyboards: ['ar', 'da', 'de', 'de-ch', 'en-gb', 'en-us', 'es', 'et', 'fi', 'fo', 'fr', 'fr-be', 'fr-ca', 'fr-ch', 'hr', 'hu', 'is', 'it', 'ja', 'lt', 'lv', 'mk', 'nl', 'nl-be', 'no', 'pl', 'pt', 'pt-br', 'ru', 'sl', 'sv', 'th', 'tr'],
+
+      drive: {
+        formats: ['raw', 'qcow2'],
+        medias: ['disk', 'cdrom'],
+        ifs: ['ide', 'scsi', 'sd', 'mtd', 'floppy', 'pflash', 'virtio'],
+        caches: ['none', 'writeback', 'unsafe', 'directsync', 'writethrough'],
+        aios: ['threads', 'native'],
+        discards: ['ignore', 'off', 'unmap', 'on']
+      }
+    };
 
     scope.showButton = function (vm, type) {
       var status = stat(vm.uuid).status;
@@ -56,6 +71,12 @@ define(['app'], function (_app) {
       } // switch()
     };
 
+    // check for io-error
+    // QMP:cmd:query-status
+    // qmpTo d28b0dd5-22ad-2a21-9a8a-c2fa345a3202 query-status undefined
+    // QMP:cmd:res:pre: {"return":{"status":"io-error","singlestep":false,"running":false}}
+    // QMP:cmd:res:post:{"status":"io-error","singlestep":false,"running":false,"vmUuid":"d28b0dd5-22ad-2a21-9a8a-c2fa345a3202","wasCmd":"query-status","timestamp":1466867216.861}
+    // VMS:on:status:d28b0dd5-22ad-2a21-9a8a-c2fa345a3202:io-error
     scope.runAction = function (vmUuid, action) {
       switch (action) {
         case 'start':
@@ -108,7 +129,6 @@ define(['app'], function (_app) {
       return mac.slice(0, 1) + num.toString(16) + mac.slice(2);
     }; // generateMacAddress()
 
-
     scope.createVMs = function () {
       console.log(scope.curSetting.vmCount);
 
@@ -144,7 +164,6 @@ define(['app'], function (_app) {
         });
       } // for
     }; // createVMs()
-
 
     var stat = scope.stat = function (uuid) {
       return scope.stats[uuid] ? scope.stats[uuid] : scope.stats[uuid] = {};
