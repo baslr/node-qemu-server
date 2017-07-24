@@ -102,7 +102,7 @@
     </div>
   </div>
 
-  <div class="form-group row">
+  <div class="form-group row" data-ng-if="'new' === editDrive.type">
     <label class="col-sm-2">Backing</label>
     <div class="col-sm-10">
       <div class="checkbox">
@@ -116,8 +116,11 @@
   <div class="form-group row" data-ng-if="editDrive.useBacking">
     <label class="col-sm-2">Path</label>
     <div class="col-sm-10">
-      <input type="text" data-ng-model="editDrive.backingPath" class="form-control" />
-      <p class="text-muted">Specify the path to the backing file</p>
+      <div class="input-group">
+        <span class="input-group-addon">backing_file=</span>
+        <input type="text" data-ng-model="editDrive.backingPath" class="form-control">
+      </div>
+      <p class="text-muted">Specify the path to the backing file.</p>
     </div>
   </div>
 
@@ -131,3 +134,26 @@
 
 
 <pre>{{editDrive | json}}</pre>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>UUID</th>
+      <th>name</th>
+      <th>media</th>
+      <th>format</th>
+      <th>path</th>
+      <th>size</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr data-ng-repeat="d in drives | orderBy:'name'">
+      <td style="font-family:monospace">{{d.uuid}}</td>
+      <td>{{d.name}}</td>
+      <td>{{d.media}}</td>
+      <td>{{d.format}}</td>
+      <td>{{d.path}}</td>
+      <td>{{d.size}}</td>
+    </tr>
+  </tbody>
+</table>

@@ -25,9 +25,17 @@ define(['app'], function (_app) {
 
     scope.createDrive = function () {
       http.post('/api/drives', scope.editDrive).then(function (data) {
-        console.log(data);
+        scope.reloadDrives();
+        scope.editDrive = {};
       });
     };
+
+    scope.reloadDrives = function () {
+      return http.get('api/drives').then(function (data) {
+        return scope.drives = data.data;
+      });
+    };
+    scope.reloadDrives();
   });
 
   _app2.default.controller('drivesController', angularModule);

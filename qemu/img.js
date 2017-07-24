@@ -36,17 +36,27 @@ class Img {
             conf.uuid = uuid.new();
         } // if
 
-        const createArgs = ['qemu-img', 'create', '-f', conf.format];
+        const createArgs = ['qemu-img', 'create', `${conf.uuid}.img`, '-f', conf.format];
 
         switch (conf.type) {
             case 'new':
-                createArgs.push('-o', `size=${conf.size}`, `${conf.uuid}.img`);
+                createArgs.push('-o', `size=${conf.size}`);
+
+                if (conf.useBacking) {
+                    createArgs.push('-o', `backing_file=${conf.backingPath}`);
+                }
+
                 const ret = execSync(createArgs.join(' '), {shell:'/bin/bash', cwd:`${__dirname}/../disks/`});
+                conf.path = `disks/${conf.uuid}.img`;
                 fs.writeFileSync(`${__dirname}/../disks/${conf.uuid}.json`, JSON.stringify(conf, false, 2));
 
                 console.log(ret.toString());
                 break;
-        }
+
+            case 'path':
+                fs.writeFileSync(`${__dirname}/../disks/${conf.uuid}.json`, JSON.stringify(conf, false, 2));
+                break;
+        } // switch
     }
 
     get config() {
