@@ -17,6 +17,12 @@ angularModule.push((scope, http) => {
     medias:['disk', 'cdrom'],
   };
 
+  scope.createDrive = () => {
+    http.post('/api/drives', scope.editDrive).then( (data) => {
+      console.log(data);
+    });
+  }
+
 });
 
 app.controller('drivesController', angularModule);

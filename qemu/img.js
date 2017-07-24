@@ -5,7 +5,7 @@ const execSync = require('child_process').execSync;
 const uuid     = require('../lib/uuid');
 
 class Img {
-    constructor(conf) {
+    constructor(conf = {}) {
         if (conf.create) {
             conf.uuid = uuid.new();
         } // if
@@ -31,6 +31,24 @@ class Img {
         this.conf = JSON.parse(JSON.stringify(conf));
     }
 
+    create(conf) {
+        if (!conf.uuid) {
+            conf.uuid = uuid.new();
+        } // if
+
+        const createArgs = ['qemu-img', 'create', '-f', conf.format];
+
+        switch (conf.type) {
+            case 'new':
+                createArgs.push('-o', `size=${conf.size}`, `${conf.uuid}.img`);
+                const ret = execSync(createArgs.join(' '), {shell:'/bin/bash', cwd:`${__dirname}/../disks/`});
+                fs.writeFileSync(`${__dirname}/../disks/${conf.uuid}.json`, JSON.stringify(conf, false, 2));
+
+                console.log(ret.toString());
+                break;
+        }
+    }
+
     get config() {
         return {
             path:`disks/${this.conf.uuid}.img`,
@@ -43,6 +61,14 @@ class Img {
 module.exports = Img;
 
 /*
+
+name: 'w10',
+  type: 'new',
+  size: '20G',
+  format: 'qcow2',
+  media: 'disk'
+
+
 const img = new Img({backingPath:"nbd:192.168.2.103:10115",
 format:"qcow2",
 type:'file',

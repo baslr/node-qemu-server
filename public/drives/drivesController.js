@@ -22,6 +22,12 @@ define(['app'], function (_app) {
       formats: ['raw', 'qcow2'],
       medias: ['disk', 'cdrom']
     };
+
+    scope.createDrive = function () {
+      http.post('/api/drives', scope.editDrive).then(function (data) {
+        console.log(data);
+      });
+    };
   });
 
   _app2.default.controller('drivesController', angularModule);
