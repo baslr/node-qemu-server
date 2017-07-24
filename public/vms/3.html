@@ -1,118 +1,14 @@
 <!-- DRIVE -->
 
 <form>
-  <!-- CREATE DRIVE -->
+  
   <div class="form-group row">
-    <label class="col-sm-2">Create drive</label>
+    <label class="col-sm-2">Select drive</label>
     <div class="col-sm-10">
-      <div class="checkbox">
-        <label>
-          <input type="checkbox" data-ng-model="editDrive.create"> Create drive
-        </label>
-      </div>
+      <select class="form-control-lg" data-ng-model="editDrive.drive" data-ng-options="d.name+' '+d.media+' '+d.format+' '+d.path+' '+d.size for d in drives"></select>
+      <p class="text-muted">Select a drive.</p>
     </div>
   </div>
-
-  <!-- UUID -->
-  <div class="form-group row" data-ng-if="editDrive.create">
-    <label class="col-sm-2">UUID</label>
-    <div class="col-sm-10">
-      <input type="text" data-ng-model="editDrive.uuid" class="form-control" />
-      <p class="text-muted">Specify a UUID</p>
-    </div>
-  </div>
-
-  <!-- NAME -->
-  <div class="form-group row" data-ng-if="editDrive.create">
-    <label class="col-sm-2">Name</label>
-    <div class="col-sm-10">
-      <input type="text" data-ng-model="editDrive.name" class="form-control" />
-      <p class="text-muted">Specify a drive name</p>
-    </div>
-  </div>
-
-
-  <div class="form-group row" data-ng-if="editDrive.create">
-    <label class="col-sm-2"></label>
-    <div class="col-sm-10">
-        <div class="form-check">
-        <label class="form-check-label">
-            <input class="form-check-input" type="radio" name="create-type" data-ng-model="editDrive.createType" value="networkXorPartitionPath">
-            Use network path xor partition path
-        </label>
-        </div>
-    </div>
-  </div>
-
-  <div class="form-group row" data-ng-if="editDrive.create">
-    <label class="col-sm-2"></label>
-    <div class="col-sm-10">
-        <div class="form-check">
-        <label class="form-check-label">
-            <input class="form-check-input" type="radio" name="create-type" data-ng-model="editDrive.createType" value="driveImage">
-            Create new drive image
-        </label>
-        </div>
-    </div>
-  </div>
-
-
-  <!-- FILE -->
-  <div class="form-group row" data-ng-if="editDrive.create && 'networkXorPartitionPath' === editDrive.createType">
-    <label class="col-sm-2">File</label>
-    <div class="col-sm-10">
-      <input type="text" data-ng-model="editDrive.file" class="form-control" />
-      <p class="text-muted">Specify the path for your drive</p>
-    </div>
-  </div>
-
-  <!-- new image SIZE -->
-  <div class="form-group row" data-ng-if="editDrive.create && 'driveImage' === editDrive.createType">
-    <label class="col-sm-2">Size</label>
-    <div class="col-sm-10">
-      <input type="text" data-ng-model="editDrive.size" class="form-control" />
-      <p class="text-muted">Specify the size for the image. num[K|M|G|T|P|E]</p>
-    </div>
-  </div>
-
-  <!-- FORMAT -->
-  <div class="form-group row" data-ng-if="editDrive.create">
-    <label class="col-sm-2">Format</label>
-    <div class="col-sm-10">
-      <select class="form-control-lg" data-ng-model="editDrive.format" data-ng-options="format for format in selections.drive.formats"></select>
-      <p class="text-muted">Select the image format; prefere qcow2 for file based images otherwise raw.</p>
-    </div>
-  </div>
-
-    <!-- MEDIA -->
-    <div class="form-group row" data-ng-if="editDrive.create">
-    <label class="col-sm-2">Media</label>
-    <div class="col-sm-10">
-      <select class="form-control-lg" data-ng-model="editDrive.media" data-ng-options="media for media in selections.drive.medias"></select>
-      <p class="text-muted">Select the media format.</p>
-    </div>
-  </div>
-
-  <div class="form-group row" data-ng-if="editDrive.create">
-    <label class="col-sm-2">Backing</label>
-    <div class="col-sm-10">
-      <div class="checkbox">
-        <label>
-          <input type="checkbox" data-ng-model="editDrive.useBacking" /> Use a backing file
-        </label>
-      </div>
-    </div>
-  </div>
-
-  <div class="form-group row" data-ng-if="editDrive.create && editDrive.useBacking">
-    <label class="col-sm-2">Path</label>
-    <div class="col-sm-10">
-      <input type="text" data-ng-model="editDrive.backingPath" class="form-control" />
-      <p class="text-muted">Specify the path to the backing file</p>
-    </div>
-  </div>
-
-
 
   <!-- todo drop down select drive
 
@@ -202,6 +98,13 @@
     <div class="col-sm-10">
       <select class="form-control-lg" data-ng-model="editDrive.discard" data-ng-options="discard for discard in selections.drive.discards"></select>
       <p class="text-muted">Select discard operation.</p>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label class="col-sm-2">Add Drive</label>
+    <div class="col-sm-10">
+      <button type="button" class="btn btn-primary" data-ng-click="addDrive()">Add Drive</button>
     </div>
   </div>
 </form>

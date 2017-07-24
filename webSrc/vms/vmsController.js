@@ -24,7 +24,12 @@ angularModule.push((scope, http) => {
   scope.stats    = {};
   scope.vms      = [];
   scope.curSetting = {idx:0, vmCount:1};
-  scope.editVm = {hardware:{net:{}}};
+  scope.editVm = {
+    hardware:{
+      net:{},
+      drives:[]
+    }
+  };
   scope.editDrive = {};
   scope.selections = {
     cpus:[],
@@ -34,14 +39,14 @@ angularModule.push((scope, http) => {
     keyboards:['ar', 'da', 'de',  'de-ch', 'en-gb', 'en-us', 'es', 'et', 'fi', 'fo', 'fr', 'fr-be', 'fr-ca', 'fr-ch', 'hr', 'hu', 'is', 'it', 'ja', 'lt', 'lv', 'mk', 'nl', 'nl-be', 'no', 'pl', 'pt', 'pt-br', 'ru', 'sl', 'sv', 'th', 'tr'],
 
     drive: {
-      formats:['raw', 'qcow2'],
-      medias:['disk', 'cdrom'],
       ifs:['ide','scsi','sd','mtd','floppy','pflash','virtio'],
       caches:['none','writeback','unsafe','directsync','writethrough'],
       aios:['threads','native'],
       discards:['ignore','off','unmap','on']
     }
   };
+
+  http.get('/api/drives').then(data => scope.drives = data.data);
 
   scope.showButton = (vm, type) => {
     const status     = stat(vm.uuid).status;
@@ -87,6 +92,16 @@ angularModule.push((scope, http) => {
   shutdown: (cb) -> @sendCmd 'system_powerdown', cb
   stop: (cb) -> @sendCmd 'quit', cb
 */
+  }
+
+  scope.addDrive = () => {
+    for(const key in scope.editDrive) {
+      if ('drive' === key) continue;
+      scope.editDrive.drive[key] = scope.editDrive[key];
+    }
+
+    scope.editVm.hardware.drives.push(scope.editDrive.drive);
+    scope.editDrive = {};
   }
 
   scope.addPortFwd = (type) => {
@@ -137,12 +152,6 @@ angularModule.push((scope, http) => {
       } // else
 
       nextMacAddr++;
-
-      vmConf.hardware.drives = [JSON.parse(JSON.stringify(scope.editDrive))];
-
-      if (vmConf.hardware.drives[0].create && 'file' === vmConf.hardware.drives[0].type && 1 < scope.curSetting.vmCount) {
-        vmConf.hardware.drives[0].name = scope.editDrive.name + `-${i}`;
-      } // if
 
       console.log(vmConf);
 
